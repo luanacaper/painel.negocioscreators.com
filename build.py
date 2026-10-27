@@ -51,9 +51,10 @@ if CHECK:
     try:
         with urllib.request.urlopen(f"https://{DOMINIO}/_build.json", timeout=20) as r:
             antes = json.load(r).get("shas", {})
-    except Exception as e:  # primeira vez, domínio ainda sem HTTPS etc.
-        print("sem build anterior:", e)
-        antes = {}
+    except Exception as e:  # domínio ainda sem DNS/HTTPS: compara com o último build feito aqui
+        print("domínio não respondeu:", e)
+        local = AQUI / ".ultimo-build.json"
+        antes = json.loads(local.read_text(encoding="utf-8")).get("shas", {}) if local.exists() else {}
     saida("changed", "true" if antes != shas else "false")
     sys.exit(0)
 
