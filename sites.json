@@ -1,0 +1,33 @@
+{
+  "dominio": "negocioscreators.com",
+  "painel": "painel.negocioscreators.com",
+  "sites": [
+    { "host": "site",   "path": "",                              "repo": "luanacaper/negocios-creators",     "nome": "Hub Negócios Creators" },
+    { "host": "site",   "path": "luanacaper/portifolio",         "repo": "luanacaper/portifolio",            "nome": "Portfólio Luana Caper" },
+    { "host": "site",   "path": "luanacaper/portifolio/ugc",     "repo": "luanacaper/portfolio-ugc",         "nome": "Portfólio UGC" },
+    { "host": "site",   "path": "luanacaper/links",              "repo": "pousadaaime/luhcaper",             "nome": "Links Luh Caper" },
+    { "host": "site",   "path": "luanacaper/economiza",          "repo": "luanacaper/economiza.ai",          "nome": "Economiza.ai Family" },
+    { "host": "site",   "path": "luanacaper/economiza-family",   "repo": "pousadaaime/economiza.aifamily",   "nome": "Economiza.ai Family (versão 2)" },
+    { "host": "site",   "path": "luanacaper/thais-farm",         "repo": "luanacaper/thais-farm",            "nome": "Thaís Farm Rio · gerador de link" },
+    { "host": "site",   "path": "aime/hospedagem",               "repo": "pousadaaime/aime-lp-hospedagem",   "nome": "Aimê · hospedagem" },
+    { "host": "site",   "path": "aime/agencias",                 "repo": "pousadaaime/aime-lp-agencia",      "nome": "Aimê · agências" },
+    { "host": "site",   "path": "aime/aniversario",              "repo": "pousadaaime/aime-lp-aniversario",  "nome": "Aimê · aniversário" },
+    { "host": "site",   "path": "aime/calendario",               "repo": "pousadaaime/calendario",           "nome": "Aimê · calendário" },
+    { "host": "site",   "path": "fastescova/cupom",              "repo": "fastescovabauru/cupom",            "nome": "Fast Escova · cupom" },
+    { "host": "site",   "path": "fastescova/calendario",         "repo": "fastescovabauru/calendario",       "nome": "Fast Escova · calendário" },
+    { "host": "site",   "path": "fastescova/relatorios",         "repo": "fastescovabauru/relatorios",       "nome": "Fast Escova · relatórios" },
+    { "host": "site",   "path": "fastescova/relatorio-semanal",  "repo": "fastescovabauru/relatorio-semanal","nome": "Fast Escova · relatório semanal (antigo)" },
+    { "host": "site",   "path": "hfconsultoria/relatorios",      "repo": "negocios-creators/hf-consultoria", "nome": "HF Consultoria · relatórios" },
+    { "host": "site",   "path": "hfcreditos/relatorios",         "repo": "negocios-creators/hf-creditos",    "nome": "HF Créditos · relatórios" },
+    { "host": "site",   "path": "indenizavoo/relatorios",        "repo": "negocios-creators/indeniza-voo",   "nome": "Indeniza Voo · relatórios" },
+    { "host": "painel", "path": "creatorsaime",                  "repo": "pousadaaime/aime-criadores",       "nome": "Creators Aimê" },
+    { "host": "painel", "path": "creatorsfast",                  "repo": "fastescovabauru/criadores",        "nome": "Creators Fast Escova" },
+    { "host": "painel", "path": "vendasaime",                    "repo": "pousadaaime/aime-painel-leads",    "nome": "Vendas Aimê" },
+    { "host": "painel", "path": "financeiro",                    "repo": "luanacaper/meu-financeiro",        "nome": "Meu Financeiro" }
+  ],
+  "aliases": [
+    { "de": "luanacaper.github.io/hf-creditos", "para": "hfcreditos/relatorios", "host": "site" },
+    { "de": "pousadaaime.github.io/thais-farm", "para": "luanacaper/thais-farm", "host": "site" }
+  ],
+  "fora": "Ficam de fora (não são contas da Luana ou não estão logadas): eilaradam/* (Lara Dam) e ltgrepresentacao/* (CRM do Célio)."
+}
