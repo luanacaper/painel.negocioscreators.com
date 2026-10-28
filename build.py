@@ -79,8 +79,8 @@ if OUT.exists():
 OUT.mkdir()
 
 with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
-    for s in sorted(meus, key=lambda s: len(s["path"])):  # raiz primeiro, subpastas depois
-        src = Path(tmp) / s["repo"].replace("/", "__")
+    for n, s in enumerate(sorted(meus, key=lambda s: len(s["path"]))):  # raiz primeiro, subpastas depois
+        src = Path(tmp) / f'{n}__{s["repo"].replace("/", "__")}'
         subprocess.run(["git", "clone", "-q", "--depth", "1", f"https://github.com/{s['repo']}.git", str(src)], check=True)
         alvo = OUT / s["path"] if s["path"] else OUT
         if s.get("incluir"):  # só parte do repositório (ex.: a pasta marca/ do hub)
