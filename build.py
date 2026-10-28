@@ -83,7 +83,16 @@ with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         src = Path(tmp) / s["repo"].replace("/", "__")
         subprocess.run(["git", "clone", "-q", "--depth", "1", f"https://github.com/{s['repo']}.git", str(src)], check=True)
         alvo = OUT / s["path"] if s["path"] else OUT
-        shutil.copytree(src, alvo, ignore=IGNORAR, dirs_exist_ok=True)
+        if s.get("incluir"):  # só parte do repositório (ex.: a pasta marca/ do hub)
+            alvo.mkdir(parents=True, exist_ok=True)
+            for item in s["incluir"]:
+                origem = src / item
+                if origem.is_dir():
+                    shutil.copytree(origem, alvo / item, ignore=IGNORAR, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(origem, alvo / ("index.html" if s.get("indice") == item else item))
+        else:
+            shutil.copytree(src, alvo, ignore=IGNORAR, dirs_exist_ok=True)
         print(f"ok  /{s['path']:<32} <- {s['repo']}")
 
 for arq in OUT.rglob("*"):
@@ -110,6 +119,9 @@ if HOST == "painel":
         "<!--LISTA-->", "\n".join(
             f'<a class="app" href="/{s["path"]}/"><span class="av">{s["nome"][0]}</span><span><b>{s["nome"]}</b><small>painel.negocioscreators.com/{s["path"]}</small></span></a>'
             for s in itens)), encoding="utf-8")
+
+if HOST == "site":  # a raiz fica livre: só a marca, até a Luana decidir o destino
+    (OUT / "index.html").write_text((AQUI / "raiz.html").read_text(encoding="utf-8"), encoding="utf-8")
 
 (OUT / "404.html").write_text((AQUI / "404.html").read_text(encoding="utf-8"), encoding="utf-8")
 (OUT / "CNAME").write_text(DOMINIO + "\n", encoding="utf-8")

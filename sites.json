@@ -2,7 +2,7 @@
   "dominio": "negocioscreators.com",
   "painel": "painel.negocioscreators.com",
   "sites": [
-    { "host": "site",   "path": "",                              "repo": "luanacaper/negocios-creators",     "nome": "Hub Negócios Creators" },
+    { "host": "site",   "path": "",                              "repo": "luanacaper/negocios-creators",     "nome": "Marca Negócios Creators", "incluir": ["marca"] },
     { "host": "site",   "path": "luanacaper/portifolio",         "repo": "luanacaper/portifolio",            "nome": "Portfólio Luana Caper" },
     { "host": "site",   "path": "luanacaper/portifolio/ugc",     "repo": "luanacaper/portfolio-ugc",         "nome": "Portfólio UGC" },
     { "host": "site",   "path": "luanacaper/links",              "repo": "pousadaaime/luhcaper",             "nome": "Links Luh Caper" },
@@ -23,13 +23,15 @@
     { "host": "painel", "path": "creatorsaime",                  "repo": "pousadaaime/aime-criadores",       "nome": "Creators Aimê" },
     { "host": "painel", "path": "creatorsfast",                  "repo": "fastescovabauru/criadores",        "nome": "Creators Fast Escova" },
     { "host": "painel", "path": "vendasaime",                    "repo": "pousadaaime/aime-painel-leads",    "nome": "Vendas Aimê" },
-    { "host": "painel", "path": "financeiro",                    "repo": "luanacaper/meu-financeiro",        "nome": "Meu Financeiro" }
+    { "host": "painel", "path": "financeiro",                    "repo": "luanacaper/meu-financeiro",        "nome": "Meu Financeiro" },
+    { "host": "painel", "path": "cobrancas",                     "repo": "luanacaper/negocios-creators",     "nome": "Cobranças da agência", "incluir": ["cobrancas.html"], "indice": "cobrancas.html" }
   ],
   "atalhos": [
     { "host": "painel", "path": "central", "url": "https://claude.ai/artifact/5PANWteZj8QiBYVbnLe44E", "nome": "Central Negócios Creators" }
   ],
   "aliases": [
     { "de": "luanacaper.github.io/hf-creditos", "para": "hfcreditos/relatorios", "host": "site" },
+    { "de": "luanacaper.github.io/negocios-creators/cobrancas.html", "para": "cobrancas", "host": "painel" },
     { "de": "pousadaaime.github.io/thais-farm", "para": "luanacaper/thais-farm", "host": "site" }
   ],
   "fora": "Ficam de fora (não são contas da Luana ou não estão logadas): eilaradam/* (Lara Dam) e ltgrepresentacao/* (CRM do Célio)."
