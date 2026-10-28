@@ -69,11 +69,16 @@ for a in CFG["aliases"]:
 mapa.sort(key=lambda x: -len(x[0]))
 padroes = [(re.compile(r"(?:https?://)?" + re.escape(de) + r"(?![A-Za-z0-9_.-])"), para) for de, para in mapa]
 
+def _apaga_somente_leitura(func, caminho, _exc):  # no Windows o Git deixa os objetos como somente leitura
+    os.chmod(caminho, 0o700)
+    func(caminho)
+
+
 if OUT.exists():
-    shutil.rmtree(OUT)
+    shutil.rmtree(OUT, onerror=_apaga_somente_leitura)
 OUT.mkdir()
 
-with tempfile.TemporaryDirectory() as tmp:
+with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
     for s in sorted(meus, key=lambda s: len(s["path"])):  # raiz primeiro, subpastas depois
         src = Path(tmp) / s["repo"].replace("/", "__")
         subprocess.run(["git", "clone", "-q", "--depth", "1", f"https://github.com/{s['repo']}.git", str(src)], check=True)
@@ -90,11 +95,21 @@ for arq in OUT.rglob("*"):
         if n != t:
             arq.write_text(n, encoding="utf-8", errors="surrogateescape")
 
+atalhos = [a for a in CFG.get("atalhos", []) if a["host"] == HOST]
+for a in atalhos:  # endereço curto no domínio que leva para um link de fora (ex.: o painel no claude.ai)
+    d = OUT / a["path"]
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "index.html").write_text(
+        f'<!doctype html><meta charset="utf-8"><title>{a["nome"]}</title><meta name="robots" content="noindex">'
+        f'<meta http-equiv="refresh" content="0; url={a["url"]}"><link rel="canonical" href="{a["url"]}">'
+        f'<p style="font-family:system-ui;padding:24px">Abrindo <a href="{a["url"]}">{a["nome"]}</a>…</p>', encoding="utf-8")
+
 if HOST == "painel":
+    itens = atalhos + meus
     (OUT / "index.html").write_text((AQUI / "painel-index.html").read_text(encoding="utf-8").replace(
         "<!--LISTA-->", "\n".join(
             f'<a class="app" href="/{s["path"]}/"><span class="av">{s["nome"][0]}</span><span><b>{s["nome"]}</b><small>painel.negocioscreators.com/{s["path"]}</small></span></a>'
-            for s in meus)), encoding="utf-8")
+            for s in itens)), encoding="utf-8")
 
 (OUT / "404.html").write_text((AQUI / "404.html").read_text(encoding="utf-8"), encoding="utf-8")
 (OUT / "CNAME").write_text(DOMINIO + "\n", encoding="utf-8")

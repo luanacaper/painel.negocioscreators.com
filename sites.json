@@ -25,6 +25,9 @@
     { "host": "painel", "path": "vendasaime",                    "repo": "pousadaaime/aime-painel-leads",    "nome": "Vendas Aimê" },
     { "host": "painel", "path": "financeiro",                    "repo": "luanacaper/meu-financeiro",        "nome": "Meu Financeiro" }
   ],
+  "atalhos": [
+    { "host": "painel", "path": "central", "url": "https://claude.ai/artifact/5PANWteZj8QiBYVbnLe44E", "nome": "Central Negócios Creators" }
+  ],
   "aliases": [
     { "de": "luanacaper.github.io/hf-creditos", "para": "hfcreditos/relatorios", "host": "site" },
     { "de": "pousadaaime.github.io/thais-farm", "para": "luanacaper/thais-farm", "host": "site" }
