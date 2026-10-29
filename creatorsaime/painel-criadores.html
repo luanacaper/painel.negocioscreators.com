@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aimê · Painel de Criadores</title>
+<style>
+  :root{
+    --mata:#1b3a2f; --mata-2:#24503f; --rio:#4a7c6f; --agua:#7fa99b;
+    --areia:#f4efe4; --areia-2:#eae2d2; --creme:#fbf8f1; --linha:#d9cfba;
+    --tinta:#21281f; --tinta-mud:#5c6357; --cobre:#c96f3f; --cobre-esc:#a9552b;
+    /* status do pipeline */
+    --triagem:#6b7a8f; --aprovado:#4a7c6f; --termoenv:#c9932f; --termoass:#7fa99b;
+    --confirmado:#24503f; --visitou:#c96f3f; --entregou:#3f8f5f; --parcial:#c9932f; --naoentregou:#b0563f;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --serif:'Cormorant Garamond',Georgia,serif;
+    --shadow:0 4px 18px rgba(27,58,47,0.10);
+    --shadow-lg:0 16px 44px rgba(27,58,47,0.24);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--areia);color:var(--tinta);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit}
+
+  /* ---------- LOGIN ---------- */
+  .login{position:fixed;inset:0;background:var(--mata);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;z-index:100;padding:28px;gap:22px;text-align:center}
+  .login.hidden{display:none}
+  .login h1{font-family:var(--serif);color:var(--creme);font-size:34px;font-weight:600}
+  .login h1 .sub{display:block;font-family:var(--sans);font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.7;margin-top:6px;font-weight:500}
+  .login p{color:var(--agua);font-size:14px;max-width:30ch}
+  .login input{width:100%;max-width:280px;padding:15px 16px;border-radius:12px;border:1.5px solid var(--rio);background:rgba(255,255,255,0.06);color:var(--creme);font-size:16px;text-align:center}
+  .login input::placeholder{color:var(--agua);opacity:0.7}
+  .login input:focus{outline:none;border-color:var(--agua);box-shadow:0 0 0 3px rgba(127,169,155,0.2)}
+  .login button{width:100%;max-width:280px;padding:15px;border-radius:12px;border:none;background:var(--cobre);color:var(--creme);font-size:16px;font-weight:600}
+  .login .erro{color:#e8a48c;font-size:13px;min-height:16px}
+  .keep-login{display:flex;align-items:center;gap:9px;color:var(--agua);font-size:13.5px;cursor:pointer;max-width:280px}
+  .keep-login input{width:19px;height:19px;min-width:19px;accent-color:var(--cobre);cursor:pointer}
+
+  /* ---------- APP SHELL ---------- */
+  .app{display:none;min-height:100vh;flex-direction:column;max-width:900px;margin:0 auto}
+  .app.show{display:flex}
+  header.top{position:sticky;top:0;z-index:20;background:var(--mata);color:var(--creme);padding:14px 18px calc(14px);padding-top:calc(14px + env(safe-area-inset-top))}
+  .top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .top .logo{font-family:var(--serif);font-size:24px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+  .top .logo small{font-family:var(--sans);font-size:9px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.65;font-weight:500}
+  .top .actions{display:flex;gap:8px;align-items:center}
+  .top .sync{display:flex;align-items:center;gap:7px;font-size:12px;opacity:0.85;background:rgba(255,255,255,0.08);padding:7px 11px;border-radius:20px;border:none;color:var(--creme)}
+  .top .sync .dot{width:8px;height:8px;border-radius:50%;background:var(--agua)}
+  .top .sync.saving .dot{background:var(--termoenv);animation:pulse 1s infinite}
+  .top .sync.err .dot{background:var(--cobre)}
+  @keyframes pulse{50%{opacity:.3}}
+  .top .icon-btn{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,0.1);color:var(--creme);display:grid;place-content:center}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+  .kpi{background:rgba(255,255,255,0.07);border-radius:12px;padding:11px 10px;text-align:left}
+  .kpi .n{font-family:var(--serif);font-size:22px;font-weight:600;line-height:1}
+  .kpi .l{font-size:9px;letter-spacing:0.05em;text-transform:uppercase;opacity:0.72;margin-top:5px}
+  @media(max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi .n{font-size:20px}}
+
+  .filters{position:sticky;top:0;z-index:15;background:var(--areia);padding:12px 14px 8px;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;padding:8px 14px;border-radius:20px;border:1.5px solid var(--linha);background:var(--creme);color:var(--tinta-mud);font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px}
+  .chip.active{background:var(--mata);border-color:var(--mata);color:var(--creme)}
+  .chip .count{font-size:11px;opacity:0.8;background:rgba(0,0,0,0.10);padding:1px 7px;border-radius:10px}
+  .chip.active .count{background:rgba(255,255,255,0.18)}
+
+  .search{padding:2px 14px 10px}
+  .search input{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--linha);background:var(--creme);font-size:15px}
+  .search input:focus{outline:none;border-color:var(--rio);box-shadow:0 0 0 3px rgba(74,124,111,0.14)}
+
+  main{flex:1;padding:4px 14px 100px}
+  .card{background:var(--creme);border-radius:14px;padding:15px;margin-bottom:11px;box-shadow:var(--shadow);border-left:4px solid var(--triagem);cursor:pointer;transition:transform .1s}
+  .card:active{transform:scale(0.99)}
+  .card.s-aprovado{border-left-color:var(--aprovado)}
+  .card.s-termoenviado{border-left-color:var(--termoenv)}
+  .card.s-termoassinado{border-left-color:var(--termoass)}
+  .card.s-confirmado{border-left-color:var(--confirmado)}
+  .card.s-visitou{border-left-color:var(--visitou)}
+  .card.s-entregou{border-left-color:var(--entregou)}
+  .card.s-entregouparcial{border-left-color:var(--parcial)}
+  .card.s-naoentregou{border-left-color:var(--naoentregou)}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .card .nome{font-size:16.5px;font-weight:600;color:var(--mata)}
+  .card .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;color:#fff;background:var(--triagem)}
+  .badge.s-aprovado{background:var(--aprovado)}
+  .badge.s-termoenviado{background:var(--termoenv)}
+  .badge.s-termoassinado{background:var(--termoass);color:var(--mata)}
+  .badge.s-confirmado{background:var(--confirmado)}
+  .badge.s-visitou{background:var(--visitou)}
+  .badge.s-entregou{background:var(--entregou)}
+  .badge.s-entregouparcial{background:var(--parcial)}
+  .badge.s-naoentregou{background:var(--naoentregou)}
+  .card .meta{font-size:13px;color:var(--tinta-mud);margin-top:7px;display:flex;flex-wrap:wrap;gap:4px 14px}
+  .card .meta span{display:inline-flex;align-items:center;gap:5px}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:7px}
+  .tag-cat{background:#e9eef4;color:#42597a}
+  .tag-qual{background:#fbe9d9;color:var(--cobre-esc)}
+
+  .empty{text-align:center;padding:70px 24px;color:var(--tinta-mud)}
+  .empty .big{font-family:var(--serif);font-size:24px;color:var(--mata);margin-bottom:8px}
+
+  .fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;width:58px;height:58px;border-radius:50%;background:var(--cobre);color:#fff;border:none;font-size:30px;box-shadow:var(--shadow-lg);display:grid;place-content:center;line-height:1}
+  .app:not(.show) .fab{display:none}
+
+  /* ---------- SHEET (drawer/modal) ---------- */
+  .sheet-bg{position:fixed;inset:0;background:rgba(20,35,28,0.55);z-index:40;opacity:0;pointer-events:none;transition:opacity .25s}
+  .sheet-bg.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;z-index:41;background:var(--areia);left:0;right:0;bottom:0;max-height:94vh;border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow:hidden;max-width:900px;margin:0 auto}
+  .sheet.open{transform:translateY(0)}
+  .sheet-grab{width:40px;height:4px;background:var(--linha);border-radius:3px;margin:10px auto 4px;flex-shrink:0}
+  .sheet-head{padding:6px 18px 14px;border-bottom:1px solid var(--linha);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}
+  .sheet-head h2{font-family:var(--serif);font-size:23px;color:var(--mata);font-weight:600}
+  .sheet-head .close{background:var(--areia-2);border:none;width:34px;height:34px;border-radius:50%;font-size:19px;color:var(--tinta-mud)}
+  .sheet-body{overflow-y:auto;padding:16px 18px 24px;-webkit-overflow-scrolling:touch}
+
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--tinta-mud);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;padding:12px 13px;border-radius:10px;border:1.5px solid var(--linha);background:var(--creme);font-size:16px;color:var(--tinta)}
+  .field select{-webkit-appearance:none;appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%235c6357' stroke-width='2.3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+  .field textarea{min-height:64px;resize:vertical;line-height:1.5}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--rio);box-shadow:0 0 0 3px rgba(74,124,111,0.14)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+
+  .status-pick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:6px}
+  .status-pick button{padding:10px 6px;border-radius:10px;border:1.5px solid var(--linha);background:var(--creme);font-size:12px;font-weight:600;color:var(--tinta-mud);display:flex;align-items:center;justify-content:center;gap:5px;text-align:center}
+  .status-pick button .d{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .status-pick button[data-s="Triagem"] .d{background:var(--triagem)}
+  .status-pick button[data-s="Aprovado"] .d{background:var(--aprovado)}
+  .status-pick button[data-s="Termo enviado"] .d{background:var(--termoenv)}
+  .status-pick button[data-s="Termo assinado"] .d{background:var(--termoass)}
+  .status-pick button[data-s="Confirmado"] .d{background:var(--confirmado)}
+  .status-pick button[data-s="Visitou"] .d{background:var(--visitou)}
+  .status-pick button[data-s="Entregou"] .d{background:var(--entregou)}
+  .status-pick button[data-s="Entregou parcial"] .d{background:var(--parcial)}
+  .status-pick button[data-s="Não entregou"] .d{background:var(--naoentregou)}
+  .status-pick button.sel{border-color:var(--mata);background:#eef4f1;color:var(--mata)}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--creme);border:1.5px solid var(--linha);border-radius:10px;margin-bottom:9px}
+  .toggle-row .lbl{font-size:15px;font-weight:500}
+  .toggle{position:relative;width:52px;height:30px;flex-shrink:0}
+  .toggle input{opacity:0;width:0;height:0}
+  .toggle .sl{position:absolute;inset:0;background:var(--linha);border-radius:30px;transition:.2s}
+  .toggle .sl::before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+  .toggle input:checked + .sl{background:var(--entregou)}
+  .toggle input:checked + .sl::before{transform:translateX(22px)}
+
+  .divider{height:1px;background:var(--linha);margin:18px 0 16px;position:relative}
+  .divider span{position:absolute;top:-9px;left:0;background:var(--areia);padding-right:12px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--rio)}
+
+  .meta-box{background:#eef4f1;border:1px solid #cfe0d8;border-radius:11px;padding:13px;margin-bottom:16px}
+  .meta-box.qualificado{background:linear-gradient(135deg,#fbf3e0,#f7ead0);border-color:var(--cobre)}
+  .meta-box .mt{font-size:12px;font-weight:700;color:var(--rio);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+  .meta-box.qualificado .mt{color:var(--cobre-esc)}
+  .meta-box p{font-size:13px;color:var(--tinta-mud);line-height:1.5}
+  .qual-btn{width:100%;margin-top:11px;padding:12px;border-radius:10px;border:2px solid var(--cobre);color:var(--cobre-esc);background:var(--creme);font-size:14px;font-weight:700}
+  .qual-btn.on{background:var(--cobre);color:#fff}
+
+  .sheet-foot{flex-shrink:0;padding:13px 18px calc(13px + env(safe-area-inset-bottom));border-top:1px solid var(--linha);background:var(--areia);display:flex;gap:10px}
+  .btn{flex:1;padding:15px;border-radius:12px;border:none;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-primary{background:var(--mata);color:var(--creme)}
+  .btn-wa{background:#25d366;color:#fff}
+  .btn-ghost{background:var(--areia-2);color:var(--tinta-mud);flex:0 0 auto;padding:15px 16px}
+
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--mata);color:var(--creme);padding:13px 20px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .loading-wrap{padding:60px 20px;text-align:center;color:var(--tinta-mud)}
+  .spin{width:36px;height:36px;border:3px solid var(--linha);border-top-color:var(--rio);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* ---------- CALENDÁRIO ---------- */
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .cal-nav button{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--linha);background:var(--creme);font-size:16px;color:var(--mata)}
+  .cal-nav .lbl{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--mata)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal-dow{font-size:10px;text-align:center;color:var(--tinta-mud);font-weight:700;text-transform:uppercase;padding-bottom:4px}
+  .cal-day{min-height:64px;background:var(--creme);border:1px solid var(--linha);border-radius:8px;padding:4px;font-size:11px;overflow:hidden}
+  .cal-day.out{background:transparent;border-color:transparent}
+  .cal-day .num{font-size:11px;font-weight:600;color:var(--tinta-mud)}
+  .cal-day.today .num{color:#fff;background:var(--cobre);border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+  .cal-chip{display:block;margin-top:2px;padding:1px 5px;border-radius:5px;font-size:9.5px;font-weight:600;color:#fff;background:var(--rio);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+  .cal-legend{margin-top:16px;font-size:12px;color:var(--tinta-mud)}
+
+  @media(min-width:720px){
+    main{padding:8px 20px 60px;display:grid;grid-template-columns:1fr 1fr;gap:11px;align-content:start}
+    .card{margin-bottom:0}
+    .empty,.loading-wrap{grid-column:1/-1}
+    .sheet{border-radius:20px;max-width:640px;top:50%;bottom:auto;left:50%;right:auto;transform:translate(-50%,-46%) scale(0.96);width:92%;max-height:88vh;opacity:0}
+    .sheet.open{transform:translate(-50%,-50%) scale(1);opacity:1}
+    .sheet-grab{display:none}
+    #calSheet{max-width:640px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <h1>Aimê<span class="sub">Painel de Criadores</span></h1>
+  <p>Área exclusiva da pousada. Informe a senha de acesso.</p>
+  <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
+  <label class="keep-login"><input type="checkbox" id="keepLogged" checked> Permanecer conectado neste aparelho</label>
+  <div class="erro" id="loginErro"></div>
+  <button id="btnEntrar">Entrar</button>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header class="top">
+    <div class="top-row">
+      <div class="logo">Aimê <small>Criadores</small></div>
+      <div class="actions">
+        <button class="icon-btn" id="calBtn" title="Calendário de estadias">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </button>
+        <button class="sync" id="syncBtn"><span class="dot"></span><span id="syncTxt">Sincronizado</span></button>
+        <button class="sync" id="sairBtn" title="Sair">Sair</button>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">No pipeline</div></div>
+      <div class="kpi"><div class="n" id="kpiConfirmado">0</div><div class="l">Confirmados</div></div>
+      <div class="kpi"><div class="n" id="kpiQualificado">0</div><div class="l">Qualificados</div></div>
+      <div class="kpi"><div class="n" id="kpiEntregou">0</div><div class="l">Entregaram</div></div>
+    </div>
+  </header>
+
+  <div class="filters" id="filters"></div>
+  <div class="search"><input type="search" id="busca" placeholder="Buscar por nome, @ ou WhatsApp…"></div>
+
+  <main id="lista">
+    <div class="loading-wrap"><div class="spin"></div>Carregando criadores…</div>
+  </main>
+
+  <button class="fab" id="fabNovo" title="Novo criador">+</button>
+</div>
+
+<!-- CALENDÁRIO -->
+<div class="sheet-bg" id="calBg"></div>
+<div class="sheet" id="calSheet">
+  <div class="sheet-grab"></div>
+  <div class="sheet-head">
+    <h2>Calendário de estadias</h2>
+    <button class="close" id="calClose">✕</button>
+  </div>
+  <div class="sheet-body" id="calBody"></div>
+</div>
+
+<!-- FICHA -->
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-grab"></div>
+  <div class="sheet-head">
+    <h2 id="sheetTitle">Criador</h2>
+    <button class="close" id="sheetClose">✕</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+  <div class="sheet-foot">
+    <button class="btn btn-wa" id="btnWa" title="Abrir WhatsApp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 0 1 12 4zm4.3 10.2c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.2.1-.4 0a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.3.1-.4l.3-.4.2-.4v-.3l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.8.8-.8 1.9-.1 3.1a10 10 0 0 0 4 3.9c1.9.9 2.3.7 2.7.7.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1z"/></svg>
+    </button>
+    <button class="btn btn-primary" id="btnSalvar">Salvar alterações</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==================================================================
+   CONFIGURAÇÃO — cole aqui a URL do Apps Script (ver Sistema/codigo-apps-script.gs)
+================================================================== */
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyJMprmeWkFYgpvrAzBJZDyr8YKwP_ugttNPWmJgzt7TVohTZ4kuvxHBDRXhCjqBVddwA/exec";
+const SENHA = "aime35666";
+
+const $ = s => document.querySelector(s);
+let registros = [];
+let filtroAtivo = 'Todos';
+let termoBusca = '';
+let criadorAberto = null;
+let calMes = new Date().getMonth();
+let calAno = new Date().getFullYear();
+
+const STATUS = ['Triagem','Aprovado','Termo enviado','Termo assinado','Confirmado','Visitou','Entregou','Entregou parcial','Não entregou'];
+const CATEGORIAS = ['Influenciador','UGC'];
+const CRITERIOS = ['','Aprovado','Aprovado com ressalva','Reprovado'];
+const FONTES = ['Formulário site','Indicação','Busca ativa','Instagram inbound','Plataforma paga'];
+const CLASSE_POR_STATUS = {
+  'Triagem':'s-triagem', 'Aprovado':'s-aprovado', 'Termo enviado':'s-termoenviado',
+  'Termo assinado':'s-termoassinado', 'Confirmado':'s-confirmado', 'Visitou':'s-visitou',
+  'Entregou':'s-entregou', 'Entregou parcial':'s-entregouparcial', 'Não entregou':'s-naoentregou'
+};
+const classeStatus = s => CLASSE_POR_STATUS[s] || 's-triagem';
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOW = ['D','S','T','Q','Q','S','S'];
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function yes(v){return String(v).toLowerCase()==='sim';}
+
+/* ---------- LOGIN ---------- */
+function tentarLogin(){
+  if ($('#senha').value === SENHA){
+    if($('#keepLogged').checked) localStorage.setItem('aime_criadores_ok','1');
+    else sessionStorage.setItem('aime_criadores_ok','1');
+    abrirApp();
+  } else {
+    $('#loginErro').textContent = 'Senha incorreta. Tente novamente.';
+    $('#senha').value='';
+  }
+}
+$('#btnEntrar').onclick = tentarLogin;
+$('#senha').addEventListener('keydown', e => { if(e.key==='Enter') tentarLogin(); });
+function abrirApp(){
+  $('#login').classList.add('hidden');
+  $('#app').classList.add('show');
+  carregar();
+}
+if (localStorage.getItem('aime_criadores_ok')==='1' || sessionStorage.getItem('aime_criadores_ok')==='1') abrirApp();
+
+/* ---------- CARREGAR ---------- */
+async function carregar(){
+  setSync('saving','Carregando…');
+  try{
+    const r = await fetch(SHEETS_URL + '?action=listar&t=' + Date.now());
+    const data = await r.json();
+    registros = (data.registros || []).reverse();
+    setSync('ok','Sincronizado');
+    render();
+  }catch(err){
+    setSync('err','Erro de conexão');
+    $('#lista').innerHTML = '<div class="empty"><div class="big">Não consegui carregar</div><p>Verifique a conexão e toque em Sincronizado para tentar de novo.</p></div>';
+  }
+}
+$('#syncBtn').onclick = carregar;
+$('#sairBtn').onclick = ()=>{
+  localStorage.removeItem('aime_criadores_ok');
+  sessionStorage.removeItem('aime_criadores_ok');
+  location.reload();
+};
+function setSync(cls,txt){
+  const b=$('#syncBtn'); b.className='sync '+(cls==='ok'?'':cls);
+  $('#syncTxt').textContent=txt;
+}
+
+/* ---------- KPIs + FILTROS + LISTA ---------- */
+function render(){
+  $('#kpiTotal').textContent = registros.length;
+  $('#kpiConfirmado').textContent = registros.filter(r=>['Confirmado','Visitou','Entregou','Entregou parcial'].includes(r.status)).length;
+  $('#kpiQualificado').textContent = registros.filter(r=>yes(r.qualificado)).length;
+  $('#kpiEntregou').textContent = registros.filter(r=>r.entregou==='Entregou').length;
+
+  const cont = {Todos:registros.length};
+  STATUS.forEach(s=>cont[s]=registros.filter(r=>(r.status||'Triagem')===s).length);
+  const chips=['Todos',...STATUS];
+  $('#filters').innerHTML = chips.map(c=>
+    `<button class="chip ${filtroAtivo===c?'active':''}" data-f="${esc(c)}">${esc(c)}<span class="count">${cont[c]||0}</span></button>`).join('');
+  $('#filters').querySelectorAll('.chip').forEach(ch=> ch.onclick=()=>{filtroAtivo=ch.dataset.f;render();});
+
+  let lista = registros.filter(r=>{
+    const st = r.status||'Triagem';
+    const okF = filtroAtivo==='Todos' || st===filtroAtivo;
+    const t = termoBusca.toLowerCase();
+    const okB = !t || [r.nome,r.instagram,r.whatsapp].some(v=>String(v||'').toLowerCase().includes(t));
+    return okF && okB;
+  });
+
+  if(!lista.length){
+    $('#lista').innerHTML = `<div class="empty"><div class="big">Nenhum criador aqui</div><p>${termoBusca?'Nada encontrado para sua busca.':'Toque no + para adicionar manualmente, ou espere o formulário trazer o primeiro.'}</p></div>`;
+    return;
+  }
+
+  $('#lista').innerHTML = lista.map(r=>{
+    const st=r.status||'Triagem';
+    const estadia = (r.checkin||'') + (r.checkout?(' → '+r.checkout):'');
+    return `<div class="card ${classeStatus(st)}" data-id="${esc(r.id)}">
+      <div class="card-top">
+        <div class="nome">${esc(r.nome)||'Sem nome'}</div>
+        <div class="badge ${classeStatus(st)}">${esc(st)}</div>
+      </div>
+      <div class="meta">
+        ${r.instagram?`<span>📷 ${esc(r.instagram)}</span>`:''}
+        ${estadia?`<span>📅 ${esc(estadia)}</span>`:''}
+        ${r.num_pessoas?`<span>👥 ${esc(r.num_pessoas)}</span>`:''}
+      </div>
+      <div class="tags">
+        ${r.categoria_final?`<span class="tag tag-cat">${esc(r.categoria_final)}</span>`:(r.categoria_autodeclarada?`<span class="tag tag-cat">${esc(r.categoria_autodeclarada)} (autodeclarado)</span>`:'')}
+        ${yes(r.qualificado)?`<span class="tag tag-qual">⭐ Qualificado</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  $('#lista').querySelectorAll('.card').forEach(c=> c.onclick=()=>abrirFicha(c.dataset.id));
+}
+$('#busca').addEventListener('input',e=>{termoBusca=e.target.value;render();});
+
+/* ---------- FICHA ---------- */
+function abrirFicha(id){
+  const r = id==='__novo__' ? {id:'',nome:'',status:'Triagem'} : registros.find(x=>String(x.id)===String(id));
+  if(!r) return;
+  criadorAberto = r;
+  $('#sheetTitle').textContent = id==='__novo__' ? 'Novo criador' : (r.nome||'Criador');
+
+  const optSel = (arr,atual)=>arr.map(o=>`<option value="${esc(o)}" ${String(atual)===o?'selected':''}>${o?esc(o):'— selecionar —'}</option>`).join('');
+
+  $('#sheetBody').innerHTML = `
+    <div class="field">
+      <label>Status do processo</label>
+      <div class="status-pick" id="statusPick">
+        ${STATUS.map(s=>`<button type="button" data-s="${esc(s)}" class="${(r.status||'Triagem')===s?'sel':''}"><span class="d"></span>${esc(s)}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="divider"><span>Classificação</span></div>
+    <div class="row2">
+      <div class="field"><label>Categoria final</label>
+        <select id="f_catfinal"><option value="">— selecionar —</option>${optSel(CATEGORIAS, r.categoria_final)}</select></div>
+      <div class="field"><label>Autodeclarado no formulário</label>
+        <input value="${esc(r.categoria_autodeclarada||'—')}" disabled></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Critérios (triagem)</label>
+        <select id="f_criterios">${optSel(CRITERIOS, r.criterios_ok)}</select></div>
+      <div class="field"><label>Fonte</label>
+        <select id="f_fonte"><option value="">— selecionar —</option>${optSel(FONTES, r.fonte)}</select></div>
+    </div>
+
+    <div class="divider"><span>Dados do criador</span></div>
+    <div class="field"><label>Nome</label><input id="f_nome" value="${esc(r.nome)}"></div>
+    <div class="row2">
+      <div class="field"><label>Instagram</label><input id="f_insta" value="${esc(r.instagram)}"></div>
+      <div class="field"><label>WhatsApp</label><input id="f_whats" value="${esc(r.whatsapp)}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>E-mail</label><input id="f_email" type="email" value="${esc(r.email)}"></div>
+      <div class="field"><label>Seguidores</label><input id="f_seguidores" value="${esc(r.seguidores)}"></div>
+    </div>
+    <div class="field"><label>Link de portfólio</label><input id="f_portfolio" value="${esc(r.portfolio_link)}"></div>
+    <div class="field"><label>Engajamento / notas de audiência</label><textarea id="f_engajamento">${esc(r.engajamento)}</textarea></div>
+
+    <div class="divider"><span>Grupo e hospedagem</span></div>
+    <div class="row2">
+      <div class="field"><label>Nº de pessoas</label><input id="f_pessoas" inputmode="numeric" value="${esc(r.num_pessoas)}"></div>
+      <div class="field"><label>Entregou?</label><select id="f_entregou">${optSel(['','Entregou','Entregou parcial','Não entregou'], r.entregou)}</select></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Check-in</label><input id="f_checkin" type="date" value="${esc(r.checkin)}"></div>
+      <div class="field"><label>Check-out</label><input id="f_checkout" type="date" value="${esc(r.checkout)}"></div>
+    </div>
+    ${toggleRow('Quarto com cozinha (loft)','t_cozinha',yes(r.quarto_cozinha))}
+
+    <div class="divider"><span>Termo e check-in na portaria</span></div>
+    <div class="row2">
+      <div class="field"><label>Termo enviado em</label><input id="f_termoenv" type="date" value="${esc(r.termo_enviado_em)}"></div>
+      <div class="field"><label>Termo assinado em</label><input id="f_termoass" type="date" value="${esc(r.termo_assinado_em)}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Hóspede — nome</label><input id="f_hnome" value="${esc(r.hospede_nome)}"></div>
+      <div class="field"><label>Hóspede — CPF</label><input id="f_hcpf" value="${esc(r.hospede_cpf)}"></div>
+    </div>
+    <div class="field"><label>Acompanhantes (nome e CPF)</label><textarea id="f_acomp" placeholder="Um por linha">${esc(r.acompanhantes_nome_cpf)}</textarea></div>
+    <div class="row2">
+      <div class="field"><label>Telefone</label><input id="f_telefone" value="${esc(r.telefone)}"></div>
+      <div class="field"><label>Placa do carro</label><input id="f_placa" value="${esc(r.placa_carro)}"></div>
+    </div>
+
+    <div class="divider"><span>Entrega</span></div>
+    <div class="field"><label>Link do Drive (pasta pra ele subir o material)</label><input id="f_drive" placeholder="https://drive.google.com/…" value="${esc(r.drive_link)}"></div>
+    <div class="field"><label>Entregável combinado</label><textarea id="f_entregavel" placeholder="Ex: 2 Reels + 8 stories">${esc(r.entregavel_combinado)}</textarea></div>
+    <div class="row2">
+      <div class="field"><label>Prazo de entrega</label><input id="f_prazo" type="date" value="${esc(r.prazo_entrega)}"></div>
+      <div class="field"><label>Aviso de publicação enviado em</label><input id="f_avisopub" type="date" value="${esc(r.data_aviso_publicacao)}"></div>
+    </div>
+    ${toggleRow('Quer ser marcado na publicação','t_marcado',yes(r.quer_marcado))}
+
+    <div class="divider"><span>Observações</span></div>
+    <div class="field"><textarea id="f_obs" placeholder="Qualquer detalhe relevante…">${esc(r.obs)}</textarea></div>
+
+    <div class="meta-box ${yes(r.qualificado)?'qualificado':''}" id="metaBox">
+      <div class="mt">⭐ Qualificação para a Meta</div>
+      <p id="metaHint"></p>
+      <button type="button" class="qual-btn ${yes(r.qualificado)?'on':''}" id="btnQualificar">${yes(r.qualificado)?'✓ Qualificado':'Marcar como Qualificado'}</button>
+    </div>
+  `;
+
+  $('#statusPick').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    $('#statusPick').querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');
+  });
+
+  let qualificadoLocal = yes(r.qualificado);
+  atualizarMetaHint();
+  $('#btnQualificar').onclick = ()=>{
+    qualificadoLocal = !qualificadoLocal;
+    $('#btnQualificar').classList.toggle('on', qualificadoLocal);
+    $('#btnQualificar').textContent = qualificadoLocal ? '✓ Qualificado' : 'Marcar como Qualificado';
+    $('#metaBox').classList.toggle('qualificado', qualificadoLocal);
+    atualizarMetaHint();
+  };
+  function atualizarMetaHint(){
+    const h=$('#metaHint');
+    if(yes(r.qualificado)) h.innerHTML = 'Já está marcado como qualificado' + (r.qualificado_em?` desde ${esc(r.qualificado_em)}`:'') + '. O evento já foi enviado pro pixel — não precisa fazer nada.';
+    else h.innerHTML = 'Ao marcar e salvar, dispara um evento <b>CriadorQualificado</b> pro pixel da Meta (via Conversions API) — ajuda a melhorar a segmentação de anúncios de captação de criadores a longo prazo.';
+  }
+  criadorAberto._qualificarClicado = () => qualificadoLocal;
+
+  abrir();
+}
+function toggleRow(label,id,on){
+  return `<div class="toggle-row"><span class="lbl">${label}</span><label class="toggle"><input type="checkbox" id="${id}" ${on?'checked':''}><span class="sl"></span></label></div>`;
+}
+function statusSelecionado(){
+  const b=$('#statusPick').querySelector('button.sel');
+  return b?b.dataset.s:'Triagem';
+}
+function abrir(){$('#sheetBg').classList.add('open');$('#sheet').classList.add('open');document.body.style.overflow='hidden';}
+function fechar(){$('#sheetBg').classList.remove('open');$('#sheet').classList.remove('open');document.body.style.overflow='';criadorAberto=null;}
+$('#sheetClose').onclick=fechar;
+$('#sheetBg').onclick=fechar;
+$('#fabNovo').onclick=()=>abrirFicha('__novo__');
+
+/* ---------- SALVAR ---------- */
+$('#btnSalvar').onclick=salvar;
+async function salvar(){
+  if(!criadorAberto) return;
+  const g=id=>{const el=$('#'+id);return el?el.value.trim():'';};
+  const gc=id=>{const el=$('#'+id);return el&&el.checked?'Sim':'Não';};
+
+  const payload={
+    action:'atualizar', id: criadorAberto.id,
+    status: statusSelecionado(),
+    categoria_final: g('f_catfinal'), criterios_ok: g('f_criterios'), fonte: g('f_fonte'),
+    nome: g('f_nome'), instagram: g('f_insta'), whatsapp: g('f_whats'), email: g('f_email'),
+    seguidores: g('f_seguidores'), portfolio_link: g('f_portfolio'), engajamento: g('f_engajamento'),
+    num_pessoas: g('f_pessoas'), entregou: g('f_entregou'),
+    checkin: g('f_checkin'), checkout: g('f_checkout'), quarto_cozinha: gc('t_cozinha'),
+    termo_enviado_em: g('f_termoenv'), termo_assinado_em: g('f_termoass'),
+    hospede_nome: g('f_hnome'), hospede_cpf: g('f_hcpf'), acompanhantes_nome_cpf: g('f_acomp'),
+    telefone: g('f_telefone'), placa_carro: g('f_placa'),
+    drive_link: g('f_drive'), entregavel_combinado: g('f_entregavel'),
+    prazo_entrega: g('f_prazo'), data_aviso_publicacao: g('f_avisopub'), quer_marcado: gc('t_marcado'),
+    obs: g('f_obs'),
+    qualificado: criadorAberto._qualificarClicado ? (criadorAberto._qualificarClicado() ? 'Sim' : 'Não') : (criadorAberto.qualificado||'Não')
+  };
+
+  const ehNovo = !criadorAberto.id;
+  if(ehNovo){
+    payload.action='novo_lead';
+    payload.categoria_autodeclarada = '';
+  }
+
+  setSync('saving','Salvando…');
+  toast(ehNovo?'Criando criador…':'Salvando…');
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload)});
+    setSync('ok','Sincronizado');
+    toast('✓ Salvo com sucesso');
+    fechar();
+    setTimeout(carregar, 600); // recarrega da planilha (pega o que o Apps Script processou, ex: evento_meta_enviado)
+  }catch(err){
+    setSync('err','Erro ao salvar');
+    toast('Não consegui salvar. Verifique a conexão.');
+  }
+}
+
+/* ---------- WHATSAPP ---------- */
+$('#btnWa').onclick=()=>{
+  if(!criadorAberto) return;
+  let num=($('#f_whats').value||'').replace(/\D/g,'');
+  if(!num) return;
+  if(num.length<=11) num='55'+num;
+  window.open('https://wa.me/'+num,'_blank');
+};
+
+/* ---------- CALENDÁRIO ---------- */
+$('#calBtn').onclick=abrirCalendario;
+$('#calClose').onclick=fecharCalendario;
+$('#calBg').onclick=fecharCalendario;
+function abrirCalendario(){ renderCalendario(); $('#calBg').classList.add('open'); $('#calSheet').classList.add('open'); document.body.style.overflow='hidden'; }
+function fecharCalendario(){ $('#calBg').classList.remove('open'); $('#calSheet').classList.remove('open'); document.body.style.overflow=''; }
+
+function renderCalendario(){
+  const primeiroDia = new Date(calAno, calMes, 1);
+  const inicioSemana = primeiroDia.getDay();
+  const diasNoMes = new Date(calAno, calMes+1, 0).getDate();
+  const hojeStr = new Date().toISOString().slice(0,10);
+
+  const estadias = registros.filter(r=>r.checkin && r.checkout);
+
+  let celulas = '';
+  for(let i=0;i<inicioSemana;i++) celulas += `<div class="cal-day out"></div>`;
+  for(let d=1; d<=diasNoMes; d++){
+    const dataStr = `${calAno}-${String(calMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const doDia = estadias.filter(r=> r.checkin<=dataStr && dataStr<=r.checkout);
+    celulas += `<div class="cal-day ${dataStr===hojeStr?'today':''}">
+      <div class="num">${d}</div>
+      ${doDia.map(r=>`<span class="cal-chip" data-id="${esc(r.id)}" title="${esc(r.nome)}">${esc(r.nome)}</span>`).join('')}
+    </div>`;
+  }
+
+  $('#calBody').innerHTML = `
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <div class="lbl">${MESES[calMes]} ${calAno}</div>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-grid">
+      ${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('')}
+      ${celulas}
+    </div>
+    <div class="cal-legend">Toque no nome de um criador pra abrir a ficha dele.</div>
+  `;
+  $('#calPrev').onclick=()=>{ calMes--; if(calMes<0){calMes=11;calAno--;} renderCalendario(); };
+  $('#calNext').onclick=()=>{ calMes++; if(calMes>11){calMes=0;calAno++;} renderCalendario(); };
+  $('#calBody').querySelectorAll('.cal-chip').forEach(c=> c.onclick=()=>{ fecharCalendario(); abrirFicha(c.dataset.id); });
+}
+
+/* ---------- TOAST ---------- */
+let toastT;
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<link rel="icon" href="https://negocioscreators.com/marca/nc-icone-32.png">
+<link rel="apple-touch-icon" href="https://negocioscreators.com/marca/nc-icone-180.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Central Negócios Creators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: app — trilho escuro da marca à esquerda (logo + clientes), barra de áreas no topo, miolo em cards. No celular: clientes viram chips no topo e as áreas viram barra de abas embaixo. */
+:root {
+  --bg: #F5F5F1;
+  --surface: #FFFFFF;
+  --surface-2: #EEEEE6;
+  --ink: #15171A;
+  --muted: #5A5E57;
+  --line: #E4E4DC;
+  --mint: #14A37E;
+  --orange: #D9692A;
+  --on-mint: #FFFFFF;
+  --ok: #14A37E;
+  --warn: #C98A12;
+  --bad: #D93D3D;
+  --na: #A3A69E;
+  --ok-soft: #E3F5EE;
+  --warn-soft: #FBF1DC;
+  --bad-soft: #FBE7E6;
+  --shadow: 0 1px 2px rgba(21, 23, 26, .05), 0 4px 16px rgba(21, 23, 26, .05);
+  --rail: #16171B;
+  --rail-2: #25272D;
+  --rail-ink: #F2F3EE;
+  --rail-muted: #A8ACA4;
+  --brand-mint: #3EDDB0;
+  --brand-orange: #FF8F4A;
+  --brand-cream: #FFF3E6;
+  --font: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1013; --surface: #1B1D22; --surface-2: #25272D; --ink: #F2F3EE; --muted: #A8ACA4; --line: #30333A;
+    --mint: #3EDDB0; --orange: #FF8F4A; --on-mint: #0F1013; --ok: #3EDDB0; --warn: #F5B83D; --bad: #FF6B6B; --na: #6B6F68;
+    --ok-soft: #153029; --warn-soft: #33290F; --bad-soft: #3A1B1B; --shadow: none; --rail: #0A0B0D; --rail-2: #1E2025; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1013; --surface: #1B1D22; --surface-2: #25272D; --ink: #F2F3EE; --muted: #A8ACA4; --line: #30333A;
+  --mint: #3EDDB0; --orange: #FF8F4A; --on-mint: #0F1013; --ok: #3EDDB0; --warn: #F5B83D; --bad: #FF6B6B; --na: #6B6F68;
+  --ok-soft: #153029; --warn-soft: #33290F; --bad-soft: #3A1B1B; --shadow: none; --rail: #0A0B0D; --rail-2: #1E2025; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; font-weight: 800; letter-spacing: -0.01em; }
+h1 { font-size: clamp(24px, 3vw, 30px); }
+h2 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+h3 { font-size: 19px; }
+h4 { font-size: 17px; }
+a { color: var(--mint); font-weight: 700; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* App shell */
+.app { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+.rail { background: var(--rail); color: var(--rail-ink); position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; padding: 20px 14px calc(16px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); }
+.logo { display: flex; align-items: center; gap: 12px; padding: 4px 8px 6px; }
+.logo svg { height: 26px; width: auto; }
+.logo small { display: block; color: var(--rail-muted); font-size: 12px; font-weight: 600; }
+.rail h2 { color: var(--rail-muted); padding: 0 10px; }
+.clients { display: grid; gap: 2px; }
+.cbtn { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 0; background: none; color: var(--rail-ink); border-radius: 10px; padding: 7px 10px; font-size: 14px; font-weight: 600; }
+.cbtn:hover { background: var(--rail-2); }
+.cbtn[aria-current="true"] { background: var(--rail-2); box-shadow: inset 3px 0 0 var(--brand-mint); }
+.cbtn small { display: block; font-size: 11px; color: var(--rail-muted); font-weight: 500; }
+.av { position: relative; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #15171A; }
+.av svg.i { width: 18px; height: 18px; color: var(--rail-ink); }
+.av .st { position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--rail); background: var(--na); }
+.av .st.s-ok { background: var(--brand-mint); } .av .st.s-warn { background: #F5B83D; } .av .st.s-bad { background: #FF6B6B; } .av .st.s-none { display: none; }
+.badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--brand-orange); color: #15171A; font-size: 12px; font-weight: 800; display: grid; place-items: center; }
+.rail .addrow input { background: var(--rail-2); border-color: transparent; color: var(--rail-ink); }
+.rail .addrow .btn { background: var(--rail-2); color: var(--rail-ink); border-color: transparent; }
+.rail-foot { margin-top: auto; padding: 0 10px; color: var(--rail-muted); font-size: 12px; }
+
+.content { min-width: 0; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); padding: calc(12px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) 12px 24px; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; }
+nav.areas { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow-x: auto; max-width: 100%; }
+nav.areas button { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; color: var(--muted); border-radius: 10px; padding: 8px 14px; font-weight: 700; font-size: 14px; white-space: nowrap; }
+nav.areas button:hover { color: var(--ink); background: var(--surface-2); }
+nav.areas button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.goal { display: grid; gap: 5px; min-width: 260px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; box-shadow: var(--shadow); }
+.goal .line { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); font-weight: 600; }
+.goal .line b { color: var(--ink); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; }
+.bar { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand-mint), var(--brand-orange)); }
+
+main { padding: 24px max(24px, env(safe-area-inset-right, 0px)) 56px 24px; display: grid; gap: 26px; min-width: 0; max-width: 1240px; width: 100%; }
+.mhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px 16px; }
+.ptitle { display: grid; gap: 2px; }
+.ptitle .crumb { font-size: 13px; font-weight: 700; color: var(--muted); }
+.block { display: grid; gap: 12px; }
+.notice { margin: 16px 24px 0; padding: 12px 14px; border-radius: 12px; background: var(--warn-soft); border: 1px solid var(--warn); font-size: 14px; }
+
+/* Mobile */
+.mclients { display: none; }
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .rail { display: none; }
+  .topbar .mtop { display: flex; }
+  .topbar { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .mclients { display: flex; gap: 6px; overflow-x: auto; padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); margin-top: 12px; }
+  .mclients .cbtn { background: var(--surface); color: var(--ink); border: 1px solid var(--line); grid-template-columns: 26px auto auto; white-space: nowrap; padding: 5px 10px 5px 6px; border-radius: 999px; }
+  .mclients .cbtn[aria-current="true"] { background: var(--ink); color: var(--bg); box-shadow: none; }
+  .mclients .cbtn small { display: none; }
+  .mclients .av { width: 26px; height: 26px; font-size: 11px; }
+  .mclients .av .st { border-color: var(--surface); }
+  .goal { width: 100%; min-width: 0; }
+  nav.areas { position: fixed; z-index: 10; left: 0; right: 0; bottom: 0; border-radius: 0; border-width: 1px 0 0; justify-content: space-around; padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  nav.areas button { flex-direction: column; gap: 2px; font-size: 11px; padding: 6px 6px; flex: 1; }
+  nav.areas button[aria-selected="true"] { background: none; color: var(--mint); }
+  main { padding: 18px max(16px, env(safe-area-inset-right, 0px)) 110px max(16px, env(safe-area-inset-left, 0px)); }
+  .notice { margin: 12px 16px 0; }
+}
+.mtop { display: none; align-items: center; gap: 10px; width: 100%; }
+.mtop svg { height: 22px; width: 69px; }
+.logo svg { width: 78px; }
+.rgoal { background: var(--rail-2); border: 0; box-shadow: none; min-width: 0; }
+.rgoal .line { color: var(--rail-muted); }
+.rgoal .line b { color: var(--rail-ink); }
+.rgoal .bar { background: #3A3D45; }
+.mgoal { display: none; }
+@media (max-width: 860px) { .mgoal { display: grid; } }
+.mtop b { font-size: 16px; }
+
+/* Peças */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--surface-2); white-space: nowrap; }
+.chip.s-ok { background: var(--ok-soft); color: var(--ok); } .chip.s-warn { background: var(--warn-soft); color: var(--warn); } .chip.s-bad { background: var(--bad-soft); color: var(--bad); }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--na); display: inline-block; }
+.s-ok .dot, .dot.s-ok { background: var(--ok); } .s-warn .dot, .dot.s-warn { background: var(--warn); } .s-bad .dot, .dot.s-bad { background: var(--bad); }
+.dot.s-none { background: transparent; }
+.theme { padding: 14px 18px; border-radius: 14px; background: linear-gradient(110deg, color-mix(in srgb, var(--brand-mint) 18%, var(--surface)), color-mix(in srgb, var(--brand-orange) 18%, var(--surface))); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+.theme span { font-size: 13px; font-weight: 700; color: var(--muted); }
+.theme b { font-size: 20px; font-weight: 800; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--mint); color: var(--on-mint); border-color: var(--mint); }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--mint); font-size: 14px; font-weight: 700; }
+.linkbtn:hover { text-decoration: underline; }
+.empty { padding: 18px; border: 1.5px dashed var(--line); border-radius: 14px; color: var(--muted); }
+.x { background: none; border: 0; color: var(--muted); font-size: 16px; line-height: 1; padding: 2px 4px; }
+.addrow { display: flex; gap: 6px; }
+.addrow input, .field input, .field select, input.cell { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 7px 10px; font-size: 14px; }
+textarea { width: 100%; min-height: 70px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 9px 11px; font-size: 14px; }
+.saved { font-size: 12px; color: var(--ok); font-weight: 700; min-height: 1em; }
+.scroll { overflow-x: auto; }
+.sugg { font-size: 13px; color: var(--muted); }
+.label { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.label small { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; padding: 3px; background: var(--surface-2); border-radius: 10px; width: fit-content; }
+.seg button { border: 0; background: none; border-radius: 8px; padding: 5px 12px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+
+/* Tabelas */
+.tcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+table.t { border-collapse: collapse; width: 100%; font-size: 14px; }
+table.t th, table.t td { border-top: 1px solid var(--line); padding: 10px 14px; text-align: left; vertical-align: middle; }
+table.t thead th { border-top: 0; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--surface-2); }
+table.t td.n, table.t th.n { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.t tfoot td { font-weight: 800; background: var(--surface-2); }
+table.t tr.click { cursor: pointer; }
+table.t tr.click:hover td { background: var(--bg); }
+table.t input.cell { width: 110px; text-align: right; font-family: var(--font-mono); flex: none; }
+.sub { font-size: 12px; color: var(--muted); display: block; font-weight: 500; }
+.pbar { display: inline-flex; align-items: center; gap: 8px; }
+.pbar .bar { width: 64px; height: 6px; }
+.pbar .bar span { background: var(--mint); }
+
+/* Pendências */
+.pend-list { display: grid; gap: 10px; }
+.pitem { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.pitem::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--bad); }
+@media (max-width: 560px) { .pitem { grid-template-columns: 1fr; } }
+.pitem.done { opacity: 0.65; } .pitem.done::before { background: var(--ok); }
+.pitem .who { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pitem .t { font-weight: 800; }
+.pitem .d { color: var(--muted); font-size: 14px; }
+.age { font-family: var(--font-mono); font-size: 12px; color: var(--bad); font-weight: 600; }
+.pitem.done .age { color: var(--ok); }
+
+/* Cards de sinais */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: start; }
+@media (max-width: 420px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); display: grid; min-width: 0; overflow: hidden; }
+.card > section { padding: 16px 18px; border-top: 1px solid var(--line); display: grid; gap: 10px; min-width: 0; }
+.card > section:first-child { border-top: 0; }
+.card.worst-bad { border-color: color-mix(in srgb, var(--bad) 55%, var(--line)); }
+.ctop { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+.acc { font-size: 12px; color: var(--muted); }
+.signals { display: grid; gap: 7px; }
+.sig { display: grid; grid-template-columns: 9px 84px 1fr; gap: 10px; align-items: baseline; font-size: 14px; }
+.sig .k { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.num { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; }
+.num .k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.num .v { font-family: var(--font-mono); font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+.check { display: grid; gap: 6px; }
+.citem { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: start; font-size: 14px; font-weight: 600; padding: 6px 8px; border-radius: 8px; }
+.citem:hover { background: var(--surface-2); }
+.citem input { margin-top: 3px; accent-color: var(--mint); width: 17px; height: 17px; }
+.citem.on span { text-decoration: line-through; color: var(--muted); font-weight: 500; }
+.citem .x { visibility: hidden; }
+.citem:hover .x, .citem .x:focus-visible { visibility: visible; }
+details summary { cursor: pointer; list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details summary .label::after { content: "▸"; }
+details[open] summary .label::after { content: "▾"; }
+
+/* Blocos de etapas */
+.steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+.sblock { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.sblock.full { border-color: color-mix(in srgb, var(--ok) 60%, var(--line)); }
+.sblock .bh { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.sblock .meta { font-size: 13px; color: var(--muted); font-weight: 600; }
+.sblock .foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: center; }
+.ring { --p: 0; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--mint) calc(var(--p) * 1%), var(--surface-2) 0); flex: none; }
+.ring span { width: 30px; height: 30px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 600; }
+.cell-s { font-family: var(--font-mono); font-size: 13px; }
+.cell-s.full { color: var(--ok); font-weight: 600; }
+.cell-s.zero { color: var(--muted); }
+
+/* Calculadora */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1080px) { .calc { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 12px; }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 12px; font-weight: 700; color: var(--muted); }
+.field input, .field select { font-family: var(--font-mono); }
+.verdict { border-radius: 14px; padding: 16px 18px; display: grid; gap: 10px; background: var(--surface-2); }
+.verdict.s-bad { background: var(--bad-soft); } .verdict.s-warn { background: var(--warn-soft); } .verdict.s-ok { background: var(--ok-soft); }
+.vtitle { font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.vtitle .dot { width: 12px; height: 12px; }
+.vitem { display: grid; grid-template-columns: 9px 1fr; gap: 10px; align-items: baseline; font-size: 14px; font-weight: 500; }
+/* Planilha expandida: some o trilho, o miolo ocupa a largura toda e a tabela vai até o fim da tela */
+body.wide .app { grid-template-columns: 1fr; }
+body.wide .rail, body.wide .mclients { display: none; }
+body.wide main { max-width: none; padding-top: 14px; }
+body.wide .sheet { max-height: calc(100vh - 220px); }
+body.wide .mhead .ptitle h1 { font-size: 22px; }
+/* Metas editáveis */
+.tmeta input.cell, .tmeta select.cell { background: transparent; border-color: transparent; }
+.tmeta input.cell:hover, .tmeta select.cell:hover { border-color: var(--line); }
+.tmeta input.cell:focus, .tmeta select.cell:focus { background: var(--bg); border-color: var(--mint); outline: none; }
+input.cell-txt, select.cell-txt { width: 100%; text-align: left; font-family: var(--font); }
+.tmeta input.cell-nota { font-size: 12px; color: var(--muted); padding-top: 0; }
+/* Roteiros */
+.rotbtn { flex: none; margin: 6px 0 6px 8px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 800; color: var(--mint); white-space: nowrap; }
+.rotbtn.tem { background: var(--ok-soft); border-color: transparent; color: var(--ok); }
+.sh td.t-link .lnk { min-width: 260px; }
+.rot-head { gap: 12px; }
+.rot-campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px 14px; }
+.rot-campos textarea { min-height: 56px; }
+.rot-campos .field:nth-last-child(2) label { color: var(--ok); }
+.rot-campos .field:last-child label { color: var(--bad); }
+.sh.rot td.t-fala textarea { min-width: 320px; font-weight: 600; }
+.sh.rot td.t-cenario textarea, .sh.rot td.t-look textarea { min-width: 200px; }
+.sh.rot td.t-legenda textarea { min-width: 220px; font-style: italic; }
+.sh.rot td.t-edicao textarea { min-width: 240px; }
+.sh.rot td.t-broll textarea { min-width: 200px; }
+.sh.rot td.t-sfx textarea, .sh.rot td.t-trilha textarea { min-width: 180px; }
+.sh.rot td.t-take textarea { min-width: 140px; }
+.sh.rot td.t-seg input { width: 80px; text-align: right; font-family: var(--font-mono); }
+.sh.rot .rctl { white-space: nowrap; padding: 6px; vertical-align: middle; background: transparent; }
+.sh.rot tfoot td { border-bottom: 0; background: var(--surface-2); }
+.rcard { display: flex; align-items: stretch; }
+.rcard .lmain { flex: 1; text-align: left; background: none; border: 0; font: inherit; cursor: pointer; padding-right: 16px; }
+.rcard .rsel { display: grid; place-items: center; padding: 0 0 0 14px; }
+.rcard .rsel input { width: 18px; height: 18px; accent-color: var(--mint); }
+.rcard.on { border-color: var(--mint); box-shadow: inset 0 0 0 1px var(--mint); }
+#print-area { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  body { background: #fff !important; color: #000 !important; }
+  .app, .notice { display: none !important; }
+  #print-area { display: block !important; }
+  .rot-print { page-break-after: always; break-after: page; font-family: var(--font); font-size: 11pt; color: #000; }
+  .rot-print:last-child { page-break-after: auto; break-after: auto; }
+  .rot-print header { display: flex; justify-content: space-between; align-items: end; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 10px; }
+  .rot-print header small { font-size: 9pt; text-transform: uppercase; letter-spacing: .08em; }
+  .rot-print h2 { font-size: 18pt; margin: 2px 0 0; color: #000; text-transform: none; letter-spacing: 0; }
+  .rot-print dl { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px 14px; margin: 0 0 10px; }
+  .rot-print dt { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+  .rot-print dd { margin: 0; white-space: pre-wrap; }
+  .rot-print table { width: 100%; border-collapse: collapse; }
+  .rot-print th, .rot-print td { border: 1px solid #555; padding: 5px 6px; text-align: left; vertical-align: top; white-space: pre-wrap; }
+  .rot-print th { background: #eee; font-size: 9pt; text-transform: uppercase; }
+  .rot-print td:first-child { width: 22px; text-align: center; }
+  .rot-print { font-size: 10pt; }
+  .rot-print td:nth-child(2) { width: 26%; }
+  .rot-print td:nth-child(3) { width: 15%; font-style: italic; }
+  .rot-print { font-size: 8.5pt; }
+  .rot-print td:nth-child(2) { width: 22%; }
+  .rot-print td:nth-child(9) { width: 12%; }
+}
+/* Corretor */
+.corr { gap: 10px; border-color: var(--warn); }
+.corr.ok { border-color: var(--ok); flex-direction: row; display: flex; justify-content: space-between; align-items: center; }
+.corr-list { display: grid; gap: 8px; max-height: 320px; overflow: auto; }
+.corr-item { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); }
+.corr-item > div:first-child { display: grid; gap: 2px; min-width: 0; }
+.corr-item del { color: var(--bad); }
+.corr-item ins { color: var(--ok); text-decoration: none; font-weight: 800; }
+/* Pedidos de roteiro */
+.ped-campos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px 16px; }
+.ped-campos .field.wide { grid-column: 1 / -1; }
+.ped-campos input { font-family: var(--font) !important; }
+.ped-campos .field.ok label { color: var(--ok); }
+.ped-campos .field.bad label { color: var(--bad); }
+.ped-prompt { font-family: var(--font-mono); font-size: 12.5px; min-height: 220px; background: var(--surface-2); }
+.login { max-width: 420px; margin: 40px auto; }
+.login input { border: 1px solid var(--line); border-radius: 10px; background: var(--bg); padding: 10px 12px; font-size: 15px; }
+/* Links */
+.lgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.lcard { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); min-width: 0; }
+.lcard:hover { border-color: var(--mint); }
+.lcard.editing { grid-column: 1 / -1; padding: 16px 18px; display: grid; gap: 12px; border-color: var(--mint); }
+.lmain { display: grid; gap: 8px; padding: 14px 44px 14px 16px; color: var(--ink); text-decoration: none; font-weight: 500; }
+.lt { font-weight: 800; font-size: 15px; }
+.ltags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.lu { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.ledit { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2) !important; font-size: 14px !important; }
+.ledit:hover { color: var(--ink); }
+/* Planilhas */
+.sh-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.sh-title { font: inherit; font-size: 22px; font-weight: 800; border: 0; border-bottom: 2px solid transparent; background: transparent; width: 100%; padding: 2px 0; color: var(--ink); }
+.sh-title:hover, .sh-title:focus { border-bottom-color: var(--line); outline: none; }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: auto; max-height: 72vh; }
+table.sh { border-collapse: separate; border-spacing: 0; font-size: 14px; min-width: 100%; }
+.sh th, .sh td { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0; vertical-align: top; text-align: left; }
+.sh thead th { position: sticky; top: 0; z-index: 2; background: var(--surface-2); }
+.sh .rn { position: sticky; left: 0; z-index: 1; background: var(--surface-2); width: 46px; min-width: 46px; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 9px 0; }
+.sh thead .rn { z-index: 3; }
+.sh .rn .x { display: none; }
+.sh tr:hover .rn span { display: none; }
+.sh tr:hover .rn .x { display: inline; }
+.sh-h input { width: 100%; min-width: 130px; border: 0; background: transparent; font: inherit; font-weight: 800; font-size: 13px; padding: 8px 10px 2px; color: var(--ink); }
+.hctl { display: flex; gap: 2px; align-items: center; padding: 0 6px 6px 8px; }
+.hctl select { font-size: 11px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 1px 4px; color: var(--muted); }
+.hctl .x { font-size: 15px; }
+.sh .addc { background: var(--surface-2); padding: 6px; border-right: 0; vertical-align: middle; }
+.sh tbody .addc { background: transparent; }
+.sh td textarea, .sh td input, .sh td select { width: 100%; border: 0; background: transparent; font: inherit; font-size: 14px; color: var(--ink); padding: 8px 10px; min-height: 38px; border-radius: 0; resize: none; }
+.sh td textarea { field-sizing: content; min-width: 160px; max-height: 160px; }
+.sh tbody td:nth-child(2) textarea { min-width: 220px; font-weight: 700; }
+.sh td.t-simnao select { min-width: 84px; }
+.sh td:focus-within { box-shadow: inset 0 0 0 2px var(--mint); }
+.sh select.v-Sim { color: var(--ok); font-weight: 800; }
+.sh select.v-Não { color: var(--muted); }
+.lnk { display: flex; align-items: center; min-width: 170px; }
+.lnk a { padding: 0 10px; text-decoration: none; font-weight: 800; }
+.sh td select.st { width: auto; min-height: 0; margin: 6px 8px; padding: 4px 10px; border-radius: 999px; font-weight: 800; font-size: 12px; }
+.st-0 { background: var(--surface-2); color: var(--muted); }
+.st-1 { background: var(--warn-soft); color: var(--warn); }
+.st-2 { background: color-mix(in srgb, var(--brand-orange) 20%, var(--surface)); color: color-mix(in srgb, var(--brand-orange) 75%, var(--ink)); }
+.st-3 { background: color-mix(in srgb, #6FA8FF 20%, var(--surface)); color: color-mix(in srgb, #3D7BE0 85%, var(--ink)); }
+.st-4 { background: var(--ok-soft); color: var(--ok); }
+.sh tr.row-st-1 td { background: var(--warn-soft); }
+.sh tr.row-st-2 td { background: color-mix(in srgb, var(--brand-orange) 13%, var(--surface)); }
+.sh tr.row-st-3 td { background: color-mix(in srgb, #6FA8FF 14%, var(--surface)); }
+.sh tr.row-st-4 td { background: var(--ok-soft); }
+.sh tr.row-st-4 td textarea { color: var(--muted); }
+.sh tr[class*="row-st-"]:not(.row-st-0) td.rn { box-shadow: inset 3px 0 0 currentColor; }
+.sh tr.row-st-1 td.rn { color: var(--warn); } .sh tr.row-st-2 td.rn { color: var(--brand-orange); }
+.sh tr.row-st-3 td.rn { color: #3D7BE0; } .sh tr.row-st-4 td.rn { color: var(--ok); }
+.armed { color: var(--bad) !important; font-size: 11px !important; font-weight: 800; }
+@media (prefers-reduced-motion: no-preference) { .cbtn, nav.areas button, .btn { transition: background-color .15s, color .15s, border-color .15s; } }
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="ncclip"><circle cx="2768.0" cy="-270.0" r="270.0"/></clipPath>
+    <symbol id="nc-word" viewBox="0 -1082 3389 1084"><path fill="currentColor" d="M876 0V-510Q876 -547 872.0 -604.5Q868 -662 847.0 -720.0Q826 -778 778.5 -817.0Q731 -856 644 -856Q609 -856 569.0 -845.0Q529 -834 494.0 -802.5Q459 -771 436.5 -710.0Q414 -649 414 -548L258 -622Q258 -750 310.0 -862.0Q362 -974 466.5 -1043.0Q571 -1112 730 -1112Q857 -1112 937.0 -1069.0Q1017 -1026 1061.5 -960.0Q1106 -894 1125.0 -822.5Q1144 -751 1148.0 -692.0Q1152 -633 1152 -606V0ZM138 0V-1080H380V-722H414V0Z M1808.0 30Q1640.0 30 1520.0 -45.0Q1400.0 -120 1336.0 -249.0Q1272.0 -378 1272.0 -540Q1272.0 -704 1338.5 -833.0Q1405.0 -962 1526.0 -1036.0Q1647.0 -1110 1812.0 -1110Q2003.0 -1110 2132.5 -1013.5Q2262.0 -917 2298.0 -750L2026.0 -678Q2002.0 -762 1942.5 -809.0Q1883.0 -856 1808.0 -856Q1722.0 -856 1667.0 -814.5Q1612.0 -773 1586.0 -701.5Q1560.0 -630 1560.0 -540Q1560.0 -399 1622.5 -311.5Q1685.0 -224 1808.0 -224Q1900.0 -224 1948.0 -266.0Q1996.0 -308 2020.0 -386L2298.0 -328Q2252.0 -156 2124.0 -63.0Q1996.0 30 1808.0 30Z"/><circle cx="2768.0" cy="-270.0" r="270.0" fill="#3EDDB0"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FF8F4A"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FFF3E6" clip-path="url(#ncclip)"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" lang="pt-BR">
+  <aside class="rail" aria-label="Negócios Creators">
+    <div class="logo">
+      <svg viewBox="0 -1082 3389 1084" style="color:#F4F5F2" role="img" aria-label="nc"><defs><clipPath id="ncclip1"><circle cx="2768.0" cy="-270.0" r="270.0"/></clipPath></defs><path fill="currentColor" d="M876 0V-510Q876 -547 872.0 -604.5Q868 -662 847.0 -720.0Q826 -778 778.5 -817.0Q731 -856 644 -856Q609 -856 569.0 -845.0Q529 -834 494.0 -802.5Q459 -771 436.5 -710.0Q414 -649 414 -548L258 -622Q258 -750 310.0 -862.0Q362 -974 466.5 -1043.0Q571 -1112 730 -1112Q857 -1112 937.0 -1069.0Q1017 -1026 1061.5 -960.0Q1106 -894 1125.0 -822.5Q1144 -751 1148.0 -692.0Q1152 -633 1152 -606V0ZM138 0V-1080H380V-722H414V0Z M1808.0 30Q1640.0 30 1520.0 -45.0Q1400.0 -120 1336.0 -249.0Q1272.0 -378 1272.0 -540Q1272.0 -704 1338.5 -833.0Q1405.0 -962 1526.0 -1036.0Q1647.0 -1110 1812.0 -1110Q2003.0 -1110 2132.5 -1013.5Q2262.0 -917 2298.0 -750L2026.0 -678Q2002.0 -762 1942.5 -809.0Q1883.0 -856 1808.0 -856Q1722.0 -856 1667.0 -814.5Q1612.0 -773 1586.0 -701.5Q1560.0 -630 1560.0 -540Q1560.0 -399 1622.5 -311.5Q1685.0 -224 1808.0 -224Q1900.0 -224 1948.0 -266.0Q1996.0 -308 2020.0 -386L2298.0 -328Q2252.0 -156 2124.0 -63.0Q1996.0 30 1808.0 30Z"/><circle cx="2768.0" cy="-270.0" r="270.0" fill="#3EDDB0"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FF8F4A"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FFF3E6" clip-path="url(#ncclip1)"/></svg>
+      <div><b>Negócios Creators</b><small>Central de gestão</small></div>
+    </div>
+    <div class="goal rgoal" id="goal"></div>
+    <h2>Clientes</h2>
+    <div class="clients" id="side"></div>
+    <div class="rail-foot" id="round"></div>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <div class="mtop"><svg viewBox="0 -1082 3389 1084" style="color:var(--ink)" role="img" aria-label="nc"><defs><clipPath id="ncclip2"><circle cx="2768.0" cy="-270.0" r="270.0"/></clipPath></defs><path fill="currentColor" d="M876 0V-510Q876 -547 872.0 -604.5Q868 -662 847.0 -720.0Q826 -778 778.5 -817.0Q731 -856 644 -856Q609 -856 569.0 -845.0Q529 -834 494.0 -802.5Q459 -771 436.5 -710.0Q414 -649 414 -548L258 -622Q258 -750 310.0 -862.0Q362 -974 466.5 -1043.0Q571 -1112 730 -1112Q857 -1112 937.0 -1069.0Q1017 -1026 1061.5 -960.0Q1106 -894 1125.0 -822.5Q1144 -751 1148.0 -692.0Q1152 -633 1152 -606V0ZM138 0V-1080H380V-722H414V0Z M1808.0 30Q1640.0 30 1520.0 -45.0Q1400.0 -120 1336.0 -249.0Q1272.0 -378 1272.0 -540Q1272.0 -704 1338.5 -833.0Q1405.0 -962 1526.0 -1036.0Q1647.0 -1110 1812.0 -1110Q2003.0 -1110 2132.5 -1013.5Q2262.0 -917 2298.0 -750L2026.0 -678Q2002.0 -762 1942.5 -809.0Q1883.0 -856 1808.0 -856Q1722.0 -856 1667.0 -814.5Q1612.0 -773 1586.0 -701.5Q1560.0 -630 1560.0 -540Q1560.0 -399 1622.5 -311.5Q1685.0 -224 1808.0 -224Q1900.0 -224 1948.0 -266.0Q1996.0 -308 2020.0 -386L2298.0 -328Q2252.0 -156 2124.0 -63.0Q1996.0 30 1808.0 30Z"/><circle cx="2768.0" cy="-270.0" r="270.0" fill="#3EDDB0"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FF8F4A"/><circle cx="3119.0" cy="-270.0" r="270.0" fill="#FFF3E6" clip-path="url(#ncclip2)"/></svg><b>Negócios Creators</b></div>
+      <nav class="areas" role="tablist" aria-label="Áreas de atuação" id="areas"></nav>
+      <div class="goal mgoal" id="mgoal"></div>
+    </header>
+    <div class="mclients" id="mside" aria-label="Clientes"></div>
+    <div id="notice" class="notice" hidden></div>
+    <main id="main"><div class="empty">Carregando…</div></main>
+  </div>
+</div>
+
+<script>
+(function () {
+  const ABAS = [["estrategia", "Estratégia"], ["trafego", "Gestão de tráfego"], ["creators", "Gestão de creators"], ["conteudo", "Criação de conteúdo"], ["gravacao", "Gravação"], ["planilhas", "Planilhas"], ["links", "Links"], ["roteiros", "Roteiros"]];
+  const CURTO = { estrategia: "Estratégia", trafego: "Tráfego", creators: "Creators", conteudo: "Conteúdo", gravacao: "Gravação", planilhas: "Planilhas", links: "Links", roteiros: "Roteiros" };
+  const ICONS = {
+    estrategia: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/>',
+    trafego: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    creators: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .6 3.2 2.4 3.5 5.2"/>',
+    conteudo: '<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
+    gravacao: '<rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10.5l5-3v9l-5-3z"/>',
+    planilhas: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M3 15h18M9 4v16"/>',
+    links: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    roteiros: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 12h6M10 16h6"/>',
+    todos: '<path d="M4 6h16M4 12h16M4 18h10"/>'
+  };
+  const icon = (k) => { const n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("viewBox", "0 0 24 24"); n.setAttribute("class", "i"); n.setAttribute("aria-hidden", "true"); n.innerHTML = ICONS[k] || ""; return n; };
+  const AVC = ["#3EDDB0", "#FF8F4A", "#FFF3E6", "#9CC7FF", "#D7B4FF", "#FFD36B", "#A8E6A1"];
+  const initials = (nome) => nome.replace(/^Pousada\s+/i, "").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  const ORDER = { bad: 0, warn: 1, ok: 2, na: 3 };
+  const SIG = [["campanha", "Campanha"], ["lead", "Lead"], ["purchase", "Purchase"], ["pagamento", "Pagamento"]];
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const state = { cfg: null, clientes: [], edicoes: {}, pend: [], ultima: null, showDone: false, frentes: [], progresso: {}, metas: {}, otim: [], metasNc: {}, planilhas: [], sheet: "", links: {}, linkEdit: "", roteiros: [], roteiro: "", rotSel: {}, dicio: null, pedidos: [], pedido: "", aba: "estrategia", cli: "", mes: "" };
+  let db = null;
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, attrs, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else if (k === "value") n.value = v;
+      else if (v !== undefined && v !== null && v !== false) n.setAttribute(k, v === true ? "" : v);
+    }
+    for (const k of kids.flat(2)) if (k !== null && k !== undefined && k !== false) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+    return n;
+  };
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoOf = (d) => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const today = () => isoOf(new Date());
+  const brl = (v) => typeof v === "number" && isFinite(v) ? "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+  const brl0 = (v) => typeof v === "number" && isFinite(v) ? "R$ " + v.toLocaleString("pt-BR", { maximumFractionDigits: 0 }) : "—";
+  const pct = (v) => (v * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + "%";
+  const days = (iso) => { if (!iso) return null; const a = new Date(iso + "T12:00:00"); return Math.max(0, Math.round((Date.now() - a.getTime()) / 86400000)); };
+  const fmtDate = (iso) => iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) : "";
+  const numDot = (v) => { if (v === undefined || v === null || v === "") return null; if (typeof v === "number") return v; const s = String(v).trim(); const n = parseFloat(/,/.test(s) ? s.replace(/\./g, "").replace(",", ".") : s); return isFinite(n) ? n : null; };
+  const worstOf = (arr) => arr.slice().sort((a, b) => ORDER[a] - ORDER[b])[0] || "na";
+  const sigWorst = (c) => worstOf(SIG.map(([k]) => (c.sinais && c.sinais[k] && c.sinais[k].s) || "na"));
+  const mesLabel = (key) => { const [y, m] = key.split("-"); return MESES[+m - 1] + (y !== String(new Date().getFullYear()) ? " de " + y : ""); };
+
+  function flash(node) { if (!node) return; node.textContent = "Salvo"; setTimeout(() => { node.textContent = ""; }, 1600); }
+  function fail(e) {
+    const n = $("#notice"); n.hidden = false;
+    n.textContent = e && e.code === "invalid_argument" ? "Você está vendo este painel só para leitura, então as edições não ficam salvas."
+      : e && e.code === "quota_exceeded" ? "O banco do painel encheu. Apague registros antigos do histórico para liberar espaço."
+      : "Não deu para salvar agora. Tente de novo em alguns segundos.";
+  }
+  function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+  const pendingText = {};
+  function keepFocus(run) {
+    const a = document.activeElement, id = a && a.id;
+    const pos = a && typeof a.selectionStart === "number" ? a.selectionStart : null;
+    run();
+    if (id) { const f = document.getElementById(id); if (f && f !== a) { f.focus(); if (pos !== null && f.setSelectionRange) { try { f.setSelectionRange(pos, pos); } catch (e) {} } } }
+  }
+  function textBox(id, value, onSave, opts) {
+    const ta = el(opts && opts.input ? "input" : "textarea", Object.assign({ id }, opts && opts.attrs));
+    ta.value = pendingText[id] !== undefined ? pendingText[id] : (value || "");
+    const save = debounce(() => { const v = ta.value; delete pendingText[id]; onSave(v); }, 700);
+    ta.addEventListener("input", () => { pendingText[id] = ta.value; save(); });
+    return ta;
+  }
+
+  /* ---------- Clientes e navegação ---------- */
+  const cfgClients = () => (state.cfg && state.cfg.clientes) || [];
+  const cliName = (slug) => (cfgClients().find((c) => c.slug === slug) || {}).nome || slug;
+  const rotinaOf = (slug) => { const c = cfgClients().find((x) => x.slug === slug); return c ? (c.rotina || []) : [slug]; };
+  const ownerOfRotina = (rid) => (cfgClients().find((c) => (c.rotina || []).includes(rid)) || {}).slug || rid;
+  const frentesDa = (aba) => state.frentes.filter((f) => f.aba === aba).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+  const inFrente = (f, slug) => (f.clientes || []).some((c) => c.slug === slug);
+  const clientStatus = (slug) => {
+    const rot = state.clientes.filter((c) => rotinaOf(slug).includes(c.id) && c.ativo !== false);
+    const pend = state.pend.filter((p) => p.status !== "resolvida" && ownerOfRotina(p.cliente) === slug).length;
+    return { s: rot.length ? worstOf(rot.map(sigWorst)) : "none", pend };
+  };
+
+  try { state.aba = localStorage.getItem("aba2") || "estrategia"; state.cli = localStorage.getItem("cli2") || ""; } catch (e) {}
+  { const h = (location.hash || "").slice(1); if (ABAS.some(([k]) => k === h)) state.aba = h; }
+  if (!ABAS.some(([k]) => k === state.aba)) state.aba = "estrategia";
+  function go(patch) {
+    Object.assign(state, patch);
+    try { localStorage.setItem("aba2", state.aba); localStorage.setItem("cli2", state.cli); } catch (e) {}
+    render(); window.scrollTo({ top: 0 });
+  }
+
+  function renderNav() {
+    const narrow = window.matchMedia && window.matchMedia("(max-width: 860px)").matches;
+    $("#areas").replaceChildren(...ABAS.map(([k, n]) => el("button", { role: "tab", "aria-selected": String(state.aba === k), title: n, onclick: () => go({ aba: k }) }, icon(k), el("span", {}, CURTO[k]))));
+  }
+  function renderSide() {
+    const addIn = el("input", { id: "new-cli", placeholder: "Novo cliente", "aria-label": "Novo cliente" });
+    const add = async () => {
+      const t = addIn.value.trim(); if (!t || !state.cfg) return; addIn.value = "";
+      let slug = slugify(t); if (cfgClients().some((c) => c.slug === slug)) slug += "-" + Date.now().toString(36).slice(-3);
+      try { await db.doc("config/negocio").update({ clientes: cfgClients().concat([{ slug, nome: t, rotina: [] }]) }); go({ cli: slug }); } catch (e) { fail(e); }
+    };
+    addIn.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const btn = (slug, nome, sub, idx) => {
+      const st = slug ? clientStatus(slug) : { s: "none", pend: state.pend.filter((p) => p.status !== "resolvida").length };
+      const av = slug ? el("span", { class: "av", style: "background:" + AVC[idx % AVC.length] }, initials(nome), el("span", { class: "st s-" + st.s }))
+        : el("span", { class: "av", style: "background:var(--rail-2)" }, icon("todos"));
+      return el("button", { class: "cbtn", "aria-current": String(state.cli === slug), onclick: () => go({ cli: slug }) },
+        av, el("span", {}, nome, sub ? el("small", {}, sub) : null),
+        st.pend ? el("span", { class: "badge", title: st.pend + " pendência(s) suas" }, st.pend) : el("span"));
+    };
+    const list = () => [btn("", "Visão geral", "todos os clientes", 0), ...cfgClients().map((c, i) => btn(c.slug, c.nome, c.dona ? "sua empresa" : null, i))];
+    $("#side").replaceChildren(...list(), el("div", { class: "addrow", style: "margin-top:10px" }, addIn, el("button", { class: "btn", type: "button", onclick: add }, "+")));
+    $("#mside").replaceChildren(...list());
+  }
+
+  /* ---------- Meta da Negócios Creators ---------- */
+  function mesAtual() {
+    const keys = Object.keys(state.metasNc).sort();
+    if (state.mes && state.metasNc[state.mes]) return state.mes;
+    const now = new Date(); const cur = now.getFullYear() + "-" + pad(now.getMonth() + 1);
+    return keys.includes(cur) ? cur : (keys.find((k) => k > cur) || keys[keys.length - 1] || "");
+  }
+  const linhasDe = (key) => (state.metasNc[key] && Array.isArray(state.metasNc[key].linhas)) ? state.metasNc[key].linhas : [];
+  const somaMeta = (ls) => ls.reduce((s, l) => s + (numDot(l.valor) || 0), 0);
+  const somaReal = (ls) => ls.reduce((s, l) => s + (numDot(l.realizado) || 0), 0);
+  function renderGoal() {
+    const key = mesAtual(); const d = state.metasNc[key];
+    if (!d) { $("#goal").replaceChildren(); $("#mgoal").replaceChildren(); return; }
+    const ls = linhasDe(key); const meta = numDot(d.meta) || somaMeta(ls); const real = somaReal(ls);
+    const nodes = () => [
+      el("div", { class: "line" }, el("span", {}, "Meta de " + mesLabel(key)), el("b", {}, brl0(real) + " de " + brl0(meta))),
+      el("div", { class: "bar", role: "img", "aria-label": "Realizado " + pct(meta ? real / meta : 0) }, el("span", { style: "width:" + Math.min(100, meta ? real / meta * 100 : 0) + "%" })),
+      el("div", { class: "line", style: "font-size:12px" }, el("span", {}, (state.cfg && state.cfg.temas) ? state.cfg.temas : ""), el("span", {}, pct(meta ? real / meta : 0)))];
+    $("#goal").replaceChildren(...nodes()); $("#mgoal").replaceChildren(...nodes());
+    const u = state.ultima;
+    $("#round").textContent = u ? "Rotina de tráfego atualizada em " + u.quando : "";
+  }
+  async function saveLinhas(key, linhas, savedNode) {
+    try { await db.collection("metasnc").doc(key).update({ linhas }); flash(savedNode); } catch (e) { fail(e); }
+  }
+  const editLinha = (key, i, patch, saved) => saveLinhas(key, linhasDe(key).map((x, j) => j === i ? Object.assign({}, x, patch) : x), saved);
+  async function novoMes() {
+    const keys = Object.keys(state.metasNc).sort();
+    const ult = keys[keys.length - 1];
+    const [y, m] = (ult || (new Date().getFullYear() + "-" + pad(new Date().getMonth() + 1))).split("-").map(Number);
+    const prox = m === 12 ? (y + 1) + "-01" : y + "-" + pad(m + 1);
+    const base = ult ? state.metasNc[ult] : { meta: 0, linhas: [] };
+    try {
+      await db.collection("metasnc").doc(prox).set({ meta: base.meta || 0, obs: "", linhas: (base.linhas || []).map((l) => Object.assign({}, l, { realizado: "" })) });
+      state.mes = prox; render();
+    } catch (e) { fail(e); }
+  }
+  function metaTable(cli) {
+    const keys = Object.keys(state.metasNc).sort();
+    const mesBtn = el("button", { class: "btn", type: "button", title: "Cria o mês seguinte copiando as fontes do último mês", onclick: novoMes }, "+ Mês");
+    if (!keys.length) return cli ? null : el("section", { class: "block" }, el("div", { class: "empty" }, "Nenhuma meta cadastrada ainda."), el("div", {}, mesBtn));
+    const key = mesAtual();
+    const all = linhasDe(key);
+    const ls = all.map((l, i) => Object.assign({ _i: i }, l)).filter((l) => !cli || l.cliente === cli);
+    const saved = el("span", { class: "saved", "aria-live": "polite" });
+    const d = state.metasNc[key] || {};
+    const metaTotal = cli ? somaMeta(ls) : (numDot(d.meta) || somaMeta(all));
+    const rows = ls.map((l) => {
+      const base = "mt-" + key + "-" + l._i + "-";
+      const v = numDot(l.valor) || 0, r = numDot(l.realizado) || 0;
+      return el("tr", {},
+        el("td", { style: "min-width:220px" },
+          textBox(base + "item", l.item || "", (x) => editLinha(key, l._i, { item: x }, saved), { input: true, attrs: { class: "cell cell-txt", placeholder: "Nome da fonte", "aria-label": "Fonte" } }),
+          textBox(base + "nota", l.nota || "", (x) => editLinha(key, l._i, { nota: x }, saved), { input: true, attrs: { class: "cell cell-txt cell-nota", placeholder: "observação (opcional)", "aria-label": "Observação da fonte" } })),
+        cli ? null : el("td", {}, el("select", { class: "cell cell-txt", "aria-label": "Cliente da fonte", onchange: (e) => editLinha(key, l._i, { cliente: e.target.value }, saved) },
+          el("option", { value: "" }, "—"), cfgClients().map((c) => el("option", { value: c.slug, selected: l.cliente === c.slug }, c.nome)))),
+        el("td", { class: "n" }, textBox(base + "valor", l.valor === undefined || l.valor === null ? "" : String(l.valor), (x) => editLinha(key, l._i, { valor: numDot(x) === null ? 0 : numDot(x) }, saved), { input: true, attrs: { class: "cell", inputmode: "decimal", placeholder: "0", "aria-label": "Meta de " + (l.item || "fonte") } })),
+        el("td", { class: "n" }, textBox(base + "real", l.realizado || "", (x) => editLinha(key, l._i, { realizado: x }, saved), { input: true, attrs: { class: "cell", inputmode: "decimal", placeholder: "0", "aria-label": "Realizado de " + (l.item || "fonte") } })),
+        el("td", { class: "n" }, v ? pct(r / v) : "—"),
+        el("td", { class: "n" }, el("button", { class: "x", type: "button", title: "Apagar fonte (clique 2 vezes)", "aria-label": "Apagar fonte " + (l.item || ""), onclick: twoStep(() => saveLinhas(key, linhasDe(key).filter((x, j) => j !== l._i), saved)) }, "×")));
+    });
+    const addFonte = () => saveLinhas(key, linhasDe(key).concat([{ item: "Nova fonte", cliente: cli || "", valor: 0, realizado: "" }]), saved);
+    return el("section", { class: "block" },
+      el("div", { class: "mhead" },
+        el("h2", {}, cli ? "Receita de " + cliName(cli) + " na meta" : "Meta da Negócios Creators"),
+        el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" },
+          el("div", { class: "seg" }, keys.map((k) => el("button", { type: "button", "aria-pressed": String(k === key), onclick: () => { state.mes = k; render(); } }, mesLabel(k)))), mesBtn)),
+      cli ? null : el("div", { style: "display:flex;gap:10px;align-items:center;flex-wrap:wrap" },
+        el("label", { class: "label", for: "meta-total-" + key, style: "margin:0" }, "Meta de " + mesLabel(key)),
+        textBox("meta-total-" + key, d.meta === undefined ? "" : String(d.meta), async (x) => { try { await db.collection("metasnc").doc(key).update({ meta: numDot(x) || 0 }); flash(saved); } catch (e) { fail(e); } }, { input: true, attrs: { class: "cell", inputmode: "decimal", placeholder: "0", style: "width:130px;flex:none" } }),
+        textBox("meta-obs-" + key, d.obs || "", async (x) => { try { await db.collection("metasnc").doc(key).update({ obs: x }); flash(saved); } catch (e) { fail(e); } }, { input: true, attrs: { class: "cell cell-txt", placeholder: "observação do mês", style: "flex:1;min-width:220px" } })),
+      el("div", { class: "tcard scroll" }, el("table", { class: "t tmeta" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Fonte"), cli ? null : el("th", {}, "Cliente"), el("th", { class: "n" }, "Meta (R$)"), el("th", { class: "n" }, "Realizado (R$)"), el("th", { class: "n" }, "%"), el("th"))),
+        el("tbody", {}, ls.length ? rows : el("tr", {}, el("td", { colspan: cli ? "5" : "6", class: "sugg" }, "Nenhuma fonte de " + (cli ? cliName(cli) : "receita") + " neste mês."))),
+        el("tfoot", {}, el("tr", {}, el("td", {}, cli ? "Total" : "Planejado " + brl0(somaMeta(all)) + " para meta de " + brl0(metaTotal)), cli ? null : el("td"), el("td", { class: "n" }, brl0(cli ? somaMeta(ls) : somaMeta(all))), el("td", { class: "n" }, brl0(somaReal(ls))), el("td", { class: "n" }, metaTotal ? pct(somaReal(ls) / metaTotal) : "—"), el("td"))))),
+      el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" }, el("button", { class: "btn primary", type: "button", onclick: addFonte }, "+ Fonte"), saved));
+  }
+
+  /* ---------- Ciclos e etapas ---------- */
+  function mondayOf(d) { const x = new Date(d); const wd = (x.getDay() + 6) % 7; x.setDate(x.getDate() - wd); return x; }
+  function cycleOf(f, prog) {
+    const now = new Date();
+    if (f.ciclo === "unico") return { key: "unico", label: "uma vez por cliente" };
+    if (f.ciclo === "semanal") { const m = mondayOf(now); return { key: "s" + isoOf(m), label: "semana de " + pad(m.getDate()) + "/" + pad(m.getMonth() + 1) }; }
+    if (f.ciclo === "mensal" || f.ciclo === "mensal-seguinte") {
+      const d = new Date(now); if (f.ciclo === "mensal-seguinte") d.setDate(d.getDate() + 3);
+      return { key: "m" + d.getFullYear() + "-" + pad(d.getMonth() + 1), label: MESES[d.getMonth()] };
+    }
+    if (f.ciclo === "campanha") return { key: "c:" + ((prog && prog.campanha) || ""), label: (prog && prog.campanha) || "campanha sem nome" };
+    return { key: "-", label: "" };
+  }
+  const progId = (fid, slug) => fid + "__" + slug;
+  function progFor(f, slug) {
+    const p = state.progresso[progId(f.id, slug)];
+    const cyc = cycleOf(f, p); const valid = p && p.ciclo === cyc.key;
+    return { raw: p, cyc, feitos: valid ? (p.feitos || []) : [], respostas: valid ? (p.respostas || {}) : {} };
+  }
+  function doneCount(f, slug) {
+    const pr = progFor(f, slug); const et = f.etapas || [];
+    const d = et.filter((e) => e.campo ? (pr.respostas[e.id] || "").trim() : pr.feitos.includes(e.id)).length;
+    return { d, t: et.length };
+  }
+  async function saveProg(f, slug, patch, savedNode) {
+    const cur = progFor(f, slug);
+    const body = Object.assign({ ciclo: cur.cyc.key, feitos: cur.feitos, respostas: cur.respostas, campanha: (cur.raw && cur.raw.campanha) || "" }, patch, { atualizado: new Date().toISOString() });
+    try { await db.collection("progresso").doc(progId(f.id, slug)).set(body); flash(savedNode); } catch (e) { fail(e); }
+  }
+  async function saveFrente(f, patch) { try { await db.collection("frentes").doc(f.id).update(patch); } catch (e) { fail(e); } }
+  const slugify = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "c" + Date.now().toString(36);
+
+  function stepBlock(f, slug) {
+    const etapas = f.etapas || [];
+    const pr = progFor(f, slug);
+    const saved = el("span", { class: "saved", "aria-live": "polite" });
+    const { d, t } = doneCount(f, slug);
+    const items = etapas.map((e) => {
+      const rm = el("button", { class: "x", type: "button", title: "Remover etapa (para todos os clientes)", "aria-label": "Remover etapa " + e.texto, onclick: (ev) => { ev.preventDefault(); saveFrente(f, { etapas: etapas.filter((x) => x.id !== e.id) }); } }, "×");
+      if (e.campo) {
+        const id = "ans-" + f.id + "-" + slug + "-" + e.id;
+        return el("div", { style: "display:grid;gap:4px" }, el("label", { class: "label", for: id }, el("span", {}, e.texto), rm),
+          textBox(id, pr.respostas[e.id], (v) => saveProg(f, slug, { respostas: Object.assign({}, progFor(f, slug).respostas, { [e.id]: v }) }, saved), { attrs: { placeholder: e.dica || "" } }));
+      }
+      const on = pr.feitos.includes(e.id); const id = "pk-" + f.id + "-" + slug + "-" + e.id;
+      return el("label", { class: "citem" + (on ? " on" : ""), for: id },
+        el("input", { type: "checkbox", id, checked: on, onchange: (ev) => { const s = new Set(pr.feitos); ev.target.checked ? s.add(e.id) : s.delete(e.id); saveProg(f, slug, { feitos: [...s] }, saved); } }),
+        el("span", {}, e.texto), rm);
+    });
+    const stepIn = el("input", { id: "ns-" + f.id + "-" + slug, placeholder: "Nova etapa", "aria-label": "Nova etapa em " + f.nome });
+    const addStep = () => { const v = stepIn.value.trim(); if (!v) return; stepIn.value = ""; saveFrente(f, { etapas: etapas.concat([{ id: "e" + Date.now().toString(36), texto: v }]) }); };
+    stepIn.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addStep(); } });
+    let camp = null;
+    if (f.ciclo === "campanha") {
+      const ci = el("input", { id: "camp-" + f.id + "-" + slug, value: (pr.raw && pr.raw.campanha) || "", placeholder: "Nome da campanha", "aria-label": "Campanha" });
+      ci.addEventListener("change", () => { const v = ci.value.trim(); saveProg(f, slug, { campanha: v, ciclo: "c:" + v, feitos: [], respostas: {} }, saved); });
+      camp = el("div", { class: "field" }, el("label", { for: ci.id }, "Campanha (trocar o nome começa do zero)"), ci);
+    }
+    return el("div", { class: "sblock" + (t && d === t ? " full" : "") },
+      el("div", { class: "bh" }, el("h4", {}, f.sub || f.nome), el("span", { class: "ring", style: "--p:" + (t ? Math.round(d / t * 100) : 0), title: d + " de " + t + " feitas" }, el("span", {}, d + "/" + t))),
+      el("div", { class: "meta" }, [f.ciclo === "campanha" ? null : "Ciclo: " + pr.cyc.label, f.prazo].filter(Boolean).join(" · ")),
+      camp,
+      el("div", { class: "check" }, items.length ? items : el("div", { class: "sugg" }, f.vazio || "Sem etapas ainda.")),
+      el("div", { class: "addrow" }, stepIn, el("button", { class: "btn", type: "button", onclick: addStep }, "Etapa")),
+      el("div", { class: "foot" }, saved, el("button", { class: "linkbtn", type: "button", onclick: () => saveFrente(f, { clientes: (f.clientes || []).filter((c) => c.slug !== slug) }) }, "Tirar " + cliName(slug) + " deste bloco")));
+  }
+  function joinButtons(fs, slug) {
+    const out = fs.filter((f) => !inFrente(f, slug));
+    if (!out.length) return null;
+    return el("div", { style: "display:flex;flex-wrap:wrap;gap:8px;align-items:center" }, el("span", { class: "sugg" }, "Não faz parte:"),
+      out.map((f) => el("button", { class: "btn", type: "button", onclick: () => saveFrente(f, { clientes: (f.clientes || []).concat([{ slug, nome: cliName(slug) }]) }) }, "+ " + (f.sub || f.nome))));
+  }
+  function overview(fs, titulo) {
+    const slugs = cfgClients().map((c) => c.slug).filter((s) => fs.some((f) => inFrente(f, s)));
+    if (!fs.length) return el("div", { class: "empty" }, "Nada configurado nesta área ainda.");
+    if (!slugs.length) return el("div", { class: "empty" }, fs.map((f) => f.vazio).filter(Boolean)[0] || "Nenhum cliente nesta área ainda. Escolha um cliente na lateral para incluir.");
+    return el("section", { class: "block" }, titulo ? el("h2", {}, titulo) : null,
+      el("div", { class: "tcard scroll" }, el("table", { class: "t" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Cliente"), fs.map((f) => el("th", {}, f.sub || f.nome, el("span", { class: "sub", style: "text-transform:none;letter-spacing:0" }, f.ciclo === "campanha" ? "por campanha" : cycleOf(f).label))))),
+        el("tbody", {}, slugs.map((s) => el("tr", { class: "click", tabindex: "0", onclick: () => go({ cli: s }), onkeydown: (e) => { if (e.key === "Enter") go({ cli: s }); } },
+          el("td", {}, el("b", {}, cliName(s))),
+          fs.map((f) => { if (!inFrente(f, s)) return el("td", { class: "cell-s zero" }, "—"); const { d, t } = doneCount(f, s); return el("td", {}, el("span", { class: "pbar" }, el("span", { class: "bar" }, el("span", { style: "width:" + (t ? d / t * 100 : 0) + "%" })), el("span", { class: "cell-s" + (t && d === t ? " full" : d === 0 ? " zero" : "") }, d + "/" + t))); })))))),
+      el("div", { class: "sugg" }, "Clique num cliente para ver e marcar as etapas."));
+  }
+
+  /* ---------- Pendências e sinais ---------- */
+  function pendList(slug) {
+    const items = state.pend.filter((p) => (state.showDone || p.status !== "resolvida") && (!slug || ownerOfRotina(p.cliente) === slug))
+      .sort((a, b) => (a.status === "resolvida") - (b.status === "resolvida") || (a.desde || "").localeCompare(b.desde || ""));
+    const head = el("div", { class: "mhead" }, el("h2", {}, "Só você resolve"), el("button", { class: "linkbtn", type: "button", onclick: () => { state.showDone = !state.showDone; render(); } }, state.showDone ? "Esconder resolvidas" : "Mostrar resolvidas"));
+    if (!items.length) return slug ? null : el("section", { class: "block" }, head, el("div", { class: "empty" }, "Nada esperando por você."));
+    return el("section", { class: "block" }, head, el("div", { class: "pend-list" }, items.map((p) => {
+      const done = p.status === "resolvida"; const d = days(p.desde);
+      const ageTxt = done ? (p.aguardandoConfirmacao ? "você marcou " + fmtDate(p.resolvidaEm) + " · rotina confere" : "resolvida " + fmtDate(p.resolvidaEm)) : (d === 0 ? "desde hoje" : "há " + d + " dia" + (d === 1 ? "" : "s"));
+      return el("div", { class: "pitem" + (done ? " done" : "") },
+        el("div", { class: "who" }, cliName(ownerOfRotina(p.cliente))),
+        el("div", { style: "min-width:0" }, el("div", { class: "t" }, p.titulo), p.detalhe ? el("div", { class: "d" }, p.detalhe) : null, el("div", { class: "age" }, ageTxt)),
+        done ? el("button", { class: "btn", type: "button", onclick: () => setPend(p, false) }, "Reabrir") : el("button", { class: "btn primary", type: "button", onclick: () => setPend(p, true) }, "Resolvi"));
+    })));
+  }
+  async function setPend(p, resolved) {
+    const data = resolved ? { status: "resolvida", resolvidaEm: today(), resolvidaPor: "luana", aguardandoConfirmacao: true } : { status: "aberta", resolvidaEm: null, resolvidaPor: null, aguardandoConfirmacao: false };
+    try { await db.collection("pendencias").doc(p.id).update(data); } catch (e) { fail(e); }
+  }
+  async function saveEd(id, patch, savedNode) {
+    const body = Object.assign({}, patch, { editadoEm: new Date().toISOString() });
+    try { const ref = db.collection("edicoes").doc(id); if (state.edicoes[id]) await ref.update(body); else await ref.set(body); flash(savedNode); } catch (e) { fail(e); }
+  }
+  function card(c) {
+    const ed = state.edicoes[c.id] || {}; const w = sigWorst(c); const n = c.numeros || {};
+    const saved = el("div", { class: "saved", "aria-live": "polite" });
+    const items = Array.isArray(ed.checklist) ? ed.checklist : [];
+    const feitos = ed.feitos && ed.feitos.data === today() ? (ed.feitos.ids || []) : [];
+    const toggle = (iid, on) => { const s = new Set(feitos); on ? s.add(iid) : s.delete(iid); saveEd(c.id, { feitos: { data: today(), ids: [...s] } }); };
+    const addIn = el("input", { id: "add-" + c.id, placeholder: "Novo passo", "aria-label": "Novo passo do checklist" });
+    const add = () => { const t = addIn.value.trim(); if (!t) return; addIn.value = ""; saveEd(c.id, { checklist: items.concat([{ id: "i" + Date.now().toString(36), texto: t }]) }); };
+    addIn.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const det = el("details", { id: "det-" + c.id },
+      el("summary", {}, el("div", { class: "label" }, el("span", {}, "Ao abrir este cliente (" + items.filter((i) => feitos.includes(i.id)).length + "/" + items.length + " hoje)"))),
+      el("div", { class: "check", style: "margin-top:8px" },
+        items.map((i) => { const on = feitos.includes(i.id); const id = "ck-" + c.id + "-" + i.id;
+          return el("label", { class: "citem" + (on ? " on" : ""), for: id }, el("input", { type: "checkbox", id, checked: on, onchange: (e) => toggle(i.id, e.target.checked) }), el("span", {}, i.texto),
+            el("button", { class: "x", type: "button", "aria-label": "Remover passo", onclick: (e) => { e.preventDefault(); saveEd(c.id, { checklist: items.filter((x) => x.id !== i.id) }); } }, "×")); }),
+        el("div", { class: "addrow" }, addIn, el("button", { class: "btn", type: "button", onclick: add }, "Adicionar"))));
+    try { if (localStorage.getItem("open-" + c.id) === "1") det.open = true; } catch (e) {}
+    det.addEventListener("toggle", () => { try { localStorage.setItem("open-" + c.id, det.open ? "1" : "0"); } catch (e) {} });
+    return el("article", { class: "card" + (w === "bad" ? " worst-bad" : "") },
+      el("section", {},
+        el("div", { class: "ctop" }, el("div", {}, el("h3", {}, c.nome), el("div", { class: "acc mono" }, c.conta ? "conta " + c.conta : "")),
+          el("span", { class: "chip s-" + w }, el("span", { class: "dot" }), { bad: "Problema", warn: "De olho", ok: "Ok", na: "Sem dado" }[w])),
+        el("div", { class: "signals" }, SIG.map(([k, label]) => { const s = (c.sinais && c.sinais[k]) || { s: "na", t: "Não verificado" };
+          return el("div", { class: "sig" }, el("span", { class: "dot s-" + (s.s || "na") }), el("span", { class: "k" }, label), el("span", {}, s.t || "")); }))),
+      el("section", {},
+        el("div", { class: "label" }, el("span", {}, "Números"), el("small", {}, n.rotulo || "")),
+        el("div", { class: "nums" },
+          el("div", { class: "num" }, el("div", { class: "k" }, "Gasto"), el("div", { class: "v" }, brl(n.gasto))),
+          el("div", { class: "num" }, el("div", { class: "k" }, "Leads"), el("div", { class: "v" }, typeof n.leads === "number" ? n.leads : "—")),
+          el("div", { class: "num" }, el("div", { class: "k" }, "CPL"), el("div", { class: "v" }, brl(n.cpl)))),
+        c.links && c.links.length ? el("div", { class: "links" }, c.links.map((l) => el("a", { href: l.url, target: "_blank", rel: "noopener" }, l.rotulo))) : null),
+      el("section", {},
+        el("label", { class: "label", for: "acao-" + c.id }, el("span", {}, "Próxima ação"), saved),
+        textBox("acao-" + c.id, ed.proxima_acao, (v) => saveEd(c.id, { proxima_acao: v }, saved), { attrs: { placeholder: c.sugestao || "O que fazer agora" } }),
+        el("label", { class: "label", for: "nota-" + c.id }, el("span", {}, "Notas")),
+        textBox("nota-" + c.id, ed.nota, (v) => saveEd(c.id, { nota: v }, saved), { attrs: { placeholder: "Anotações suas" } })),
+      el("section", {}, det));
+  }
+
+  /* ---------- Calculadora ---------- */
+  const FASES = [
+    { id: "24h", nome: "24 horas", foco: "Entrega e saúde do anúncio. O foco não é ROI: é ver se o gerenciador entrega para o público certo.", campos: [["gasto", "Gasto até agora (R$)"], ["ctr", "CTR no feed (%)"], ["cpm", "CPM (R$)"]] },
+    { id: "48h", nome: "48 horas", foco: "Funil e intenção: o algoritmo já entendeu o público, agora mede o interesse real.", campos: [["cliques", "Cliques no link (saída)"], ["pv", "Page views na LP"], ["cpc", "CPC (R$)"], ["gasto", "Gasto (R$)"], ["conv", "Leads ou checkouts"]] },
+    { id: "72h", nome: "72 horas", foco: "Primeira decisão real: o mínimo de dados para avaliar conversão de entrada.", campos: [["gasto", "Gasto do conjunto (R$)"], ["conv", "Conversões (leads/vendas)"], ["checkouts", "Checkouts iniciados"], ["compras", "Compras"]] },
+    { id: "7d", nome: "7 dias", foco: "Consolidação: a semana inteira mostra o comportamento em cada dia.", campos: [["roas", "ROAS"], ["freq", "Frequência"], ["prosp", "É prospecção?", "simnao"]] },
+    { id: "escala", nome: "Escala", foco: "Só escala com os 3 requisitos juntos: ROAS acima do break-even há 5+ dias, conversão estável e caixa para aguentar oscilação.", campos: [["dias", "Dias seguidos acima do break-even"], ["estavel", "Conversão do site estável?", "simnao"], ["caixa", "Tem caixa para oscilar?", "simnao"], ["pequeno", "Público atual é pequeno?", "simnao"], ["orc", "Orçamento diário atual (R$)"], ["cpaAntes", "CPA antes de escalar (R$)"], ["cpaDepois", "CPA depois de escalar (R$)"]] },
+  ];
+  const METAS = [["orcamento", "Orçamento diário planejado (R$)"], ["cpa", "CPA / CPL ideal (R$)"], ["cpc", "CPC teto (R$)"], ["cpm", "CPM teto (R$)", 80], ["roas", "ROAS de break-even"], ["ticket", "Ticket médio (R$)"]];
+  const calc = { fase: "24h", x: {}, alvo: "" };
+  try { const s = JSON.parse(localStorage.getItem("calc2") || "null"); if (s) Object.assign(calc, s); } catch (e) {}
+  const persistCalc = () => { try { localStorage.setItem("calc2", JSON.stringify(calc)); } catch (e) {} };
+  function metasOf(slug) { const m = state.metas[slug] || {}; const o = {}; METAS.forEach(([k, , d]) => { const v = numDot(m[k]); o[k] = v === null ? (d === undefined ? null : d) : v; }); return o; }
+
+  function diagnose(fase, m, x) {
+    const it = []; const add = (s, t) => it.push({ s, t }); const n = (k) => numDot(x[k]);
+    if (fase === "24h") {
+      const gasto = n("gasto"), ctr = n("ctr"), cpm = n("cpm");
+      if (gasto !== null && m.orcamento) { const p = gasto / m.orcamento; if (p < 0.5) add("bad", "Orçamento travado: gastou " + pct(p) + " do diário. Lance baixo, público restrito demais ou anúncio rejeitado. Confira se foi reprovado e abra o público."); else add("ok", "Entregando: gastou " + pct(p) + " do orçamento diário."); }
+      else if (gasto !== null) add("na", "Preencha o orçamento diário nas metas do cliente para avaliar a entrega.");
+      if (ctr !== null) { const c = ctr.toLocaleString("pt-BR");
+        if (ctr <= 0.5) add("bad", "CTR de " + c + "%: deplorável. Pause este criativo e suba outro.");
+        else if (ctr < 1) add("bad", "CTR abaixo de 1%: o criativo está invisível ou irrelevante para esse público. Troque o criativo.");
+        else if (ctr < 1.5) add("warn", "CTR entre 1% e 1,5%: aceitável. Deixe rodar e reavalie em 48h.");
+        else add("ok", "CTR acima de 1,5% e gastando normal: não toque em nada."); }
+      if (cpm !== null && m.cpm) { if (cpm > m.cpm) add("bad", "CPM de " + brl(cpm) + ", acima do teto de " + brl(m.cpm) + ": concorrência alta ou criativo com baixa qualidade. Teste outro criativo."); else add("ok", "CPM de " + brl(cpm) + " dentro do padrão (teto " + brl(m.cpm) + ")."); }
+    }
+    if (fase === "48h") {
+      const cl = n("cliques"), pv = n("pv"), cpc = n("cpc"), gasto = n("gasto"), conv = n("conv");
+      if (cl && pv !== null) { const q = 1 - pv / cl; if (q > 0.3) add("bad", "Quebra de página de " + pct(q) + " (" + cl + " cliques, " + pv + " page views): o site está lento e o dinheiro está indo embora. Comprima imagens ou troque a hospedagem agora."); else add("ok", "Quebra de página de " + pct(Math.max(0, q)) + ": a LP está carregando bem."); }
+      if (cpc !== null && m.cpc) { if (cpc > m.cpc) add("bad", "CPC de " + brl(cpc) + " acima do teto de " + brl(m.cpc) + ": a conta não fecha. Mude a primeira dobra da página ou teste um público paralelo."); else add("ok", "CPC de " + brl(cpc) + " dentro do teto."); }
+      else if (cpc !== null) add("na", "Preencha o CPC teto nas metas do cliente para avaliar o clique.");
+      if (gasto !== null && conv !== null) { if (conv > 0) { const c = gasto / conv; add(m.cpa && c > m.cpa * 1.2 ? "warn" : "ok", "Custo por lead/checkout até agora: " + brl(c) + (m.cpa ? " (meta " + brl(m.cpa) + "). A decisão de cortar é em 72h." : ".")); } else add("warn", "Nenhum lead ou checkout ainda com " + brl(gasto) + " gastos. A decisão de cortar é em 72h."); }
+    }
+    if (fase === "72h") {
+      const gasto = n("gasto"), conv = n("conv"), ck = n("checkouts"), cp = n("compras");
+      if (gasto !== null && conv !== null) {
+        if (!m.cpa) add("na", "Preencha o CPA ideal nas metas do cliente para decidir.");
+        else if (conv === 0) { if (gasto >= 2 * m.cpa) add("bad", "Zero conversão com " + brl(gasto) + " gastos (2x o CPA ideal é " + brl(2 * m.cpa) + "): esse conjunto está condenado. Desligue."); else add("warn", "Sem conversão ainda, mas o gasto não chegou a 2x o CPA ideal. Pode deixar rodar até " + brl(2 * m.cpa) + "."); }
+        else { const c = gasto / conv; if (c <= m.cpa) add("ok", "CPA de " + brl(c) + " dentro da meta de " + brl(m.cpa) + ": mantenha vivo."); else if (c <= m.cpa * 1.2) add("warn", "CPA de " + brl(c) + ", muito perto da meta de " + brl(m.cpa) + ": mantenha vivo e acompanhe."); else add("bad", "CPA de " + brl(c) + ", acima da meta de " + brl(m.cpa) + ": desligue este conjunto ou criativo."); }
+      }
+      if (ck !== null && cp !== null) { if (ck > 0 && cp === 0) add("warn", ck + " checkouts sem nenhuma venda: pode ser frete abusivo, falta de parcelamento ou falta de confiança no checkout."); else if (ck > 0) add("ok", "Taxa de checkout para compra: " + pct(cp / ck) + "."); }
+    }
+    if (fase === "7d") {
+      const roas = n("roas"), fr = n("freq"), prosp = x.prosp !== "nao";
+      if (roas !== null) { if (!m.roas) add("na", "Preencha o ROAS de break-even nas metas do cliente."); else if (roas < m.roas) add("bad", "ROAS " + roas + " abaixo do break-even de " + m.roas + ": a oferta ou o produto precisa de ajuste. Mate o que dá prejuízo."); else add("ok", "ROAS " + roas + " acima do break-even de " + m.roas + ". Pegue o criativo campeão da semana e crie variações dele."); }
+      if (fr !== null) { if (prosp && fr > 2.5) add("bad", "Frequência " + fr + " em prospecção: o público é pequeno e você está saturando as mesmas pessoas. Abra o público ou teste novos semelhantes."); else add("ok", "Frequência " + fr + (prosp ? " dentro do limite de 2,5." : " (remarketing aceita frequência maior).")); }
+    }
+    if (fase === "escala") {
+      const dias = n("dias"), orc = n("orc"), ca = n("cpaAntes"), cd = n("cpaDepois");
+      const dobrou = ca && cd !== null && cd >= 2 * ca;
+      if (dobrou) add("bad", "Escalou e o CPA dobrou (" + brl(ca) + " → " + brl(cd) + "): volte o orçamento para o patamar anterior agora. O algoritmo precisa de tempo para calibrar.");
+      const req = [];
+      if (dias !== null) req.push(dias >= 5 ? null : "o ROAS precisa ficar acima do break-even por pelo menos 5 dias (está em " + dias + ")");
+      if (x.estavel) req.push(x.estavel === "sim" ? null : "a taxa de conversão do site ainda não está estável");
+      if (x.caixa) req.push(x.caixa === "sim" ? null : "falta caixa para aguentar a oscilação de CPA no início da escala");
+      const falta = req.filter(Boolean); falta.forEach((r) => add("bad", "Ainda não escale: " + r + "."));
+      if (dias !== null && x.estavel && x.caixa && !falta.length && !dobrou) {
+        if (x.pequeno === "sim") add("ok", "Pode escalar na horizontal: duplique o conjunto vencedor para novos públicos semelhantes ou público aberto, com o mesmo criativo campeão.");
+        else if (orc) add("ok", "Pode escalar na vertical: +20 a 25% a cada 24–48h. Com " + brl(orc) + " hoje: " + [1, 2, 3].map((k) => brl(orc * Math.pow(1.2, k))).join(" → ") + ".");
+        else add("ok", "Pode escalar na vertical: +20 a 25% no orçamento a cada 24–48h. Preencha o orçamento atual para ver os valores.");
+      }
+    }
+    return it;
+  }
+  function diagOf(slug) {
+    const items = diagnose(calc.fase, metasOf(slug), calc.x[calc.fase] || {});
+    const real = items.filter((i) => i.s !== "na");
+    return { items, s: items.length ? worstOf((real.length ? real : items).map((i) => i.s)) : "na" };
+  }
+  function verdictNode(slug) {
+    const { items, s } = diagOf(slug);
+    return el("div", { class: "verdict s-" + s, id: "verdict" },
+      el("div", { class: "vtitle" }, el("span", { class: "dot s-" + s }), { bad: "Agir agora", warn: "De olho", ok: "Segue o jogo", na: "Preencha os números" }[s]),
+      items.length ? items.map((i) => el("div", { class: "vitem" }, el("span", { class: "dot s-" + i.s }), el("span", {}, i.t)))
+        : el("div", { class: "sugg" }, "Digite os números do Gerenciador. O diagnóstico aparece aqui na hora, com o que fazer."));
+  }
+  function refreshVerdict(slug) { const v = $("#verdict"); if (v) v.replaceWith(verdictNode(slug)); const b = $("#c-save"); if (b) b.disabled = !diagOf(slug).items.some((i) => i.s !== "na"); }
+  function calcPanel(slug) {
+    const fase = FASES.find((f) => f.id === calc.fase) || FASES[0];
+    const x = calc.x[fase.id] = calc.x[fase.id] || {};
+    const inputs = fase.campos.map(([k, label, tipo]) => {
+      const id = "ci-" + fase.id + "-" + k;
+      const input = tipo === "simnao" ? el("select", { id }, el("option", { value: "" }, "—"), el("option", { value: "sim" }, "Sim"), el("option", { value: "nao" }, "Não")) : el("input", { id, inputmode: "decimal", autocomplete: "off" });
+      input.value = x[k] || "";
+      input.addEventListener(tipo === "simnao" ? "change" : "input", () => { x[k] = input.value; persistCalc(); refreshVerdict(slug); });
+      return el("div", { class: "field" }, el("label", { for: id }, label), input);
+    });
+    const ms = state.metas[slug] || {}; const saved = el("span", { class: "saved", "aria-live": "polite" });
+    const metas = METAS.map(([k, label, d]) => {
+      const id = "cm-" + slug + "-" + k;
+      const inp = textBox(id, ms[k] !== undefined && ms[k] !== null ? String(ms[k]) : "", async (v) => {
+        const body = Object.assign({}, state.metas[slug] || {}, { [k]: v }); state.metas[slug] = body; refreshVerdict(slug);
+        try { await db.collection("metas").doc(slug).set(body); flash(saved); } catch (e) { fail(e); }
+      }, { input: true, attrs: { inputmode: "decimal", autocomplete: "off", placeholder: d !== undefined ? String(d) : "" } });
+      inp.addEventListener("input", () => { state.metas[slug] = Object.assign({}, state.metas[slug] || {}, { [k]: inp.value }); refreshVerdict(slug); });
+      return el("div", { class: "field" }, el("label", { for: id }, label), inp);
+    });
+    const alvo = el("input", { id: "c-alvo", value: calc.alvo || "", placeholder: "ex.: Lc. HF010 - Enfermeira", oninput: (e) => { calc.alvo = e.target.value; persistCalc(); } });
+    const save = el("button", { class: "btn primary", type: "button", id: "c-save", onclick: async () => {
+      const { items, s } = diagOf(slug);
+      const acao = (items.find((i) => i.s === "bad") || items.find((i) => i.s === "warn") || items.find((i) => i.s === "ok") || {}).t || "";
+      try {
+        await db.collection("otimizacoes").add({ data: today(), criadoEm: new Date().toISOString(), cliente: slug, clienteNome: cliName(slug), alvo: (calc.alvo || "").trim(), fase: fase.id, faseNome: fase.nome, entradas: Object.assign({}, x), metas: metasOf(slug), status: s, itens: items, acao });
+        flash(saved);
+        const f = state.frentes.find((q) => q.ferramenta === "calculadora");
+        if (f && inFrente(f, slug) && (f.etapas || []).some((e) => e.id === fase.id)) { const pr = progFor(f, slug); if (!pr.feitos.includes(fase.id)) saveProg(f, slug, { feitos: pr.feitos.concat([fase.id]) }); }
+      } catch (e) { fail(e); }
+    } }, "Salvar no histórico");
+    const det = el("details", { id: "metas-" + slug }, el("summary", {}, el("div", { class: "label" }, el("span", {}, "Metas de " + cliName(slug) + " (ficam salvas)"))), el("div", { class: "fields", style: "margin-top:10px" }, metas));
+    try { if (localStorage.getItem("metasopen") === "1" || !state.metas[slug]) det.open = true; } catch (e) {}
+    det.addEventListener("toggle", () => { try { localStorage.setItem("metasopen", det.open ? "1" : "0"); } catch (e) {} });
+    const panel = el("div", { class: "calc" },
+      el("div", { class: "panel" },
+        el("div", { class: "field" }, el("label", { for: "c-alvo" }, "Campanha, conjunto ou criativo"), alvo),
+        el("div", { class: "seg", role: "group", "aria-label": "Fase" }, FASES.map((f) => el("button", { type: "button", "aria-pressed": String(f.id === fase.id), onclick: () => { calc.fase = f.id; persistCalc(); render(); } }, f.nome))),
+        el("div", { class: "sugg" }, fase.foco),
+        el("div", { class: "fields" }, inputs), det),
+      el("div", { class: "panel" }, verdictNode(slug),
+        el("div", { style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center" }, save,
+          el("button", { class: "btn", type: "button", onclick: () => { calc.x[calc.fase] = {}; persistCalc(); render(); } }, "Limpar números"), saved)));
+    setTimeout(() => refreshVerdict(slug));
+    return panel;
+  }
+  function histTable(slug) {
+    const rows = state.otim.filter((o) => !slug || o.cliente === slug).sort((a, b) => (b.criadoEm || "").localeCompare(a.criadoEm || "")).slice(0, 100);
+    return el("section", { class: "block" }, el("h2", {}, "Tabela de otimização"),
+      el("div", { class: "tcard scroll" }, el("table", { class: "t" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Data"), slug ? null : el("th", {}, "Cliente"), el("th", {}, "Alvo"), el("th", {}, "Fase"), el("th", {}, "Resultado"), el("th", {}, "O que fazer"))),
+        el("tbody", {}, rows.length ? rows.map((o) => el("tr", {}, el("td", { class: "mono" }, fmtDate(o.data)), slug ? null : el("td", {}, o.clienteNome || o.cliente), el("td", {}, o.alvo || "—"), el("td", {}, o.faseNome || o.fase),
+          el("td", {}, el("span", { class: "chip s-" + (o.status || "na") }, el("span", { class: "dot" }), { bad: "Agir", warn: "De olho", ok: "Ok", na: "—" }[o.status || "na"])), el("td", { style: "min-width:240px" }, o.acao || "")))
+          : el("tr", {}, el("td", { colspan: "6", class: "sugg" }, "Cada diagnóstico salvo na calculadora vira uma linha aqui."))))));
+  }
+
+  /* ---------- Planilhas ---------- */
+  const STATUS = ["Iniciar", "Roteiro", "Gravação", "Edição", "Finalizado"];
+  const STATUS_CLS = { "Iniciar": "st-0", "Roteiro": "st-1", "Gravação": "st-2", "Edição": "st-3", "Finalizado": "st-4" };
+  const TIPOS = [["texto", "Texto"], ["simnao", "Sim/Não"], ["link", "Link"], ["status", "Status"]];
+  const sheetLocal = {}; const sheetTimer = {};
+  const uid = () => Math.random().toString(36).slice(2, 9);
+  const sheetOf = (id) => sheetLocal[id] || state.planilhas.find((p) => p.id === id);
+  function editSheet(id, mut, structural) {
+    const cur = JSON.parse(JSON.stringify(sheetOf(id)));
+    mut(cur); fixStatus(cur); sheetLocal[id] = cur;
+    clearTimeout(sheetTimer[id]);
+    const save = async () => {
+      const s = sheetLocal[id]; if (!s) return;
+      try { await db.collection("planilhas").doc(id).update({ titulo: s.titulo || "", colunas: s.colunas, linhas: s.linhas, editadoEm: new Date().toISOString() }); flash($("#sh-saved")); }
+      catch (e) { fail(e); }
+      finally { if (sheetLocal[id] === s) delete sheetLocal[id]; }
+    };
+    if (structural) { save(); render(); } else sheetTimer[id] = setTimeout(save, 600);
+  }
+  function fixStatus(sh) {
+    const cols = sh.colunas || [];
+    let st = cols.filter((c) => c.tipo === "status");
+    if (!st.length) st = [{ id: "status", nome: "Status", tipo: "status" }];
+    sh.colunas = cols.filter((c) => c.tipo !== "status").concat(st.slice(0, 1));
+  }
+  const statusOf = (sh, r) => { const c = (sh.colunas || []).find((x) => x.tipo === "status"); const v = c && (r.v || {})[c.id]; return STATUS.includes(v) ? v : "Iniciar"; };
+  const twoStep = (fn) => (e) => {
+    const b = e.currentTarget;
+    if (b.dataset.armed) { fn(); return; }
+    b.dataset.armed = "1"; b.textContent = "apagar?"; b.classList.add("armed");
+    setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = b.dataset.label || "×"; b.classList.remove("armed"); } }, 3000);
+  };
+  function statusCounts(p) {
+    const sc = (p.colunas || []).find((c) => c.tipo === "status"); if (!sc) return null;
+    const n = {}; (p.linhas || []).forEach((r) => { const v = (r.v || {})[sc.id] || "Iniciar"; n[v] = (n[v] || 0) + 1; });
+    return el("div", { style: "display:flex;flex-wrap:wrap;gap:6px" }, STATUS.filter((k) => n[k]).map((k) => el("span", { class: "chip " + STATUS_CLS[k] }, k + " " + n[k])));
+  }
+  async function novaPlanilha() {
+    const cli = state.cli; if (!cli) return;
+    const n = state.planilhas.filter((p) => p.cliente === cli).length;
+    try {
+      const ref = await db.collection("planilhas").add({ cliente: cli, titulo: "Nova planilha", ordem: n, criadoEm: new Date().toISOString(),
+        colunas: [{ id: "c" + uid(), nome: "Item", tipo: "texto" }, { id: "c" + uid(), nome: "Roteiro", tipo: "link" }, { id: "c" + uid(), nome: "Status", tipo: "status" }],
+        linhas: [{ id: "r" + uid(), v: {} }] });
+      state.sheet = ref.id; render();
+    } catch (e) { fail(e); }
+  }
+  function cellNode(p, r, c) {
+    const id = "pc-" + p.id + "-" + r.id + "-" + c.id;
+    const val = (r.v || {})[c.id] || "";
+    const set = (v, structural) => editSheet(p.id, (s) => { const row = s.linhas.find((x) => x.id === r.id); if (row) { row.v = row.v || {}; row.v[c.id] = v; } }, structural);
+    if (c.tipo === "simnao") {
+      return el("select", { id, class: "v-" + (val || "vazio"), "aria-label": c.nome, onchange: (e) => set(e.target.value, true) },
+        el("option", { value: "" }, "—"), el("option", { value: "Sim", selected: val === "Sim" }, "Sim"), el("option", { value: "Não", selected: val === "Não" }, "Não"));
+    }
+    if (c.tipo === "status") {
+      const v = STATUS.includes(val) ? val : "Iniciar";
+      return el("select", { id, class: "st " + STATUS_CLS[v], "aria-label": c.nome, onchange: (e) => set(e.target.value, true) }, STATUS.map((k) => el("option", { value: k, selected: k === v }, k)));
+    }
+    if (c.tipo === "link") {
+      const inp = el("input", { id, type: "url", value: val, placeholder: "colar link", "aria-label": c.nome, oninput: (e) => set(e.target.value) });
+      const rot = /roteiro/i.test(c.nome) ? rotDaLinha(p.id, r.id) : null;
+      const rotBtn = /roteiro/i.test(c.nome) ? el("button", { class: "rotbtn" + (rot ? " tem" : ""), type: "button", title: rot ? "Abrir o roteiro deste vídeo" : "Criar o roteiro deste vídeo", onclick: () => rot ? abrirRoteiro(rot) : criarRoteiro(p.cliente, p, r) }, rot ? "📝 Abrir roteiro" : "+ Criar roteiro") : null;
+      return el("div", { class: "lnk" }, rotBtn, inp, /^https?:\/\//.test(val) ? el("a", { href: val, target: "_blank", rel: "noopener", title: "Abrir link" }, "↗") : null);
+    }
+    const ta = el("textarea", { id, rows: "1", "aria-label": c.nome, oninput: (e) => set(e.target.value) });
+    ta.value = val;
+    return ta;
+  }
+  function setWide(v) {
+    state.wide = v; document.body.classList.toggle("wide", v);
+    try { localStorage.setItem("wide", v ? "1" : "0"); } catch (e) {}
+    render();
+  }
+  try { state.wide = localStorage.getItem("wide") === "1"; } catch (e) {}
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && state.wide) setWide(false); });
+  function sheetNode(p) {
+    const shown = JSON.parse(JSON.stringify(p)); fixStatus(shown);
+    const cols = shown.colunas; const rows = p.linhas || [];
+    const move = (ci, d) => editSheet(p.id, (s) => { const j = ci + d; if (j < 0 || j >= s.colunas.length || s.colunas[j].tipo === "status" || s.colunas[ci].tipo === "status") return; [s.colunas[ci], s.colunas[j]] = [s.colunas[j], s.colunas[ci]]; }, true);
+    const addCol = () => editSheet(p.id, (s) => {
+      const nc = { id: "c" + uid(), nome: "Nova coluna", tipo: "texto" };
+      s.colunas.push(nc);
+    }, true);
+    const addRow = () => editSheet(p.id, (s) => {
+      const v = {}; s.colunas.filter((c) => c.tipo === "status").forEach((c) => { v[c.id] = "Iniciar"; });
+      s.linhas.push({ id: "r" + uid(), v });
+    }, true);
+    const title = el("input", { class: "sh-title", id: "sht-" + p.id, value: p.titulo || "", placeholder: "Título da planilha", "aria-label": "Título da planilha", oninput: (e) => editSheet(p.id, (s) => { s.titulo = e.target.value; }) });
+    const head = el("tr", {}, el("th", { class: "rn" }, "#"),
+      cols.map((c, ci) => el("th", { class: "sh-h" },
+        el("input", { id: "shh-" + p.id + "-" + c.id, value: c.nome, "aria-label": "Nome da coluna", oninput: (e) => editSheet(p.id, (s) => { s.colunas[ci].nome = e.target.value; }) }),
+        c.tipo === "status" ? el("div", { class: "hctl" }, el("span", { class: "sugg", style: "font-size:11px" }, "sempre a última")) : el("div", { class: "hctl" },
+          el("select", { "aria-label": "Tipo da coluna " + c.nome, onchange: (e) => editSheet(p.id, (s) => { s.colunas[ci].tipo = e.target.value; }, true) }, TIPOS.filter(([k]) => k !== "status").map(([k, n]) => el("option", { value: k, selected: c.tipo === k }, n))),
+          el("button", { class: "x", type: "button", title: "Mover para a esquerda", "aria-label": "Mover coluna para a esquerda", onclick: () => move(ci, -1) }, "‹"),
+          el("button", { class: "x", type: "button", title: "Mover para a direita", "aria-label": "Mover coluna para a direita", onclick: () => move(ci, 1) }, "›"),
+          el("button", { class: "x", type: "button", title: "Apagar coluna (clique 2 vezes)", "aria-label": "Apagar coluna " + c.nome, onclick: twoStep(() => editSheet(p.id, (s) => { s.colunas.splice(ci, 1); }, true)) }, "×")))),
+      );
+    const body = rows.map((r, ri) => el("tr", { class: "row-" + STATUS_CLS[statusOf(shown, r)] },
+      el("td", { class: "rn" }, el("span", {}, ri + 1), el("button", { class: "x", type: "button", title: "Apagar linha (clique 2 vezes)", "aria-label": "Apagar linha " + (ri + 1), onclick: twoStep(() => editSheet(p.id, (s) => { s.linhas = s.linhas.filter((x) => x.id !== r.id); }, true)) }, "×")),
+      cols.map((c) => el("td", { class: "t-" + c.tipo }, cellNode(p, r, c)))));
+    return el("section", { class: "block" },
+      el("div", { class: "sh-bar" }, el("div", { style: "flex:1;min-width:220px" }, title), statusCounts(p), el("span", { class: "saved", id: "sh-saved", "aria-live": "polite" }),
+        el("button", { class: "btn", type: "button", "aria-pressed": String(!!state.wide), title: state.wide ? "Voltar ao tamanho normal (Esc)" : "Ver a planilha na tela toda", onclick: () => setWide(!state.wide) }, state.wide ? "↙ Recolher" : "↗ Expandir")),
+      el("div", { class: "sheet" }, el("table", { class: "sh" }, el("thead", {}, head), el("tbody", {}, body))),
+      el("div", { style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center" },
+        el("button", { class: "btn primary", type: "button", onclick: addRow }, "+ Linha"),
+        el("button", { class: "btn", type: "button", onclick: addCol, title: "A coluna nova entra antes do Status" }, "+ Coluna"),
+        el("span", { class: "sugg" }, "Salva sozinho. Clique no nome de uma coluna para renomear. Para apagar, clique no × duas vezes.")),
+      el("div", { style: "display:flex;justify-content:flex-end" }, el("button", { class: "linkbtn", type: "button", style: "color:var(--bad)", "data-label": "Apagar esta planilha", onclick: twoStep(async () => { try { await db.collection("planilhas").doc(p.id).delete(); state.sheet = ""; } catch (e) { fail(e); } }) }, "Apagar esta planilha")));
+  }
+  function viewPlanilhas() {
+    const cli = state.cli;
+    if (!cli) {
+      const ps = state.planilhas.slice().sort((a, b) => cliName(a.cliente).localeCompare(cliName(b.cliente), "pt-BR") || (a.ordem || 0) - (b.ordem || 0));
+      if (!ps.length) return [el("div", { class: "empty" }, "Nenhuma planilha ainda. Escolha um cliente na lateral e crie a primeira.")];
+      return [el("section", { class: "block" }, el("div", { class: "tcard scroll" }, el("table", { class: "t" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Planilha"), el("th", {}, "Cliente"), el("th", { class: "n" }, "Linhas"), el("th", {}, "Status"))),
+        el("tbody", {}, ps.map((p) => el("tr", { class: "click", tabindex: "0", onclick: () => { state.sheet = p.id; go({ cli: p.cliente }); }, onkeydown: (e) => { if (e.key === "Enter") { state.sheet = p.id; go({ cli: p.cliente }); } } },
+          el("td", {}, el("b", {}, p.titulo || "Sem título")), el("td", {}, cliName(p.cliente)), el("td", { class: "n" }, (p.linhas || []).length), el("td", {}, statusCounts(p))))))))];
+    }
+    const mine = state.planilhas.filter((p) => p.cliente === cli).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+    const novo = el("button", { class: "btn", type: "button", onclick: novaPlanilha }, "+ Nova planilha");
+    if (!mine.length) return [el("div", { class: "empty" }, "Nenhuma planilha de " + cliName(cli) + " ainda."), el("div", {}, novo)];
+    if (!mine.some((p) => p.id === state.sheet)) state.sheet = mine[0].id;
+    return [el("div", { class: "mhead" }, el("div", { class: "seg" }, mine.map((p) => el("button", { type: "button", "aria-pressed": String(p.id === state.sheet), onclick: () => { state.sheet = p.id; render(); } }, (sheetOf(p.id) || p).titulo || "Sem título"))), novo),
+      sheetNode(sheetOf(state.sheet))];
+  }
+
+  /* ---------- Links ---------- */
+  const LTIPOS = { painel: "Painel", criadores: "Criadores", lp: "LP", trafego: "Tráfego", calendario: "Calendário", site: "Site", ferramenta: "Ferramenta" };
+  const linkHost = (u) => String(u || "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const linksOf = (slug) => ((state.links[slug] || {}).itens) || [];
+  async function saveLinks(slug, itens) {
+    try {
+      const ref = db.collection("links").doc(slug);
+      if (state.links[slug]) await ref.update({ itens }); else await ref.set({ itens });
+    } catch (e) { fail(e); }
+  }
+  function linkForm(slug, l) {
+    const novo = !l; l = l || { t: "", u: "", k: "site" };
+    const fid = "lf-" + (l.id || "novo") + "-";
+    const t = el("input", { id: fid + "t", value: l.t, placeholder: "Nome do link" });
+    const u = el("input", { id: fid + "u", value: l.u, placeholder: "https://…", type: "url" });
+    const k = el("select", { id: fid + "k" }, Object.entries(LTIPOS).map(([v, n]) => el("option", { value: v, selected: l.k === v }, n)));
+    const h = el("input", { id: fid + "h", value: l.h || "", placeholder: "Observação (opcional)" });
+    const pv = el("input", { id: fid + "p", type: "checkbox", checked: !!l.priv });
+    const salvar = () => {
+      const item = { id: l.id || "l" + uid(), t: t.value.trim() || "Sem nome", u: u.value.trim(), k: k.value };
+      if (h.value.trim()) item.h = h.value.trim();
+      if (pv.checked) item.priv = true;
+      const lista = linksOf(slug).slice();
+      const i = lista.findIndex((x) => x.id === item.id);
+      if (i >= 0) { if (lista[i].d) item.d = lista[i].d; lista[i] = item; } else lista.push(item);
+      state.linkEdit = ""; saveLinks(slug, lista.map((x) => JSON.parse(JSON.stringify(x)))); render();
+    };
+    return el("div", { class: "lcard editing" },
+      el("div", { class: "fields" },
+        el("div", { class: "field" }, el("label", { for: fid + "t" }, "Nome"), t),
+        el("div", { class: "field", style: "grid-column: span 2" }, el("label", { for: fid + "u" }, "Link"), u),
+        el("div", { class: "field" }, el("label", { for: fid + "k" }, "Tipo"), k),
+        el("div", { class: "field", style: "grid-column: span 2" }, el("label", { for: fid + "h" }, "Observação"), h)),
+      el("label", { class: "citem", for: fid + "p" }, pv, el("span", {}, "Tem login (painel privado)")),
+      el("div", { style: "display:flex;gap:8px;flex-wrap:wrap;align-items:center" },
+        el("button", { class: "btn primary", type: "button", onclick: salvar }, novo ? "Adicionar link" : "Salvar"),
+        el("button", { class: "btn", type: "button", onclick: () => { state.linkEdit = ""; render(); } }, "Cancelar"),
+        novo ? null : el("button", { class: "linkbtn", type: "button", style: "color:var(--bad);margin-left:auto", "data-label": "Apagar link", onclick: twoStep(() => { state.linkEdit = ""; saveLinks(slug, linksOf(slug).filter((x) => x.id !== l.id)); }) }, "Apagar link")));
+  }
+  function linkCard(slug, l, editavel) {
+    if (editavel && state.linkEdit === l.id) return linkForm(slug, l);
+    return el("div", { class: "lcard" },
+      el("a", { class: "lmain", href: l.u, target: "_blank", rel: "noopener" },
+        el("span", { class: "lt" }, l.t),
+        el("span", { class: "ltags" }, el("span", { class: "chip" }, (l.priv ? "🔒 " : "") + (LTIPOS[l.k] || l.k)), l.h ? el("span", { class: "sugg" }, l.h) : null),
+        el("span", { class: "lu mono" }, linkHost(l.u))),
+      editavel ? el("button", { class: "x ledit", type: "button", title: "Editar link", "aria-label": "Editar " + l.t, onclick: () => { state.linkEdit = l.id; render(); } }, "✎") : null);
+  }
+  function viewLinks() {
+    const cli = state.cli;
+    if (!cli) {
+      const secs = cfgClients().filter((c) => linksOf(c.slug).length);
+      if (!secs.length) return [el("div", { class: "empty" }, "Nenhum link ainda. Escolha um cliente na lateral para adicionar.")];
+      return secs.map((c) => el("section", { class: "block" },
+        el("div", { class: "mhead" }, el("h2", {}, c.nome), el("button", { class: "linkbtn", type: "button", onclick: () => go({ cli: c.slug }) }, "Editar links")),
+        el("div", { class: "lgrid" }, linksOf(c.slug).map((l) => linkCard(c.slug, l, false)))));
+    }
+    const lista = linksOf(cli);
+    const ordem = Object.keys(LTIPOS);
+    const grupos = ordem.map((k) => [k, lista.filter((l) => l.k === k)]).filter(([, ls]) => ls.length);
+    const outros = lista.filter((l) => !ordem.includes(l.k));
+    if (outros.length) grupos.push(["outros", outros]);
+    return [
+      el("div", { class: "mhead" }, el("span", { class: "sugg" }, lista.length + " link" + (lista.length === 1 ? "" : "s") + " · clique no ✎ para editar"),
+        el("button", { class: "btn primary", type: "button", onclick: () => { state.linkEdit = "novo"; render(); } }, "+ Link")),
+      state.linkEdit === "novo" ? linkForm(cli, null) : null,
+      lista.length ? null : el("div", { class: "empty" }, "Nenhum link de " + cliName(cli) + " ainda."),
+      ...grupos.map(([k, ls]) => el("section", { class: "block" }, el("h2", {}, { painel: "Painéis", criadores: "Criadores", lp: "Landing pages", trafego: "Tráfego", calendario: "Calendários", site: "Sites", ferramenta: "Ferramentas", outros: "Outros" }[k]),
+        el("div", { class: "lgrid" }, ls.map((l) => linkCard(cli, l, true)))))];
+  }
+
+  /* ---------- Roteiros ---------- */
+  const RCAMPOS = [["marca", "Marca / Produto"], ["roupa", "Roupa principal"], ["estilo", "Estilo de vídeo"], ["equip", "Equipamentos e composição"], ["dos", "Do's (deve ter)"], ["donts", "Don'ts (não pode ter)"]];
+  const RCOLS = [["fala", "Fala"], ["legenda", "Legenda na tela"], ["cenario", "Cenário"], ["take", "Take (cenas)"], ["broll", "B-roll"], ["seg", "Segundos"], ["look", "Look específico por cena"], ["edicao", "Descrição técnica de edição"], ["sfx", "Efeitos sonoros"], ["trilha", "Trilha sonora"]];
+  const rotLocal = {}; const rotTimer = {};
+  const rotOf = (id) => rotLocal[id] || state.roteiros.find((r) => r.id === id);
+  const podeImprimir = /negocioscreators\.com$/.test(location.hostname);
+  function editRot(id, mut, structural) {
+    const cur = JSON.parse(JSON.stringify(rotOf(id)));
+    mut(cur); rotLocal[id] = cur;
+    clearTimeout(rotTimer[id]);
+    const save = async () => {
+      const r = rotLocal[id]; if (!r) return;
+      const body = Object.assign({}, r); delete body.id; body.editadoEm = new Date().toISOString();
+      try { await db.collection("roteiros").doc(id).set(body); flash($("#rot-saved")); }
+      catch (e) { fail(e); }
+      finally { if (rotLocal[id] === r) delete rotLocal[id]; }
+    };
+    if (structural) { save(); render(); } else rotTimer[id] = setTimeout(save, 600);
+  }
+  const rotDaLinha = (pid, rid) => state.roteiros.find((r) => r.planilha === pid && r.linha === rid);
+  function tituloRot(r) {
+    if (r.planilha && r.linha) {
+      const p = sheetOf(r.planilha); const row = p && (p.linhas || []).find((x) => x.id === r.linha);
+      const c = p && (p.colunas || []).find((x) => x.tipo === "texto");
+      const t = row && c && (row.v || {})[c.id];
+      if (t) return t;
+    }
+    return r.titulo || "Roteiro sem nome";
+  }
+  const novaCena = () => ({ id: "s" + uid(), fala: "", legenda: "", cenario: "", take: "", broll: "", seg: "", look: "", edicao: "", sfx: "", trilha: "" });
+  async function criarRoteiro(cli, p, row) {
+    const c = p && (p.colunas || []).find((x) => x.tipo === "texto");
+    const doc = { cliente: cli, planilha: p ? p.id : "", linha: row ? row.id : "", titulo: row && c ? ((row.v || {})[c.id] || "") : "Novo roteiro",
+      marca: "", roupa: "", estilo: "", equip: "", dos: "", donts: "", cenas: [novaCena(), novaCena(), novaCena()], criadoEm: new Date().toISOString() };
+    try { const ref = await db.collection("roteiros").add(doc); state.roteiro = ref.id; go({ aba: "roteiros", cli }); } catch (e) { fail(e); }
+  }
+  const abrirRoteiro = (r) => { state.roteiro = r.id; go({ aba: "roteiros", cli: r.cliente }); };
+  const segTotal = (r) => (r.cenas || []).reduce((s, c) => s + (numDot(c.seg) || 0), 0);
+  const statusDoRot = (r) => { const p = r.planilha && sheetOf(r.planilha); const row = p && (p.linhas || []).find((x) => x.id === r.linha); return row ? statusOf(p, row) : null; };
+
+  /* ---------- Corretor de português (LanguageTool) ---------- */
+  const corr = { id: "", carregando: false, itens: null, erro: "" };
+  function textosDoRot(r) {
+    const seg = [];
+    RCAMPOS.forEach(([k, n]) => { if (k !== "marca" && (r[k] || "").trim()) seg.push({ key: k, rotulo: n, txt: r[k] }); });
+    (r.cenas || []).forEach((c, i) => RCOLS.forEach(([k, n]) => { if (k !== "seg" && (c[k] || "").trim()) seg.push({ key: "c:" + c.id + ":" + k, rotulo: "Cena " + (i + 1) + " · " + n, txt: c[k] }); }));
+    return seg;
+  }
+  async function corrigir(r) {
+    corr.id = r.id; corr.carregando = true; corr.itens = null; corr.erro = ""; render();
+    const seg = textosDoRot(r);
+    let pos = 0; const partes = [];
+    seg.forEach((s) => { s.ini = pos; partes.push(s.txt); pos += s.txt.length + 2; });
+    try {
+      const body = new URLSearchParams({ text: partes.join("\n\n"), language: "pt-BR" });
+      const resp = await fetch("https://api.languagetool.org/v2/check", { method: "POST", body });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const j = await resp.json();
+      corr.itens = (j.matches || []).map((m) => {
+        const s = seg.find((x) => m.offset >= x.ini && m.offset < x.ini + x.txt.length);
+        if (!s || !(m.replacements || []).length) return null;
+        const off = m.offset - s.ini;
+        const trecho = s.txt.substr(off, m.length);
+        const rule = m.rule || {}, cat = (rule.category || {}).id || "";
+        if (["whitespace", "style", "typographical", "locale-violation", "register"].includes(rule.issueType)) return null;
+        if (/STYLE|TYPOGRAPHY|REDUNDANCY|REPETITION/.test(cat) || /estrangeirismo/i.test(m.message || "")) return null;
+        if (!trecho.trim() || (/^[A-ZÀ-Ý0-9]{2,}$/.test(trecho.trim()))) return null;
+        if (dicio().includes(trecho.trim().toLowerCase())) return null;
+        return { key: s.key, rotulo: s.rotulo, off, len: m.length, trecho, sug: m.replacements[0].value, msg: m.message, ctx: s.txt, typo: cat === "TYPOS" };
+      }).filter(Boolean);
+    } catch (e) { corr.erro = "Não deu para revisar agora (" + (e.message || e) + "). Tente de novo em um minuto."; }
+    corr.carregando = false; render();
+  }
+  const dicio = () => ((state.dicio && state.dicio.palavras) || []).map((w) => String(w).toLowerCase());
+  async function aceitarPalavra(it) {
+    const w = it.trecho.trim().toLowerCase();
+    const palavras = Array.from(new Set(dicio().concat([w])));
+    try { await db.doc("config/dicionario").set({ palavras }); } catch (e) { fail(e); }
+    corr.itens = corr.itens.filter((x) => x.trecho.trim().toLowerCase() !== w); render();
+  }
+  function aplicarCorrecoes(r, itens) {
+    const porCampo = {};
+    itens.forEach((it) => { (porCampo[it.key] = porCampo[it.key] || []).push(it); });
+    editRot(r.id, (x) => {
+      Object.entries(porCampo).forEach(([key, its]) => {
+        its.sort((a, b) => b.off - a.off);
+        const troca = (t) => its.reduce((acc, it) => acc.substr(it.off, it.len) === it.trecho ? acc.slice(0, it.off) + it.sug + acc.slice(it.off + it.len) : acc, t || "");
+        if (key.startsWith("c:")) { const [, cid, campo] = key.split(":"); const c = x.cenas.find((y) => y.id === cid); if (c) c[campo] = troca(c[campo]); }
+        else x[key] = troca(x[key]);
+      });
+    }, true);
+    corr.itens = corr.itens.filter((it) => !itens.includes(it));
+    // os trechos depois da troca mudam de posição: revisa de novo o que sobrou
+    if (corr.itens.length) setTimeout(() => corrigir(rotOf(r.id)), 800);
+  }
+  function corretorNode(r) {
+    if (corr.id !== r.id || (!corr.carregando && corr.itens === null && !corr.erro)) return null;
+    const fechar = el("button", { class: "linkbtn", type: "button", onclick: () => { corr.id = ""; corr.itens = null; corr.erro = ""; render(); } }, "Fechar");
+    if (corr.carregando) return el("section", { class: "panel corr" }, el("div", { class: "sugg" }, "Revisando o português do roteiro…"));
+    if (corr.erro) return el("section", { class: "panel corr" }, el("div", { class: "sugg" }, corr.erro), fechar);
+    if (!corr.itens.length) return el("section", { class: "panel corr ok" }, el("b", {}, "✓ Nenhum erro de português encontrado."), fechar);
+    return el("section", { class: "panel corr" },
+      el("div", { class: "mhead" }, el("h4", {}, corr.itens.length + " sugest" + (corr.itens.length === 1 ? "ão" : "ões") + " de correção"),
+        el("div", { style: "display:flex;gap:8px;align-items:center" }, el("button", { class: "btn primary", type: "button", onclick: () => aplicarCorrecoes(r, corr.itens.slice()) }, "Aplicar todas"), fechar)),
+      el("div", { class: "corr-list" }, corr.itens.map((it) => el("div", { class: "corr-item" },
+        el("div", {}, el("span", { class: "sub" }, it.rotulo), el("span", {}, el("del", {}, it.trecho || "·"), " → ", el("ins", {}, it.sug)), el("span", { class: "sub" }, it.msg)),
+        el("div", { style: "display:flex;gap:6px" },
+          el("button", { class: "btn", type: "button", onclick: () => aplicarCorrecoes(r, [it]) }, "Aplicar"),
+          it.typo ? el("button", { class: "linkbtn", type: "button", title: "Guarda a palavra no dicionário do painel e não aponta mais", onclick: () => aceitarPalavra(it) }, "Sempre aceitar") : null,
+          el("button", { class: "linkbtn", type: "button", onclick: () => { corr.itens = corr.itens.filter((x) => x !== it); render(); } }, "Ignorar"))))),
+      el("div", { class: "sugg" }, "Revisão feita pelo LanguageTool. O texto do roteiro é enviado para o serviço só na hora em que você clica."));
+  }
+
+  function rotEditor(r) {
+    const saved = el("span", { class: "saved", id: "rot-saved", "aria-live": "polite" });
+    const vinc = r.planilha && r.linha;
+    const titulo = vinc ? el("h3", {}, tituloRot(r))
+      : el("input", { class: "sh-title", id: "rot-t-" + r.id, value: r.titulo || "", placeholder: "Nome do vídeo", "aria-label": "Nome do roteiro", oninput: (e) => editRot(r.id, (x) => { x.titulo = e.target.value; }) });
+    const st = statusDoRot(r);
+    const campos = RCAMPOS.map(([k, n]) => {
+      const id = "rot-" + r.id + "-" + k;
+      const ta = el("textarea", { id, rows: "2", oninput: (e) => editRot(r.id, (x) => { x[k] = e.target.value; }) }); ta.value = r[k] || "";
+      return el("div", { class: "field" }, el("label", { for: id }, n), ta);
+    });
+    const cenas = r.cenas || [];
+    const mover = (i, d) => editRot(r.id, (x) => { const j = i + d; if (j < 0 || j >= x.cenas.length) return; [x.cenas[i], x.cenas[j]] = [x.cenas[j], x.cenas[i]]; }, true);
+    const linhas = cenas.map((c, i) => el("tr", {},
+      el("td", { class: "rn" }, el("span", {}, i + 1)),
+      RCOLS.map(([k, n]) => {
+        const id = "rc-" + r.id + "-" + c.id + "-" + k;
+        const set = (v) => editRot(r.id, (x) => { const cc = x.cenas.find((y) => y.id === c.id); if (cc) cc[k] = v; });
+        if (k === "seg") return el("td", { class: "t-seg" }, el("input", { id, inputmode: "decimal", value: c.seg || "", placeholder: "0", "aria-label": n + " da cena " + (i + 1), oninput: (e) => set(e.target.value) }));
+        const ta = el("textarea", { id, rows: "1", "aria-label": n + " da cena " + (i + 1), oninput: (e) => set(e.target.value) }); ta.value = c[k] || "";
+        return el("td", { class: "t-" + k }, ta);
+      }),
+      el("td", { class: "rctl" },
+        el("button", { class: "x", type: "button", title: "Subir cena", "aria-label": "Subir cena " + (i + 1), onclick: () => mover(i, -1) }, "↑"),
+        el("button", { class: "x", type: "button", title: "Descer cena", "aria-label": "Descer cena " + (i + 1), onclick: () => mover(i, 1) }, "↓"),
+        el("button", { class: "x", type: "button", title: "Apagar cena (clique 2 vezes)", "aria-label": "Apagar cena " + (i + 1), onclick: twoStep(() => editRot(r.id, (x) => { x.cenas = x.cenas.filter((y) => y.id !== c.id); }, true)) }, "×"))));
+    return [
+      el("div", { class: "mhead" },
+        el("button", { class: "btn", type: "button", onclick: () => { state.roteiro = ""; render(); } }, "← Todos os roteiros"),
+        el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" }, saved,
+          el("button", { class: "btn", type: "button", disabled: corr.carregando, onclick: () => corrigir(r) }, "✓ Corrigir português"),
+          el("button", { class: "btn primary", type: "button", onclick: () => imprimir([r.id]) }, "Imprimir"))),
+      corretorNode(r),
+      el("section", { class: "panel rot-head" },
+        el("div", { class: "sh-bar" }, el("div", { style: "flex:1;min-width:220px" }, titulo),
+          st ? el("span", { class: "chip " + STATUS_CLS[st] }, st) : null,
+          el("span", { class: "chip" }, cenas.length + " cena" + (cenas.length === 1 ? "" : "s") + " · " + segTotal(r) + "s")),
+        vinc ? el("div", { class: "sugg" }, "Ligado ao vídeo da planilha. ", el("button", { class: "linkbtn", type: "button", onclick: () => { state.sheet = r.planilha; go({ aba: "planilhas", cli: r.cliente }); } }, "Ver na planilha")) : null,
+        el("div", { class: "rot-campos" }, campos)),
+      el("div", { class: "sheet" }, el("table", { class: "sh rot" },
+        el("thead", {}, el("tr", {}, el("th", { class: "rn" }, "#"), RCOLS.map(([k, n]) => el("th", { class: "sh-h t-" + k }, el("div", { style: "padding:10px" }, n))), el("th", { class: "addc" }))),
+        el("tbody", {}, linhas),
+        el("tfoot", {}, el("tr", {}, el("td", { class: "rn" }), el("td", { colspan: "5", style: "padding:8px 10px;font-weight:800" }, "Total"), el("td", { class: "t-seg", style: "padding:8px 10px;font-weight:800" }, segTotal(r) + "s"), el("td", { colspan: "5" }))))),
+      el("div", { style: "display:flex;gap:8px;flex-wrap:wrap" },
+        el("button", { class: "btn primary", type: "button", onclick: () => editRot(r.id, (x) => { x.cenas = (x.cenas || []).concat([novaCena()]); }, true) }, "+ Cena")),
+      el("div", { style: "display:flex;justify-content:flex-end" }, el("button", { class: "linkbtn", type: "button", style: "color:var(--bad)", "data-label": "Apagar este roteiro", onclick: twoStep(async () => { try { await db.collection("roteiros").doc(r.id).delete(); state.roteiro = ""; render(); } catch (e) { fail(e); } }) }, "Apagar este roteiro"))];
+  }
+
+  function printNode(r) {
+    const esc = (t) => t || "";
+    return el("article", { class: "rot-print" },
+      el("header", {}, el("div", {}, el("small", {}, cliName(r.cliente)), el("h2", {}, tituloRot(r))), el("div", { class: "pmeta" }, (r.cenas || []).length + " cenas · " + segTotal(r) + "s")),
+      el("dl", {}, RCAMPOS.map(([k, n]) => [el("dt", {}, n), el("dd", {}, esc(r[k]) || "—")])),
+      el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "#"), RCOLS.map(([, n]) => el("th", {}, n)))),
+        el("tbody", {}, (r.cenas || []).map((c, i) => el("tr", {}, el("td", {}, i + 1), RCOLS.map(([k]) => el("td", {}, esc(c[k]))))))));
+  }
+  function imprimir(ids) {
+    const rs = ids.map(rotOf).filter(Boolean);
+    if (!rs.length) return;
+    if (!podeImprimir) {
+      const n = $("#notice"); n.hidden = false;
+      n.textContent = "Para imprimir, abra o painel em painel.negocioscreators.com/central. Dentro do claude.ai a impressão é bloqueada.";
+      return;
+    }
+    let area = $("#print-area");
+    if (!area) { area = el("div", { id: "print-area" }); document.body.append(area); }
+    area.replaceChildren(...rs.map(printNode));
+    setTimeout(() => window.print(), 50);
+  }
+
+  /* ---------- Pedidos de roteiro (formulário que vira prompt) ---------- */
+  const PCAMPOS = [
+    ["marca", "Marca / Produto", 1, "Ex.: One Sec, app de bloqueio de tela"],
+    ["video", "Nome do vídeo (como vai ficar na planilha)", 1, "Ex.: One Sec (time)"],
+    ["briefing", "Briefing da marca", 6, "Cole aqui o texto do briefing ou o link do PDF/Drive"],
+    ["dos", "Do's (deve ter)", 3, "Um por linha. Ex.: olhar direto pra câmera; mostrar o app funcionando"],
+    ["donts", "Don'ts (não pode ter)", 3, "Um por linha. Ex.: não dizer que é gratuito"],
+    ["refs", "Referências", 5, "Links de vídeos (virais, concorrentes, edição) e o que você gostou em cada um"],
+    ["conexao", "Sua conexão real com a marca", 3, "Como você usa isso na sua vida? O que mudou pra você?"],
+    ["objetivo", "Objetivo do vídeo", 2, "Ex.: gerar downloads pelo link de indicação; portfólio UGC"],
+    ["publico", "Pra quem é", 2, "Ex.: quem trabalha no celular e se distrai com redes sociais"],
+    ["onde", "Onde vai ser postado", 2, "Ex.: perfil oficial, stories, TikTok, portfólio"],
+    ["estilo", "Estilo do vídeo que você quer", 3, "Ex.: frontal olhando pra câmera + B-roll na metade da tela; cenas tech"],
+    ["tempo", "Tempo (duração máxima)", 1, "Ex.: até 1 minuto"],
+    ["estrutura", "Estrutura do vídeo", 3, "Ex.: gancho → problema com lacuna → produto → benefícios → prova → CTA"],
+    ["cta", "Estilo de call to action", 2, "Ex.: comenta uma palavra e eu mando; link na bio; cupom"],
+    ["obs", "Outras observações", 2, "Roupa, cenário, equipamentos, prazo de entrega…"]
+  ];
+  const pedOf = (id) => state.pedidos.find((p) => p.id === id);
+  const pedTimer = {};
+  function editPed(id, campo, valor) {
+    const p = pedOf(id); if (!p) return;
+    p[campo] = valor;
+    clearTimeout(pedTimer[id]);
+    pedTimer[id] = setTimeout(async () => {
+      const body = Object.assign({}, pedOf(id)); delete body.id; body.editadoEm = new Date().toISOString();
+      try { await db.collection("pedidos").doc(id).set(body); flash($("#ped-saved")); } catch (e) { fail(e); }
+    }, 600);
+  }
+  async function novoPedido() {
+    const cli = state.cli || "luana-caper";
+    const doc = { cliente: cli, status: "rascunho", criadoEm: new Date().toISOString() };
+    PCAMPOS.forEach(([k]) => { doc[k] = ""; });
+    try { const ref = await db.collection("pedidos").add(doc); state.pedido = ref.id; state.roteiro = ""; go({ aba: "roteiros", cli }); } catch (e) { fail(e); }
+  }
+  function promptDoPedido(p) {
+    const partes = PCAMPOS.filter(([k]) => (p[k] || "").trim()).map(([k, n]) => "## " + n + "\n" + p[k].trim());
+    return "Use a skill roteiro-ugc (com o método criativo-bestseller e o meu tom de voz) pra criar o roteiro completo deste pedido, igual combinamos: todas as colunas preenchidas, 2 opções de gancho, português revisado, e no fim suba na Central, ligado ao vídeo na planilha Conteúdos, com o PDF em Downloads.\n\n"
+      + "Pedido de roteiro " + p.id + " · cliente: " + cliName(p.cliente) + "\n\n"
+      + partes.join("\n\n")
+      + "\n\nO que não estiver preenchido, decida pelo método ou me pergunte. Só a minha conexão com a marca você não pode inventar.";
+  }
+  function pedidoEditor(p) {
+    const saved = el("span", { class: "saved", id: "ped-saved", "aria-live": "polite" });
+    const campos = PCAMPOS.map(([k, n, linhas, dica]) => {
+      const id = "ped-" + p.id + "-" + k;
+      const ta = el(linhas === 1 ? "input" : "textarea", Object.assign({ id, placeholder: dica }, linhas === 1 ? {} : { rows: String(linhas) }));
+      ta.value = p[k] || "";
+      ta.addEventListener("input", () => editPed(p.id, k, ta.value));
+      return el("div", { class: "field" + (linhas >= 5 ? " wide" : "") + (k === "dos" ? " ok" : k === "donts" ? " bad" : "") }, el("label", { for: id }, n), ta);
+    });
+    const area = el("textarea", { id: "ped-prompt-" + p.id, class: "ped-prompt", readonly: true, rows: "10" });
+    area.value = promptDoPedido(p);
+    const copiado = el("span", { class: "saved", "aria-live": "polite" });
+    const copiar = async () => {
+      area.value = promptDoPedido(pedOf(p.id) || p);
+      try { await navigator.clipboard.writeText(area.value); copiado.textContent = "Copiado! Agora é só colar no chat com o Claude."; }
+      catch (e) { area.select(); copiado.textContent = "Selecionei o texto: aperte Ctrl+C."; }
+      if (p.status === "rascunho") editPed(p.id, "status", "prompt gerado");
+    };
+    const rot = p.roteiro && rotOf(p.roteiro);
+    return [
+      el("div", { class: "mhead" },
+        el("button", { class: "btn", type: "button", onclick: () => { state.pedido = ""; render(); } }, "← Roteiros e pedidos"),
+        el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" }, saved,
+          rot ? el("button", { class: "btn", type: "button", onclick: () => { state.pedido = ""; abrirRoteiro(rot); } }, "📝 Ver roteiro criado") : null)),
+      el("section", { class: "panel" },
+        el("div", { class: "sh-bar" }, el("h3", { style: "flex:1" }, "Pedido de roteiro" + (p.video || p.marca ? " · " + (p.video || p.marca) : "")),
+          el("span", { class: "chip " + (p.status === "roteiro criado" ? "st-4" : p.status === "prompt gerado" ? "st-1" : "st-0") }, p.status || "rascunho")),
+        el("div", { class: "sugg" }, "Preencha o que você já tem. O que ficar vazio eu decido pelo método ou te pergunto."),
+        el("div", { class: "ped-campos" }, campos)),
+      el("section", { class: "panel" },
+        el("div", { class: "mhead" }, el("h4", {}, "Prompt pronto"),
+          el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" }, copiado, el("button", { class: "btn primary", type: "button", onclick: copiar }, "Gerar e copiar prompt"))),
+        el("div", { class: "sugg" }, "Copie e cole no chat com o Claude. Ele cria o roteiro completo, sobe aqui na Central e marca este pedido como feito."),
+        area),
+      el("div", { style: "display:flex;justify-content:flex-end" }, el("button", { class: "linkbtn", type: "button", style: "color:var(--bad)", "data-label": "Apagar este pedido", onclick: twoStep(async () => { try { await db.collection("pedidos").doc(p.id).delete(); state.pedido = ""; render(); } catch (e) { fail(e); } }) }, "Apagar este pedido"))];
+  }
+  function listaPedidos(cli) {
+    const ps = state.pedidos.filter((p) => (!cli || p.cliente === cli) && p.status !== "roteiro criado").sort((a, b) => (b.criadoEm || "").localeCompare(a.criadoEm || ""));
+    return el("section", { class: "block" },
+      el("div", { class: "mhead" }, el("h2", {}, "Pedidos de roteiro"), el("button", { class: "btn primary", type: "button", onclick: novoPedido }, "+ Pedido de roteiro")),
+      ps.length ? el("div", { class: "lgrid" }, ps.map((p) => el("div", { class: "lcard rcard" },
+        el("button", { class: "lmain", type: "button", onclick: () => { state.pedido = p.id; render(); } },
+          el("span", { class: "lt" }, p.video || p.marca || "Pedido sem nome"),
+          el("span", { class: "ltags" }, cli ? null : el("span", { class: "chip" }, cliName(p.cliente)), el("span", { class: "chip " + (p.status === "prompt gerado" ? "st-1" : "st-0") }, p.status || "rascunho")),
+          el("span", { class: "lu" }, PCAMPOS.filter(([k]) => (p[k] || "").trim()).length + " de " + PCAMPOS.length + " campos preenchidos")))))
+        : el("div", { class: "sugg" }, "Comece um pedido: preencha briefing, referências e estilo, e gere o prompt pra mandar pro Claude."));
+  }
+
+  function viewRoteiros() {
+    const cli = state.cli;
+    if (state.pedido) { const pd = pedOf(state.pedido); if (pd) return pedidoEditor(pd); state.pedido = ""; }
+    if (state.roteiro) { const r = rotOf(state.roteiro); if (r) return rotEditor(r); state.roteiro = ""; }
+    state.rotSel = state.rotSel || {};
+    const lista = state.roteiros.filter((r) => !cli || r.cliente === cli)
+      .sort((a, b) => cliName(a.cliente).localeCompare(cliName(b.cliente), "pt-BR") || (a.criadoEm || "").localeCompare(b.criadoEm || ""));
+    const sel = lista.filter((r) => state.rotSel[r.id]);
+    const novo = cli ? el("button", { class: "btn", type: "button", onclick: () => criarRoteiro(cli, null, null) }, "+ Roteiro avulso") : null;
+    if (!lista.length) return [listaPedidos(cli), el("div", { class: "empty" }, cli ? "Nenhum roteiro de " + cliName(cli) + " ainda. Na planilha, clique em \"Criar roteiro\" na coluna Roteiro de um vídeo." : "Nenhum roteiro ainda. Na planilha, clique em \"Criar roteiro\" na coluna Roteiro de um vídeo."), novo ? el("div", {}, novo) : null];
+    return [
+      listaPedidos(cli),
+      el("h2", {}, "Roteiros"),
+      el("div", { class: "mhead" },
+        el("div", { style: "display:flex;gap:8px;align-items:center;flex-wrap:wrap" },
+          el("button", { class: "btn", type: "button", onclick: () => { const todos = sel.length !== lista.length; lista.forEach((r) => { state.rotSel[r.id] = todos; }); render(); } }, sel.length === lista.length ? "Desmarcar todos" : "Selecionar todos"),
+          el("button", { class: "btn primary", type: "button", disabled: !sel.length, onclick: () => imprimir(sel.map((r) => r.id)) }, "Imprimir selecionados" + (sel.length ? " (" + sel.length + ")" : ""))),
+        novo),
+      el("div", { class: "lgrid" }, lista.map((r) => {
+        const st = statusDoRot(r); const cid = "rs-" + r.id;
+        return el("div", { class: "lcard rcard" + (state.rotSel[r.id] ? " on" : "") },
+          el("label", { class: "rsel", for: cid, title: "Selecionar para imprimir" }, el("input", { type: "checkbox", id: cid, checked: !!state.rotSel[r.id], onchange: (e) => { state.rotSel[r.id] = e.target.checked; render(); } })),
+          el("button", { class: "lmain", type: "button", onclick: () => abrirRoteiro(r) },
+            el("span", { class: "lt" }, tituloRot(r)),
+            el("span", { class: "ltags" }, cli ? null : el("span", { class: "chip" }, cliName(r.cliente)), st ? el("span", { class: "chip " + STATUS_CLS[st] }, st) : null),
+            el("span", { class: "lu" }, (r.marca ? r.marca + " · " : "") + (r.cenas || []).length + " cenas · " + segTotal(r) + "s")));
+      }))];
+  }
+
+  /* ---------- Banco no Supabase (mesma interface do banco antigo do artifact) ---------- */
+  const NC_URL = "https://ldwrkqlpigjnbulfxsbh.supabase.co";
+  const NC_KEY = "sb_publishable_lY-olbrferdwg4fbm7op_w_9M5IymY1";
+  const sb = window.supabase.createClient(NC_URL, NC_KEY, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "implicit" } });
+  function makeDb() {
+    const cache = {};          // col -> { id -> data }
+    const colSubs = {};        // col -> [cb]
+    const docSubs = {};        // "col/id" -> [cb]
+    const clone = (o) => JSON.parse(JSON.stringify(o));
+    const snapDocs = (col) => ({ docs: Object.entries(cache[col] || {}).sort(([a], [b]) => a.localeCompare(b)).map(([id, d]) => ({ id, exists: true, data: () => d })) });
+    const notify = (col, id) => {
+      (colSubs[col] || []).forEach((cb) => cb(snapDocs(col)));
+      const k = col + "/" + id, d = (cache[col] || {})[id];
+      (docSubs[k] || []).forEach((cb) => cb({ exists: !!d, data: () => d }));
+    };
+    const put = (col, id, d) => { (cache[col] = cache[col] || {}); if (d === null) delete cache[col][id]; else cache[col][id] = d; notify(col, id); };
+    const merge = (a, b) => {
+      const o = Object.assign({}, a);
+      Object.entries(b).forEach(([k, v]) => {
+        if (v && typeof v === "object" && !Array.isArray(v) && o[k] && typeof o[k] === "object" && !Array.isArray(o[k])) o[k] = merge(o[k], v);
+        else if (v === undefined) delete o[k]; else o[k] = v;
+      });
+      return o;
+    };
+    const fail = (error) => { if (error) throw { code: error.code === "42501" ? "invalid_argument" : "unavailable", message: error.message }; };
+    async function upsert(col, id, data) {
+      const d = clone(data); put(col, id, d);
+      const { error } = await sb.from("nc_docs").upsert({ col, id, data: d }); fail(error);
+    }
+    const ready = (async () => {
+      const { data, error } = await sb.from("nc_docs").select("col,id,data"); fail(error);
+      (data || []).forEach((r) => { (cache[r.col] = cache[r.col] || {})[r.id] = r.data; });
+      sb.channel("nc_docs").on("postgres_changes", { event: "*", schema: "public", table: "nc_docs" }, (p) => {
+        if (p.eventType === "DELETE") put(p.old.col, p.old.id, null); else put(p.new.col, p.new.id, p.new.data);
+      }).subscribe();
+    })();
+    const docApi = (col, id) => ({
+      id,
+      async get() { await ready; const d = (cache[col] || {})[id]; return { id, exists: !!d, data: () => d }; },
+      async set(data) { await ready; await upsert(col, id, data); },
+      async update(data) { await ready; const cur = (cache[col] || {})[id]; if (!cur) throw { code: "invalid_argument", message: "documento não existe" }; await upsert(col, id, merge(cur, data)); },
+      async delete() { await ready; put(col, id, null); const { error } = await sb.from("nc_docs").delete().eq("col", col).eq("id", id); fail(error); },
+      onSnapshot(cb, err) {
+        const k = col + "/" + id; (docSubs[k] = docSubs[k] || []).push(cb);
+        ready.then(() => { const d = (cache[col] || {})[id]; cb({ exists: !!d, data: () => d }); }, (e) => err && err(e));
+        return () => { docSubs[k] = (docSubs[k] || []).filter((x) => x !== cb); };
+      }
+    });
+    return {
+      collection(col) {
+        return {
+          doc: (id) => docApi(col, id || "d" + Math.random().toString(36).slice(2, 12)),
+          async add(data) { const id = "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); await docApi(col, id).set(data); return { id }; },
+          onSnapshot(cb, err) {
+            (colSubs[col] = colSubs[col] || []).push(cb);
+            ready.then(() => cb(snapDocs(col)), (e) => err && err(e));
+            return () => { colSubs[col] = (colSubs[col] || []).filter((x) => x !== cb); };
+          }
+        };
+      },
+      doc(path) { const [col, id] = path.split("/"); return docApi(col, id); }
+    };
+  }
+  async function entrar() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const { data: adm } = await sb.from("nc_admins").select("email");
+      if (adm && adm.length) return session;
+      telaLogin("O e-mail " + session.user.email + " não tem acesso a este painel.", true);
+      return null;
+    }
+    telaLogin("", false);
+    return null;
+  }
+  function telaLogin(msg, logado) {
+    const email = el("input", { id: "login-email", type: "email", placeholder: "seu e-mail", autocomplete: "email", value: (() => { try { return localStorage.getItem("nc-email") || ""; } catch (e) { return ""; } })() });
+    const aviso = el("div", { class: "sugg", "aria-live": "polite" }, msg);
+    const enviar = async (ev) => {
+      ev.preventDefault();
+      const e = email.value.trim(); if (!e) return;
+      try { localStorage.setItem("nc-email", e); } catch (x) {}
+      aviso.textContent = "Enviando…";
+      const { error } = await sb.auth.signInWithOtp({ email: e, options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: true } });
+      aviso.textContent = error ? "Não deu para enviar: " + error.message : "Pronto! Abra o e-mail e clique no link para entrar. Pode fechar esta aba.";
+    };
+    $("#main").replaceChildren(el("form", { class: "panel login", onsubmit: enviar },
+      el("h1", {}, "Entrar"),
+      el("p", { class: "sugg" }, "Digite seu e-mail. Você recebe um link para entrar, sem senha."),
+      email,
+      el("button", { class: "btn primary", type: "submit" }, "Receber link de acesso"),
+      logado ? el("button", { class: "linkbtn", type: "button", onclick: async () => { await sb.auth.signOut(); location.reload(); } }, "Sair desta conta") : null,
+      aviso));
+    $("#side").replaceChildren(); $("#mside").replaceChildren(); $("#areas").replaceChildren();
+  }
+
+  /* ---------- Áreas ---------- */
+  function viewEstrategia() {
+    const cli = state.cli; const fs = frentesDa("estrategia");
+    const theme = state.cfg && state.cfg.temas ? el("div", { class: "theme" }, el("span", { class: "sugg" }, "Tema de " + (state.cfg.temasPeriodo || "agora") + ", pra tudo falar a mesma língua:"), el("b", {}, state.cfg.temas)) : null;
+    if (!cli) return [theme, metaTable(""), overview(fs, "Estratégias do mês por cliente")];
+    const mine = fs.filter((f) => inFrente(f, cli));
+    return [theme, metaTable(cli),
+      el("section", { class: "block" }, el("h2", {}, "Estratégia do mês"),
+        mine.length ? el("div", { class: "steps" }, mine.map((f) => stepBlock(f, cli))) : el("div", { class: "empty" }, "Nenhuma estratégia ligada a este cliente ainda."),
+        joinButtons(fs, cli))];
+  }
+  function viewTrafego() {
+    const cli = state.cli; const fs = frentesDa("trafego");
+    if (!cli) {
+      const cards = state.clientes.filter((c) => c.ativo !== false).sort((a, b) => ORDER[sigWorst(a)] - ORDER[sigWorst(b)] || (a.ordem || 0) - (b.ordem || 0));
+      return [pendList(""),
+        el("section", { class: "block" }, el("h2", {}, "Rotina do dia"), cards.length ? el("div", { class: "grid" }, cards.map(card)) : el("div", { class: "empty" }, "A rotina das 8h30 ainda não gravou nenhuma rodada.")),
+        overview(fs, "Andamento por cliente"), histTable("")];
+    }
+    const rot = state.clientes.filter((c) => rotinaOf(cli).includes(c.id) && c.ativo !== false);
+    const mine = fs.filter((f) => inFrente(f, cli));
+    return [pendList(cli),
+      rot.length ? el("section", { class: "block" }, el("h2", {}, "Rotina do dia"), el("div", { class: "grid" }, rot.map(card)))
+        : el("div", { class: "sugg" }, cliName(cli) + " ainda não está na rotina diária automática (falta confirmar conta e método de lead)."),
+      el("section", { class: "block" }, el("h2", {}, "Etapas"), mine.filter((f) => f.ferramenta !== "calculadora").length ? el("div", { class: "steps" }, mine.filter((f) => f.ferramenta !== "calculadora").map((f) => stepBlock(f, cli))) : el("div", { class: "empty" }, "Nenhuma etapa de tráfego ligada a este cliente."), joinButtons(fs, cli)),
+      el("section", { class: "block" }, el("h2", {}, "Otimização"), calcPanel(cli)),
+      histTable(cli)];
+  }
+  function viewArea(aba) {
+    const cli = state.cli; const fs = frentesDa(aba);
+    if (!cli) return [overview(fs, "Andamento por cliente")];
+    const mine = fs.filter((f) => inFrente(f, cli));
+    return [el("section", { class: "block" },
+      mine.length ? el("div", { class: "steps" }, mine.map((f) => stepBlock(f, cli))) : el("div", { class: "empty" }, (fs[0] && fs[0].vazio) || "Este cliente não está nesta área."),
+      joinButtons(fs, cli))];
+  }
+
+  let raf = 0;
+  function render() { clearTimeout(raf); raf = setTimeout(renderNow, 0); }
+  function renderNow() {
+    if (state.cli && state.cfg && !cfgClients().some((c) => c.slug === state.cli)) state.cli = "";
+    renderNav(); renderSide(); renderGoal();
+    const aba = state.aba; const titulo = (ABAS.find(([k]) => k === aba) || [])[1];
+    const head = el("div", { class: "mhead" }, el("div", { class: "ptitle" }, el("span", { class: "crumb" }, state.cli ? cliName(state.cli) : "Visão geral · todos os clientes"), el("h1", {}, titulo)));
+    const body = aba === "estrategia" ? viewEstrategia() : aba === "trafego" ? viewTrafego() : aba === "planilhas" ? viewPlanilhas() : aba === "links" ? viewLinks() : aba === "roteiros" ? viewRoteiros() : viewArea(aba);
+    document.body.classList.toggle("wide", !!state.wide && aba === "planilhas" && !!state.cli);
+    keepFocus(() => $("#main").replaceChildren(head, ...body.filter(Boolean)));
+    document.querySelectorAll("textarea, input:not([type]), input[type=text]").forEach((e) => { e.spellcheck = true; e.lang = "pt-BR"; });
+  }
+  renderNav();
+  if (window.matchMedia) { const mq = window.matchMedia("(max-width: 860px)"); if (mq.addEventListener) mq.addEventListener("change", renderNav); }
+
+  (async () => {
+    const sessao = await entrar(); if (!sessao) return;
+    db = makeDb();
+    $("#round").replaceChildren(el("span", {}, sessao.user.email), el("br"), el("button", { class: "linkbtn", type: "button", style: "color:var(--rail-muted);font-size:12px", onclick: async () => { await sb.auth.signOut(); location.reload(); } }, "Sair"));
+    const onErr = (e) => { if (e && e.code !== "unavailable") fail(e); };
+    const mapOf = (s) => { const m = {}; s.docs.forEach((d) => { m[d.id] = d.data(); }); return m; };
+    const listOf = (s) => s.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+    db.doc("config/negocio").onSnapshot((s) => { state.cfg = s.exists ? s.data() : { clientes: [] }; render(); }, onErr);
+    db.collection("clientes").onSnapshot((s) => { state.clientes = listOf(s); render(); }, onErr);
+    db.collection("edicoes").onSnapshot((s) => { state.edicoes = mapOf(s); render(); }, onErr);
+    db.collection("pendencias").onSnapshot((s) => { state.pend = listOf(s); render(); }, onErr);
+    db.doc("rodadas/ultima").onSnapshot((s) => { state.ultima = s.exists ? s.data() : null; render(); }, onErr);
+    db.collection("frentes").onSnapshot((s) => { state.frentes = listOf(s); render(); }, onErr);
+    db.collection("progresso").onSnapshot((s) => { state.progresso = mapOf(s); render(); }, onErr);
+    db.collection("metas").onSnapshot((s) => { state.metas = mapOf(s); if (!(document.activeElement && String(document.activeElement.id).startsWith("cm-"))) render(); }, onErr);
+    db.collection("otimizacoes").onSnapshot((s) => { state.otim = listOf(s); render(); }, onErr);
+    db.collection("metasnc").onSnapshot((s) => { state.metasNc = mapOf(s); render(); }, onErr);
+    db.collection("planilhas").onSnapshot((s) => { state.planilhas = listOf(s); render(); }, onErr);
+    db.collection("links").onSnapshot((s) => { state.links = mapOf(s); render(); }, onErr);
+    db.collection("roteiros").onSnapshot((s) => { state.roteiros = listOf(s); render(); }, onErr);
+    db.collection("pedidos").onSnapshot((s) => { state.pedidos = listOf(s); if (!(document.activeElement && String(document.activeElement.id).startsWith("ped-"))) render(); }, onErr);
+    db.doc("config/dicionario").onSnapshot((s) => { state.dicio = s.exists ? s.data() : null; }, onErr);
+  })();
+})();
+</script>
+
+</body>
+</html>

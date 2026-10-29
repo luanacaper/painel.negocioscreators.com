@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#121316">
+<link rel="icon" type="image/png" sizes="32x32" href="marca/nc-icone-32.png">
+<link rel="apple-touch-icon" href="marca/nc-icone-180.png">
+<title>Cobranças · Negócios Creators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Mesmo sistema do hub: Manrope, pílulas, cartões claros; aqui cada cliente é um cartão de cobrança com o status do mês. */
+:root{
+  --bg:#F5F5F1; --surface:#FFFFFF; --ink:#15171A; --muted:#5A5E57; --line:#E4E4DC; --chip:#EEEEE6;
+  --mint:#14A37E; --orange:#D9692A;
+  --good:#2F7D4F; --good-soft:#E1F1E6; --warn:#A96A12; --warn-soft:#F8ECD6; --crit:#B42318; --crit-soft:#FBE3E0;
+  --display:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1013; --surface:#25272D; --ink:#F2F3EE; --muted:#A8ACA4; --line:#3A3D45; --chip:#33363E;
+  --mint:#3EDDB0; --orange:#FF8F4A;
+  --good:#5CC486; --good-soft:#183325; --warn:#E3A948; --warn-soft:#3A2C14; --crit:#F07466; --crit-soft:#3D1D1A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1013; --surface:#25272D; --ink:#F2F3EE; --muted:#A8ACA4; --line:#3A3D45; --chip:#33363E;
+  --mint:#3EDDB0; --orange:#FF8F4A;
+  --good:#5CC486; --good-soft:#183325; --warn:#E3A948; --warn-soft:#3A2C14; --crit:#F07466; --crit-soft:#3D1D1A; color-scheme:dark }
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--display);line-height:1.5;-webkit-text-size-adjust:100%}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:10px}
+.wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:20px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+.wrap>*{min-width:0}
+.topo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.topo a.voltar{font-weight:700;font-size:.85rem;text-decoration:none;color:var(--muted)}
+.topo h1{font-size:clamp(1.4rem,4vw,1.9rem);font-weight:800;letter-spacing:-.03em}
+.topo h1 span{color:var(--orange)}
+.topo p{color:var(--muted);font-size:.9rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 16px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none}
+.btn.contorno{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.contorno:hover{border-color:var(--ink)}
+.btn.mini{min-height:34px;padding:4px 12px;font-size:.82rem}
+.btn:disabled{opacity:.55;cursor:wait}
+.cartao{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.campo{display:grid;gap:5px}
+.campo label{font-weight:700;font-size:.82rem}
+.campo input,.campo select{width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg)}
+.campo input:focus,.campo select:focus{outline:none;border-color:var(--ink)}
+.campo small{color:var(--muted);font-size:.76rem}
+.aviso{padding:10px 14px;border-radius:14px;font-size:.9rem}
+.aviso.erro{background:var(--crit-soft);color:var(--crit)}
+.aviso.ok{background:var(--good-soft);color:var(--good)}
+.resumo{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:.85rem}
+.resumo b{color:var(--ink)}
+.clientes{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.cli{display:grid;gap:10px;align-content:start}
+.cli-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.cli-cab h3{font-size:1.05rem;font-weight:800;letter-spacing:-.01em}
+.cli-cab small{display:block;color:var(--muted);font-size:.78rem;overflow-wrap:anywhere}
+.dados{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dados div{background:var(--bg);border-radius:12px;padding:8px 10px}
+.dados span{display:block;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dados b{font-family:var(--mono);font-weight:500;font-size:.92rem;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.crit{background:var(--crit-soft);color:var(--crit)}
+.pill.off{background:var(--chip);color:var(--muted)}
+.cli-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.interruptor{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer}
+.interruptor input{width:18px;height:18px;accent-color:var(--mint)}
+h2{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.manual{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+.confirma{display:grid;gap:10px;margin-top:12px;padding:14px;border-radius:16px;background:var(--warn-soft);color:var(--ink)}
+.confirma p{font-size:.92rem}
+.confirma div{display:flex;flex-wrap:wrap;gap:8px}
+.tabela{overflow-x:auto;border:1.5px solid var(--line);border-radius:16px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:640px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--bg)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.det{color:var(--muted);max-width:240px;overflow-wrap:anywhere}
+.vazio{padding:22px;text-align:center;color:var(--muted)}
+.login{max-width:420px;display:grid;gap:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topo">
+    <div>
+      <a class="voltar" href="./">← Negócios Creators</a>
+      <h1>Cobranças da <span>agência</span></h1>
+      <p>Emails de vencimento com Pix e QR code, saindo do rotacreators@gmail.com.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn contorno mini" id="b-atualizar" type="button" hidden>Atualizar</button>
+      <button class="btn contorno mini" id="b-sair" type="button" hidden>Sair</button>
+    </div>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script>
+/* Endereço do app da Web do Google Apps Script (projeto "Cobranças Negócios Creators" na conta rotacreators).
+   Não é segredo: quem protege é a senha do painel. */
+const API = "https://script.google.com/macros/s/AKfycbyO9iO71xSsL9pVzphvrePe2qI_ZeCmSji5P8EOiL5JH6uEVbFjYE8X_tNRapWIaO2XyA/exec";
+const CHAVE = "nc-cobrancas-senha";
+
+const app = document.getElementById("app");
+let senha = ""; try { senha = localStorage.getItem(CHAVE) || ""; } catch (e) {}
+let estado = null, pendente = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const brl = v => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const dataHora = s => { if (!s) return ""; const [d, h] = String(s).split("T"); const [a, m, dd] = d.split("-"); return `${dd}/${m}/${a}${h ? " " + h : ""}`; };
+
+async function chamar(corpo) {
+  const r = await fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ senha, ...corpo }) });
+  if (!r.ok) throw new Error("O Google respondeu com erro " + r.status + ". Tente de novo em instantes.");
+  return r.json();
+}
+
+function telaSemApi() {
+  app.innerHTML = `<div class="cartao login"><h2>Quase pronto</h2><p>O envio automático ainda não foi publicado no Google. Assim que ele for ligado, esta página passa a mostrar os clientes, os envios e o botão de envio manual.</p></div>`;
+}
+
+function telaLogin(msg, criar) {
+  document.getElementById("b-sair").hidden = true;
+  document.getElementById("b-atualizar").hidden = true;
+  app.innerHTML = `<form class="cartao login" id="f-login">
+    <h2>${criar ? "Crie a senha do painel" : "Entrar"}</h2>
+    ${criar ? `<p style="color:var(--muted);font-size:.9rem">Primeiro acesso. A senha fica guardada no Google, no projeto de cobranças. Mínimo 8 caracteres.</p>` : ""}
+    ${msg ? `<div class="aviso erro" role="alert">${esc(msg)}</div>` : ""}
+    <div class="campo"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="${criar ? "new-password" : "current-password"}" required minlength="${criar ? 8 : 1}"></div>
+    <button class="btn" type="submit">${criar ? "Criar senha e entrar" : "Entrar"}</button>
+  </form>`;
+  document.getElementById("f-login").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const s = document.getElementById("l-senha").value;
+    const b = ev.target.querySelector("button"); b.disabled = true;
+    try {
+      if (criar) { const r = await chamar({ acao: "definirSenha", nova: s }); if (!r.ok) throw new Error(r.erro); }
+      senha = s; try { localStorage.setItem(CHAVE, s); } catch (e) {}
+      carregar();
+    } catch (e) { telaLogin(e.message, criar); }
+  });
+}
+
+async function carregar() {
+  if (!API) return telaSemApi();
+  if (!senha) {
+    try { const r = await chamar({ acao: "estado" }); if (r.semSenha) return telaLogin("", true); } catch (e) {}
+    return telaLogin("");
+  }
+  app.innerHTML = `<p class="vazio">Carregando…</p>`;
+  try {
+    const r = await chamar({ acao: "estado" });
+    if (r.semSenha) return telaLogin("", true);
+    if (!r.ok) { senha = ""; try { localStorage.removeItem(CHAVE); } catch (e) {} return telaLogin(r.erro); }
+    estado = r; desenhar();
+  } catch (e) {
+    app.innerHTML = `<div class="aviso erro" role="alert">${esc(e.message)}</div>`;
+  }
+}
+
+function statusDoMes(c) {
+  const env = estado.envios.filter(e => e.cliente_id === c.id && e.competencia === c.competencia_atual);
+  const ok = env.find(e => e.status === "enviado");
+  if (ok) return `<span class="pill good">Enviado ${esc(dataHora(ok.quando).slice(0, 5))}</span>`;
+  const err = env.find(e => e.status === "erro" || e.status === "pendente");
+  if (err) return `<span class="pill crit">${err.status === "erro" ? "Erro no envio" : "Faltam dados"}</span>`;
+  if (!c.ativo) return `<span class="pill off">Pausado</span>`;
+  return `<span class="pill warn">Agendado</span>`;
+}
+
+function desenhar(aviso) {
+  document.getElementById("b-sair").hidden = false;
+  document.getElementById("b-atualizar").hidden = false;
+  const cs = estado.clientes;
+  app.innerHTML = `
+  <div style="display:grid;gap:22px">
+    ${aviso ? `<div class="aviso ${aviso.tipo}" role="status">${esc(aviso.txt)}</div>` : ""}
+    <div class="resumo"><span>Hoje <b>${esc(estado.hoje)}</b></span><span>Saindo de <b>${esc(estado.remetente)}</b></span><span><a href="${esc(estado.planilha)}" target="_blank" rel="noopener">Abrir planilha de clientes</a></span></div>
+    <section style="display:grid;gap:12px">
+      <h2>Clientes</h2>
+      <div class="clientes">${cs.map(c => `
+        <article class="cartao cli">
+          <div class="cli-cab"><div><h3>${esc(c.cliente)}</h3><small>${esc(c.para)}${c.cc ? " · cc " + esc(c.cc) : ""}</small></div>${statusDoMes(c)}</div>
+          <div class="dados">
+            <div><span>Valor</span><b>${brl(c.valor)}</b></div>
+            <div><span>Competência</span><b>${esc(c.competencia_atual)}</b></div>
+            <div><span>Envio</span><b>dia ${esc(c.dia_envio)}</b></div>
+            <div><span>Vencimento</span><b>${c.dia_vencimento ? "dia " + esc(c.dia_vencimento) : "falta"}</b></div>
+          </div>
+          <p style="font-size:.82rem;color:var(--muted)">${c.proximo ? `Próximo envio automático: <b style="color:var(--ink)">${esc(c.proximo.data)}</b>` : ""}${!c.dia_vencimento ? ` · <b style="color:var(--crit)">Preencha o dia do vencimento na planilha.</b>` : ""}${!c.tem_qr ? ` · sem QR` : ""}</p>
+          <div class="cli-acoes">
+            <button class="btn mini" type="button" data-enviar="${esc(c.id)}">Enviar agora</button>
+            <label class="interruptor"><input type="checkbox" data-ativo="${esc(c.id)}" ${c.ativo ? "checked" : ""}> Automático ligado</label>
+          </div>
+        </article>`).join("")}</div>
+    </section>
+
+    <section class="cartao" style="display:grid;gap:12px">
+      <h2>Envio manual</h2>
+      <form class="manual" id="f-manual">
+        <div class="campo"><label for="m-cliente">Cliente</label><select id="m-cliente">${cs.map(c => `<option value="${esc(c.id)}">${esc(c.cliente)}</option>`).join("")}</select></div>
+        <div class="campo"><label for="m-comp">Competência</label><input id="m-comp" placeholder="09/2026" pattern="\\d{2}/\\d{4}" required></div>
+        <div class="campo"><label for="m-venc">Vencimento</label><input id="m-venc" placeholder="10/10/2026" pattern="\\d{2}/\\d{2}/\\d{4}" required></div>
+        <div class="campo"><label for="m-valor">Valor (R$)</label><input id="m-valor" inputmode="decimal" required></div>
+        <div class="campo"><label class="interruptor" for="m-teste" style="color:var(--ink)"><input id="m-teste" type="checkbox"> Só um teste pra mim</label><small>Vai pro ${esc(estado.remetente)} com [TESTE] no título.</small></div>
+        <button class="btn" type="submit">Revisar envio</button>
+      </form>
+      <div id="confirma"></div>
+    </section>
+
+    <section style="display:grid;gap:12px">
+      <h2>Histórico de envios</h2>
+      <div class="tabela"><table>
+        <thead><tr><th>Quando</th><th>Cliente</th><th>Competência</th><th>Vencimento</th><th>Valor</th><th>Origem</th><th>Situação</th><th>Detalhe</th></tr></thead>
+        <tbody>${estado.envios.length ? estado.envios.map(e => `<tr>
+          <td class="num">${esc(dataHora(e.quando))}</td><td>${esc(e.cliente)}</td><td class="num">${esc(e.competencia)}</td><td class="num">${esc(e.vencimento)}</td>
+          <td class="num">${e.valor ? brl(e.valor) : ""}</td><td>${esc(e.origem)}</td>
+          <td><span class="pill ${e.status === "enviado" ? "good" : e.status === "teste" ? "off" : "crit"}">${esc(e.status)}</span></td>
+          <td class="det">${esc(e.detalhe || e.para)}</td></tr>`).join("") : `<tr><td colspan="8" class="vazio">Nenhum envio ainda. O primeiro automático aparece aqui.</td></tr>`}</tbody>
+      </table></div>
+    </section>
+  </div>`;
+  preencherManual(cs[0]);
+  document.getElementById("m-cliente").addEventListener("change", ev => preencherManual(cs.find(c => c.id === ev.target.value)));
+  document.getElementById("f-manual").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const c = cs.find(x => x.id === document.getElementById("m-cliente").value);
+    pendente = { acao: "enviar", cliente_id: c.id, competencia: document.getElementById("m-comp").value.trim(), vencimento: document.getElementById("m-venc").value.trim(),
+      valor: Number(document.getElementById("m-valor").value.replace(/\./g, "").replace(",", ".")), teste: document.getElementById("m-teste").checked };
+    mostrarConfirmacao(c);
+  });
+  app.querySelectorAll("[data-enviar]").forEach(b => b.addEventListener("click", () => {
+    const c = cs.find(x => x.id === b.dataset.enviar);
+    preencherManual(c);
+    document.getElementById("m-cliente").value = c.id;
+    document.getElementById("f-manual").requestSubmit();
+    document.getElementById("f-manual").scrollIntoView({ behavior: "smooth", block: "center" });
+  }));
+  app.querySelectorAll("[data-ativo]").forEach(i => i.addEventListener("change", async () => {
+    i.disabled = true;
+    try { const r = await chamar({ acao: "ativo", cliente_id: i.dataset.ativo, ativo: i.checked }); if (!r.ok) throw new Error(r.erro); estado = r; desenhar({ tipo: "ok", txt: i.checked ? "Envio automático ligado." : "Envio automático pausado." }); }
+    catch (e) { desenhar({ tipo: "erro", txt: e.message }); }
+  }));
+}
+
+function preencherManual(c) {
+  if (!c) return;
+  document.getElementById("m-comp").value = c.competencia_atual;
+  document.getElementById("m-venc").value = c.vencimento_atual || "";
+  document.getElementById("m-valor").value = String(c.valor).replace(".", ",");
+  document.getElementById("confirma").innerHTML = "";
+}
+
+function mostrarConfirmacao(c) {
+  const p = pendente;
+  const para = p.teste ? estado.remetente : c.para;
+  const ja = !p.teste && estado.envios.some(e => e.cliente_id === c.id && e.competencia === p.competencia && e.status === "enviado");
+  document.getElementById("confirma").innerHTML = `<div class="confirma" role="alertdialog" aria-label="Confirmar envio">
+    <p>${p.teste ? "Teste" : "Enviar"} cobrança da <b>${esc(c.cliente)}</b> pra <b>${esc(para)}</b>: ${brl(p.valor)}, competência ${esc(p.competencia)}, vencimento ${esc(p.vencimento)}.</p>
+    ${ja ? `<p><b>Atenção:</b> essa competência já foi enviada pra esse cliente.</p>` : ""}
+    <div><button class="btn" type="button" id="c-sim">${p.teste ? "Mandar teste" : "Enviar email"}</button><button class="btn contorno" type="button" id="c-nao">Cancelar</button></div>
+  </div>`;
+  document.getElementById("c-nao").onclick = () => { pendente = null; document.getElementById("confirma").innerHTML = ""; };
+  document.getElementById("c-sim").onclick = async ev => {
+    ev.target.disabled = true; ev.target.textContent = "Enviando…";
+    try {
+      const r = await chamar(p);
+      const s = await chamar({ acao: "estado" }); if (s.ok) estado = s;
+      desenhar(r.ok ? { tipo: "ok", txt: p.teste ? `Teste enviado pra ${estado.remetente}.` : `Email da ${c.cliente} enviado pra ${c.para}.` } : { tipo: "erro", txt: r.erro || "Não foi possível enviar." });
+    } catch (e) { desenhar({ tipo: "erro", txt: e.message }); }
+  };
+}
+
+document.getElementById("b-sair").onclick = () => { senha = ""; try { localStorage.removeItem(CHAVE); } catch (e) {} telaLogin(""); };
+document.getElementById("b-atualizar").onclick = carregar;
+carregar();
+</script>
+</body>
+</html>

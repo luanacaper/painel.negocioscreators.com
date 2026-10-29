@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meu Financeiro</title>
+<meta name="theme-color" content="#0E6655">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Financeiro">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=3">
+<link rel="icon" href="icon-512.png?v=3">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js?v=2"></script>
+<style>
+:root{
+  --bg:#F2F4F1;--surface:#fff;--ink:#16211D;--muted:#5B6863;--line:#D9DFDB;
+  --accent:#0E6655;--accent-ink:#fff;--accent-soft:#DCEFE9;
+  --good:#2F7D4F;--good-soft:#E1F1E6;--warn:#A96A12;--warn-soft:#F8ECD6;--crit:#B42318;--crit-soft:#FBE3E0;
+  --display:"Manrope",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark;--bg:#0E1412;--surface:#161F1C;--ink:#E4ECE8;--muted:#94A39D;--line:#2A3632;
+  --accent:#4FBFA8;--accent-ink:#0E1412;--accent-soft:#173A33;--good:#5CC486;--good-soft:#183325;--warn:#E3A948;--warn-soft:#3A2C14;--crit:#F07466;--crit-soft:#3D1D1A;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.01em}
+h1{font-size:24px;font-weight:800} h2{font-size:18px;font-weight:800}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.muted{color:var(--muted)} .small{font-size:13px}
+.wrap{max-width:720px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{display:flex;flex-direction:column;gap:2px}.kpi b{font-family:var(--mono);font-size:20px;font-weight:500}
+.item{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .d{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.2}
+.item .t{min-width:0}.item .t div{overflow-wrap:anywhere}.item .t small{color:var(--muted);font-size:12.5px;display:block}
+.item.in .v{color:var(--good)} .item.late{box-shadow:inset 3px 0 0 var(--crit);padding-left:8px}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px}
+.pill.crit{background:var(--crit-soft);color:var(--crit)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.good{background:var(--good-soft);color:var(--good)}.pill.info{background:var(--accent-soft);color:var(--accent)}
+button,.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:8px 12px;cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.small{padding:5px 9px;font-size:13px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 10px;width:100%}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+form{display:flex;flex-direction:column;gap:10px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;border-radius:8px;padding:7px 4px;background:transparent;color:var(--muted)}
+.seg button.on{background:var(--accent-soft);color:var(--accent)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav.tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;color:var(--muted);padding:4px 8px;min-width:58px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--accent)}
+nav.tabs button.add{background:var(--accent);color:var(--accent-ink);border-radius:14px}
+.bar{height:10px;background:var(--bg);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}.bar i.over{background:var(--crit)}
+dialog{border:0;border-radius:14px;padding:0;width:min(440px,calc(100% - 32px));background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog .in{padding:16px;display:flex;flex-direction:column;gap:12px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:9px;font-size:14px;z-index:20}
+.empty{padding:14px 0;color:var(--muted);text-align:center}
+.login{min-height:80vh;display:flex;align-items:center}
+.pri1{color:var(--crit)}.pri2{color:var(--warn)}.pri3{color:var(--muted)}
+.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink)} .chk input{width:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"><p class="muted">Carregando…</p></div>
+<nav class="tabs" id="tabs" hidden></nav>
+
+<dialog id="dlg"><div class="in" id="dlgBody"></div></dialog>
+
+<script>
+// "Manter conectada": sessão guardada no aparelho (localStorage) ou só até fechar (sessionStorage)
+const lembrar = () => { try { return localStorage.getItem('fin_lembrar') !== '0'; } catch(e) { return true; } };
+const store = () => { try { return lembrar() ? localStorage : sessionStorage; } catch(e) { return null; } };
+const armazenamento = {
+  getItem: k => { try { return localStorage.getItem(k) ?? sessionStorage.getItem(k); } catch(e) { return null; } },
+  setItem: (k, v) => { try { store().setItem(k, v); } catch(e) {} },
+  removeItem: k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch(e) {} }
+};
+const sb = supabase.createClient(window.SB_URL, window.SB_KEY, { auth: { storage: armazenamento, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+function traduz(msg){
+  msg = String(msg || '');
+  if (/rate limit/i.test(msg)) return 'O Supabase só manda 2 emails por hora e esse limite foi atingido. Tente de novo daqui a ~1 hora (clique uma vez só).';
+  if (/not confirmed/i.test(msg)) return 'Falta confirmar o email: abra o link que o Supabase mandou (olhe no spam também).';
+  if (/already registered|already been registered/i.test(msg)) return 'Esse email já tem acesso. Use Entrar ou Esqueci a senha.';
+  if (/Invalid login/i.test(msg)) return 'Email ou senha incorretos.';
+  if (/at least 6/i.test(msg)) return 'A senha precisa ter pelo menos 6 caracteres.';
+  return msg;
+}
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const brl = v => v == null ? '—' : 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+const hoje = () => new Date(Date.now() - new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const addDias = (iso, n) => { const d = new Date(iso+'T12:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+const ddmm = iso => iso ? iso.slice(8,10)+'/'+iso.slice(5,7) : 's/ data';
+const DIAS = ['dom','seg','ter','qua','qui','sex','sáb'];
+const diaSem = iso => iso ? DIAS[new Date(iso+'T12:00').getDay()] : '';
+const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const FORMAS = [['pix','Pix'],['debito','Débito'],['credito-inter','Crédito Inter'],['credito-nubank','Crédito Nubank'],['boleto','Boleto'],['dinheiro','Dinheiro']];
+const LISTAS = [['compras','Compras'],['casa','Casa'],['desejos','Desejos']];
+const PRI = {1:'Alta',2:'Média',3:'Baixa'};
+
+let tab = 'semana', listaAtual = 'compras', mesAtual = hoje().slice(0,7);
+try { tab = localStorage.getItem('fin_tab') || tab; listaAtual = localStorage.getItem('fin_lista') || listaAtual; } catch(e) {}
+
+function toast(msg){ const t = document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), 2600); }
+function erro(e){ console.error(e); toast('Erro: ' + (e.message || e.hint || e.code || e)); }
+async function q(p){ const {data, error} = await p; if (error) throw error; return data; }
+
+/* ---------- Auth ---------- */
+async function iniciar(){
+  const {data:{session}} = await sb.auth.getSession();
+  if (!session) return telaLogin();
+  const ok = await sb.rpc('eh_permitido');
+  if (!ok.data) return telaSemAcesso(session.user.email);
+  montarTabs(); render();
+}
+sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_IN' || ev === 'SIGNED_OUT') iniciar(); });
+
+function telaLogin(msg=''){
+  $('#tabs').hidden = true;
+  $('#app').innerHTML = `<div class="login"><div class="card" style="width:100%;display:flex;flex-direction:column;gap:14px">
+    <div><h1>Meu Financeiro</h1><p class="muted small">Casa + Rota Creators · Lu e Heuller</p></div>
+    ${msg ? `<p class="small" style="color:var(--crit)">${esc(msg)}</p>` : ''}
+    <form id="fLogin">
+      <label>Email<input id="lEmail" type="email" autocomplete="email" required></label>
+      <label>Senha<input id="lSenha" type="password" autocomplete="current-password" minlength="6" required></label>
+      <label class="chk"><input id="lLembrar" type="checkbox" ${lembrar()?'checked':''}> Manter conectada neste aparelho</label>
+      <button class="primary" type="submit">Entrar</button>
+      <div class="row between small"><button type="button" class="small" id="bPrimeiro">Primeiro acesso</button><button type="button" class="small" id="bEsqueci">Esqueci a senha</button></div>
+    </form></div></div>`;
+  const salvaLembrar = () => { try { localStorage.setItem('fin_lembrar', $('#lLembrar').checked ? '1' : '0'); } catch(e) {} };
+  $('#fLogin').onsubmit = async e => { e.preventDefault(); salvaLembrar();
+    const {error} = await sb.auth.signInWithPassword({email:$('#lEmail').value.trim(), password:$('#lSenha').value});
+    if (error) telaLogin(traduz(error.message)); };
+  $('#bPrimeiro').onclick = async () => { const email=$('#lEmail').value.trim(), senha=$('#lSenha').value;
+    if (!email || senha.length < 6) return toast('Preencha email e uma senha com 6+ caracteres');
+    const {error} = await sb.auth.signUp({email, password:senha, options:{emailRedirectTo: location.href.split('#')[0]}});
+    salvaLembrar();
+    if (error) return telaLogin(traduz(error.message));
+    telaLogin('Acesso criado. Agora abra o email do Supabase (olhe no spam) e clique no link de confirmação. Depois é só Entrar.'); };
+  $('#bEsqueci').onclick = async () => { const email=$('#lEmail').value.trim(); if(!email) return toast('Digite o email primeiro');
+    const {error} = await sb.auth.resetPasswordForEmail(email, {redirectTo: location.href.split('#')[0]});
+    telaLogin(error ? traduz(error.message) : 'Pronto: mandamos um link pro seu email (olhe no spam). Abra no mesmo aparelho e crie a senha nova.'); };
+}
+function telaSemAcesso(email){
+  $('#tabs').hidden = true;
+  $('#app').innerHTML = `<div class="card"><h2>Acesso não liberado</h2><p class="muted">O email ${esc(email)} ainda não está na lista de quem pode ver o financeiro.</p><button id="bSair">Sair</button></div>`;
+  $('#bSair').onclick = () => sb.auth.signOut();
+}
+// Link de recuperação de senha
+sb.auth.onAuthStateChange(async ev => { if (ev === 'PASSWORD_RECOVERY') abrir(`<h2>Nova senha</h2><form id="fNova"><label>Senha nova<input id="nSenha" type="password" minlength="6" required></label><button class="primary">Salvar</button></form>`, () => {
+  $('#fNova').onsubmit = async e => { e.preventDefault(); const {error} = await sb.auth.updateUser({password:$('#nSenha').value}); fechar(); toast(error ? traduz(error.message) : 'Senha trocada. Você já está dentro.'); }; }); });
+
+/* ---------- Navegação ---------- */
+const ICON = {
+  semana:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>',
+  mes:'<rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2"/>',
+  add:'<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  cartoes:'<rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/>',
+  listas:'<path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/>'
+};
+function montarTabs(){
+  const t = $('#tabs'); t.hidden = false;
+  t.innerHTML = [['semana','Semana'],['mes','Mês'],['add','Lançar'],['cartoes','Cartões'],['listas','Listas']].map(([k,n]) =>
+    `<button data-t="${k}" class="${k==='add'?'add':''} ${tab===k?'on':''}" aria-label="${n}"><svg viewBox="0 0 24 24">${ICON[k]}</svg>${n}</button>`).join('');
+  t.querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.t === 'add') return lancar();
+    tab = b.dataset.t; try { localStorage.setItem('fin_tab', tab); } catch(e) {}
+    t.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); render(); });
+}
+async function render(){ try { await ({semana, mes, cartoes, listas})[tab](); } catch(e) { erro(e); } }
+
+/* ---------- Diálogo ---------- */
+function abrir(html, depois){ $('#dlgBody').innerHTML = html + '<button type="button" id="dlgFechar">Cancelar</button>'; $('#dlgFechar').onclick = fechar; $('#dlg').showModal(); depois && depois(); }
+function fechar(){ $('#dlg').close(); }
+
+/* ---------- Item de lançamento ---------- */
+function linhaLanc(l){
+  const atras = l.status !== 'pago' && l.vencimento && l.vencimento < hoje();
+  const pill = l.status==='pago' ? `<span class="pill good">${l.tipo==='entrada'?'recebido':'pago'} ${ddmm(l.pago_em)}</span>`
+    : l.status==='negociando' ? '<span class="pill warn">negociando</span>'
+    : atras ? '<span class="pill crit">atrasado</span>' : '';
+  return `<div class="item ${l.tipo==='entrada'?'in':''} ${atras?'late':''}" data-id="${l.id}">
+    <span class="d">${diaSem(l.vencimento)}<br>${ddmm(l.vencimento)}</span>
+    <span class="t"><div>${esc(l.descricao)} ${pill}</div>${l.obs?`<small>${esc(l.obs)}</small>`:''}</span>
+    <span class="num v">${l.tipo==='entrada'?'+':''}${brl(l.status==='pago'?(l.valor_pago??l.valor_previsto):l.valor_previsto)}</span></div>`;
+}
+function ligarItens(root, recarregar){
+  root.querySelectorAll('.item[data-id]').forEach(el => el.onclick = () => acaoLanc(+el.dataset.id, recarregar));
+}
+async function acaoLanc(id, recarregar){
+  const l = (await q(sb.from('lancamentos').select('*').eq('id', id)))[0];
+  const ent = l.tipo === 'entrada';
+  abrir(`<h2>${esc(l.descricao)}</h2><p class="muted small">Previsto ${brl(l.valor_previsto)} · vence ${ddmm(l.vencimento)}</p>
+    <form id="fPag">
+      <div class="grid2"><label>Valor ${ent?'recebido':'pago'}<input id="pValor" type="number" step="0.01" inputmode="decimal" value="${l.valor_pago ?? l.valor_previsto ?? ''}" required></label>
+      <label>Data<input id="pData" type="date" value="${l.pago_em || hoje()}" required></label></div>
+      <label>Forma<select id="pForma">${FORMAS.map(([v,n])=>`<option value="${v}" ${l.forma_pagamento===v?'selected':''}>${n}</option>`).join('')}</select></label>
+      <button class="primary">${l.status==='pago'?'Atualizar':'Marcar como '+(ent?'recebido':'pago')}</button>
+    </form>
+    <form id="fAdiar"><div class="grid2"><label>Nova data<input id="aData" type="date" value="${l.vencimento||hoje()}"></label><label>Novo valor<input id="aValor" type="number" step="0.01" value="${l.valor_previsto ?? ''}"></label></div>
+      <button>Mudar data / valor</button></form>
+    <div class="row between">${l.status==='pago'?'<button id="bDesfaz" class="small">Desfazer pagamento</button>':''}<button id="bCancela" class="small">Cancelar conta</button></div>`, () => {
+    $('#fPag').onsubmit = async e => { e.preventDefault(); try {
+      await q(sb.from('lancamentos').update({status:'pago', valor_pago:+$('#pValor').value, pago_em:$('#pData').value, forma_pagamento:$('#pForma').value, origem:'painel', updated_at:new Date().toISOString()}).eq('id', id));
+      fechar(); toast(ent?'Recebido':'Pago'); recarregar(); } catch(err) { erro(err); } };
+    $('#fAdiar').onsubmit = async e => { e.preventDefault(); try {
+      await q(sb.from('lancamentos').update({vencimento:$('#aData').value, valor_previsto:+$('#aValor').value||null, status: l.status==='pago'?'pago':'adiado', updated_at:new Date().toISOString()}).eq('id', id));
+      fechar(); toast('Atualizado'); recarregar(); } catch(err) { erro(err); } };
+    $('#bCancela').onclick = async () => { await q(sb.from('lancamentos').update({status:'cancelado'}).eq('id', id)); fechar(); toast('Conta cancelada'); recarregar(); };
+    const d = $('#bDesfaz'); if (d) d.onclick = async () => { await q(sb.from('lancamentos').update({status:'previsto', valor_pago:null, pago_em:null}).eq('id', id)); fechar(); toast('Desfeito'); recarregar(); };
+  });
+}
+
+/* ---------- Semana ---------- */
+async function semana(){
+  const h = hoje(), fim = addDias(h, 7);
+  const abertos = await q(sb.from('lancamentos').select('*').in('status',['previsto','adiado','negociando']).lte('vencimento', fim).order('vencimento'));
+  const pagos = await q(sb.from('lancamentos').select('*').eq('status','pago').gte('pago_em', addDias(h,-7)).order('pago_em', {ascending:false}));
+  const atras = abertos.filter(l => l.vencimento < h), sem = abertos.filter(l => l.vencimento >= h);
+  let saldos = []; try { saldos = await q(sb.from('saldos').select('*').order('conta')); } catch(e) {}
+  const saldoTot = saldos.reduce((a,x)=>a+Number(x.valor||0),0);
+  let pend = []; try { pend = await q(sb.from('mensagens_pendentes').select('*').eq('status','aberta').order('recebido_em')); } catch(e) {}
+  const soma = (arr, t) => arr.filter(l => l.tipo===t).reduce((s,l) => s + Number(l.valor_previsto||0), 0);
+  const sai = soma(abertos.filter(l=>l.status!=='negociando'),'saida'), ent = soma(abertos,'entrada');
+  $('#app').innerHTML = `<div class="row between"><div><h1>Esta semana</h1><p class="muted small">${ddmm(h)} a ${ddmm(fim)}</p></div><button class="small" id="bSair">Sair</button></div>
+    <div class="card" id="cSaldo"><div class="row between"><span class="muted small">🏦 Dinheiro em conta</span><button class="small" id="bSaldo">Atualizar</button></div>
+      <b class="num" style="font-size:26px">${brl(saldoTot)}</b>
+      <div class="small muted">${saldos.map(x=>`${esc(x.nome)}: ${brl(x.valor)} <span title="${esc(x.quem||'')}">(${ddmm(String(x.atualizado_em).slice(0,10))})</span>`).join(' · ')}</div>
+      <div class="small" style="margin-top:6px;color:${saldoTot+ent-sai>=0?'var(--good)':'var(--crit)'}">${saldoTot+ent-sai>=0?'Saldo + a receber cobre a semana: sobra '+brl(saldoTot+ent-sai):'Faltam '+brl(sai-saldoTot-ent)+' pra cobrir a semana'}</div></div>
+    <div class="grid2"><div class="card kpi"><span class="muted small">Pra pagar (com atrasados)</span><b>${brl(sai)}</b></div>
+    <div class="card kpi"><span class="muted small">Pra receber</span><b style="color:var(--good)">${brl(ent)}</b></div></div>
+    ${pend.length ? `<div class="card"><h2 style="color:var(--warn)">Pra revisar (${pend.length})</h2><p class="small muted">Mensagens do grupo que o robô não entendeu sozinho. Toque pra marcar como resolvida.</p>${pend.map(p=>`<div class="item" data-pid="${p.id}" style="grid-template-columns:52px 1fr auto"><span class="d">${ddmm(p.recebido_em.slice(0,10))}</span><span class="t"><div>${esc(p.texto).replace(/
+/g,'<br>')}</div><small>${esc(p.quem||'')}</small></span><span class="pill warn">abrir</span></div>`).join('')}</div>` : ''}
+    ${atras.length ? `<div class="card"><h2 style="color:var(--crit)">Atrasados</h2>${atras.map(linhaLanc).join('')}</div>` : ''}
+    <div class="card"><h2>Próximos 7 dias</h2>${sem.map(linhaLanc).join('') || '<p class="empty">Nada vencendo.</p>'}</div>
+    <div class="card"><h2>Pago nos últimos 7 dias</h2>${pagos.map(linhaLanc).join('') || '<p class="empty">Nada ainda.</p>'}</div>
+    <p class="muted small">Toque numa conta pra marcar como paga, mudar data ou valor.</p>`;
+  ligarItens($('#app'), semana);
+  $('#bSaldo').onclick = () => abrir(`<h2>Atualizar saldo</h2><form id="fSaldo">${saldos.map(x=>`<label>${esc(x.nome)}<input type="number" step="0.01" inputmode="decimal" data-conta="${x.conta}" value="${x.valor}"></label>`).join('')}<button class="primary">Salvar</button></form>`, () => {
+    $('#fSaldo').onsubmit = async e => { e.preventDefault(); try {
+      for (const inp of document.querySelectorAll('#fSaldo input[data-conta]')) { const ant = saldos.find(x=>x.conta===inp.dataset.conta);
+        if (+inp.value !== Number(ant.valor)) await q(sb.from('saldos').update({valor:+inp.value, atualizado_em:new Date().toISOString(), quem:'painel'}).eq('conta', inp.dataset.conta)); }
+      fechar(); toast('Saldo atualizado'); semana(); } catch(err) { erro(err); } }; });
+  document.querySelectorAll('[data-pid]').forEach(el => el.onclick = async () => { el.querySelector('.pill').textContent = 'toque de novo = resolvida';
+    el.onclick = async () => { try { await q(sb.from('mensagens_pendentes').update({status:'resolvida', resolucao:'marcada no painel'}).eq('id', +el.dataset.pid)); toast('Resolvida'); semana(); } catch(e) { erro(e); } }; });
+  $('#bSair').onclick = () => sb.auth.signOut();
+}
+
+/* ---------- Mês ---------- */
+async function mes(){
+  const [a, m] = mesAtual.split('-').map(Number);
+  const ini = `${mesAtual}-01`, fim = new Date(a, m, 0).toISOString().slice(0,10);
+  const ls = await q(sb.from('lancamentos').select('*').neq('status','cancelado').gte('vencimento', ini).lte('vencimento', fim).order('vencimento'));
+  const gs = await q(sb.from('gastos').select('*').gte('data', ini).lte('data', fim).order('data', {ascending:false}));
+  const tot = (t, pago) => ls.filter(l => l.tipo===t && (pago ? l.status==='pago' : true)).reduce((s,l)=>s+Number(pago?(l.valor_pago??l.valor_previsto):l.valor_previsto||0),0);
+  const eP=tot('entrada'), eR=tot('entrada',1), sP=tot('saida'), sR=tot('saida',1);
+  const gTot = gs.reduce((s,g)=>s+Number(g.valor),0);
+  const porCat = {}; ls.filter(l=>l.tipo==='saida').forEach(l => porCat[l.categoria||'outros'] = (porCat[l.categoria||'outros']||0) + Number(l.valor_previsto||0));
+  gs.forEach(g => porCat[g.categoria||'outros'] = (porCat[g.categoria||'outros']||0) + Number(g.valor));
+  const cats = Object.entries(porCat).sort((x,y)=>y[1]-x[1]), maxC = Math.max(1, ...cats.map(c=>c[1]));
+  const nav = d => { const dt = new Date(a, m-1+d, 1); return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0'); };
+  $('#app').innerHTML = `<div class="row between"><button class="small" id="mAnt" aria-label="Mês anterior">‹</button><h1>${MESES[m-1]} ${a}</h1><button class="small" id="mProx" aria-label="Próximo mês">›</button></div>
+    <div class="grid2">
+      <div class="card kpi"><span class="muted small">Entradas previstas</span><b style="color:var(--good)">${brl(eP)}</b><span class="small muted">recebido ${brl(eR)}</span></div>
+      <div class="card kpi"><span class="muted small">Contas do mês</span><b>${brl(sP)}</b><span class="small muted">pago ${brl(sR)}</span></div>
+      <div class="card kpi"><span class="muted small">Gastos avulsos</span><b>${brl(gTot)}</b><span class="small muted">${gs.length} lançamentos</span></div>
+      <div class="card kpi"><span class="muted small">Sobra prevista</span><b style="color:${eP-sP-gTot<0?'var(--crit)':'var(--good)'}">${brl(eP-sP-gTot)}</b><span class="small muted">entradas − contas − gastos</span></div>
+    </div>
+    <div class="card"><h2>Pra onde vai</h2><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">${cats.map(([c,v])=>`<div><div class="row between small"><span>${esc(c)}</span><span class="num">${brl(v)}</span></div><div class="bar"><i style="width:${(v/maxC*100).toFixed(1)}%"></i></div></div>`).join('') || '<p class="empty">Sem dados.</p>'}</div></div>
+    <div class="card"><h2>Contas e entradas</h2>${ls.map(linhaLanc).join('') || '<p class="empty">Nada neste mês.</p>'}</div>
+    <div class="card"><h2>Gastos avulsos</h2>${gs.map(g=>`<div class="item"><span class="d">${ddmm(g.data)}</span><span class="t"><div>${esc(g.descricao)}</div><small>${esc(g.categoria||'')} · ${esc(g.forma||'')} · ${esc(g.quem||'')}</small></span><span class="num">${brl(g.valor)}</span></div>`).join('') || '<p class="empty">Nenhum.</p>'}</div>
+    ${ini >= hoje().slice(0,7)+'-01' ? '<button id="bGerar" class="small">Gerar contas fixas deste mês</button>' : ''}`;
+  $('#mAnt').onclick = () => { mesAtual = nav(-1); mes(); };
+  $('#mProx').onclick = () => { mesAtual = nav(1); mes(); };
+  if ($('#bGerar')) $('#bGerar').onclick = async () => { try { const n = await q(sb.rpc('gerar_mes', {p_mes: ini})); toast(n ? `${n} contas criadas` : 'Este mês já estava gerado'); mes(); } catch(e) { erro(e); } };
+  ligarItens($('#app'), mes);
+}
+
+/* ---------- Cartões ---------- */
+async function cartoes(){
+  const fs = await q(sb.from('faturas').select('*').gte('mes', hoje().slice(0,7)+'-01').order('mes'));
+  const tetos = await q(sb.from('tetos_cartao').select('*').order('mes'));
+  const meses = [...new Set([...fs.map(f=>f.mes), ...tetos.map(t=>t.mes)])].filter(x => x >= hoje().slice(0,7)+'-01').sort().slice(0,8);
+  const dados = meses.map(mm => { const f = fs.filter(x=>x.mes===mm); const t = tetos.find(x=>x.mes===mm);
+    return {mes:mm, nu:f.filter(x=>x.cartao==='Nubank Lu').reduce((s,x)=>s+Number(x.valor),0), inter:f.filter(x=>x.cartao==='Inter (pai)').reduce((s,x)=>s+Number(x.valor),0), teto:t?Number(t.teto):null}; });
+  const lbl = mm => MESES[+mm.slice(5,7)-1] + '/' + mm.slice(2,4);
+  const linha = (d, extra=0) => { const tot = d.nu + d.inter + extra; const pct = d.teto ? Math.min(100, tot/d.teto*100) : 0; const over = d.teto && tot > d.teto;
+    return `<div style="display:flex;flex-direction:column;gap:4px;padding:8px 0;border-bottom:1px solid var(--line)">
+      <div class="row between"><b>${lbl(d.mes)}</b><span class="num">${brl(tot)}${d.teto?` <span class="muted small">/ teto ${brl(d.teto)}</span>`:''}</span></div>
+      ${d.teto?`<div class="bar"><i class="${over?'over':''}" style="width:${pct.toFixed(1)}%"></i></div>`:''}
+      <div class="small muted">Nubank ${brl(d.nu)} · Inter ${brl(d.inter)}${extra?` · simulação ${brl(extra)}`:''} ${over?'<span class="pill crit">acima do teto</span>':d.teto?`<span class="pill good">sobra ${brl(d.teto-tot)}</span>`:''}</div></div>`; };
+  $('#app').innerHTML = `<div><h1>Cartões</h1><p class="muted small">Faturas já comprometidas × teto do mês (descendo ~R$ 150/mês)</p></div>
+    <div class="card" id="cLista">${dados.map(d=>linha(d)).join('') || '<p class="empty">Sem faturas cadastradas.</p>'}</div>
+    <div class="card"><h2>Simular compra parcelada</h2><p class="muted small">Veja se cabe no teto antes de passar no cartão.</p>
+      <form id="fSim"><div class="grid2"><label>Valor total<input id="sValor" type="number" step="0.01" inputmode="decimal" required></label><label>Parcelas<input id="sParc" type="number" min="1" max="24" value="3" required></label></div>
+      <label>Primeira parcela cai em<select id="sMes">${dados.map(d=>`<option value="${d.mes}">${lbl(d.mes)}</option>`).join('')}</select></label>
+      <button class="primary">Simular</button></form><div id="sRes"></div></div>
+    <div class="card"><h2>Atualizar valor de fatura</h2>
+      <form id="fFat"><div class="grid2"><label>Cartão<select id="fCart"><option>Nubank Lu</option><option>Inter (pai)</option><option>Nubank Heuller</option></select></label>
+      <label>Mês de vencimento<input id="fMes" type="month" value="${hoje().slice(0,7)}" required></label></div>
+      <div class="grid2"><label>Valor<input id="fVal" type="number" step="0.01" required></label><label>Vencimento<input id="fVenc" type="date"></label></div>
+      <button>Salvar fatura</button></form></div>`;
+  $('#fSim').onsubmit = e => { e.preventDefault(); const v=+$('#sValor').value, n=+$('#sParc').value, p=v/n, ini=$('#sMes').value;
+    const idx = dados.findIndex(d=>d.mes===ini);
+    $('#sRes').innerHTML = `<p class="small" style="margin-top:10px">${n}× de <b class="num">${brl(p)}</b></p>` + dados.map((d,i)=> linha(d, i>=idx && i<idx+n ? p : 0)).join(''); };
+  $('#fFat').onsubmit = async e => { e.preventDefault(); try {
+    await q(sb.from('faturas').upsert({cartao:$('#fCart').value, mes:$('#fMes').value+'-01', valor:+$('#fVal').value, vencimento:$('#fVenc').value||null}, {onConflict:'cartao,mes'}));
+    toast('Fatura salva'); cartoes(); } catch(err) { erro(err); } };
+}
+
+/* ---------- Listas ---------- */
+async function listas(){
+  const itens = await q(sb.from('listas').select('*').eq('lista', listaAtual).order('status').order('prioridade').order('created_at'));
+  const pend = itens.filter(i=>i.status==='pendente'), feitos = itens.filter(i=>i.status!=='pendente');
+  const total = pend.reduce((s,i)=>s+Number(i.preco_alvo||i.valor_estimado||0),0);
+  const cats = [...new Set(itens.map(i=>i.categoria).filter(Boolean))];
+  const li = i => `<div class="item" data-lid="${i.id}" style="grid-template-columns:44px 1fr auto">
+    <span class="d pri${i.prioridade}">${PRI[i.prioridade]}</span>
+    <span class="t"><div>${esc(i.item)} ${i.ugc_possivel?'<span class="pill info">UGC</span>':''} ${i.status!=='pendente'?`<span class="pill good">${i.status}</span>`:''}</div>
+      <small>${[i.categoria, i.prazo?'até '+ddmm(i.prazo):'', i.preco_alvo?'alvo '+brl(i.preco_alvo):'', i.obs].filter(Boolean).map(esc).join(' · ')}</small></span>
+    <span class="num">${i.valor_estimado?brl(i.valor_estimado):''}</span></div>`;
+  $('#app').innerHTML = `<div class="row between"><h1>Listas</h1><button class="primary small" id="bNovo">+ Item</button></div>
+    <div class="seg">${LISTAS.map(([k,n])=>`<button data-l="${k}" class="${k===listaAtual?'on':''}">${n}</button>`).join('')}</div>
+    <div class="card kpi"><span class="muted small">${pend.length} pendentes · total estimado</span><b>${brl(total)}</b></div>
+    ${cats.length?`<div class="row" style="flex-wrap:wrap;gap:6px">${cats.map(c=>`<span class="pill info">${esc(c)} · ${pend.filter(i=>i.categoria===c).length}</span>`).join('')}</div>`:''}
+    <div class="card">${pend.map(li).join('') || '<p class="empty">Lista vazia.</p>'}</div>
+    ${feitos.length?`<details class="card"><summary>Concluídos (${feitos.length})</summary>${feitos.map(li).join('')}</details>`:''}`;
+  document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { listaAtual = b.dataset.l; try { localStorage.setItem('fin_lista', listaAtual); } catch(e) {} listas(); });
+  $('#bNovo').onclick = () => editarItem(null, cats);
+  document.querySelectorAll('[data-lid]').forEach(el => el.onclick = () => editarItem(itens.find(i=>i.id==el.dataset.lid), cats));
+}
+function editarItem(i, cats){
+  const v = i || {lista:listaAtual, prioridade:2};
+  abrir(`<h2>${i?'Editar item':'Novo item'}</h2><form id="fItem">
+    <label>Item<input id="iItem" value="${esc(v.item||'')}" required></label>
+    <div class="grid2"><label>Lista<select id="iLista">${LISTAS.map(([k,n])=>`<option value="${k}" ${v.lista===k?'selected':''}>${n}</option>`).join('')}</select></label>
+    <label>Categoria<input id="iCat" list="dlCats" value="${esc(v.categoria||'')}" placeholder="bebê, cozinha, quarto…"><datalist id="dlCats">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></label></div>
+    <div class="grid2"><label>Prioridade<select id="iPri">${[1,2,3].map(p=>`<option value="${p}" ${v.prioridade==p?'selected':''}>${PRI[p]}</option>`).join('')}</select></label>
+    <label>Prazo<input id="iPrazo" type="date" value="${v.prazo||''}"></label></div>
+    <div class="grid2"><label>Valor estimado<input id="iVal" type="number" step="0.01" inputmode="decimal" value="${v.valor_estimado??''}"></label>
+    <label>Preço-alvo<input id="iAlvo" type="number" step="0.01" inputmode="decimal" value="${v.preco_alvo??''}"></label></div>
+    <label>Link<input id="iLink" type="url" value="${esc(v.link||'')}"></label>
+    <label class="chk"><input id="iUgc" type="checkbox" ${v.ugc_possivel?'checked':''}> Dá pra conseguir via UGC / permuta</label>
+    <label>Observação<textarea id="iObs" rows="2">${esc(v.obs||'')}</textarea></label>
+    ${i?`<label>Status<select id="iStatus">${['pendente','comprado','resolvido','descartado'].map(s=>`<option ${v.status===s?'selected':''}>${s}</option>`).join('')}</select></label>`:''}
+    <button class="primary">Salvar</button>
+    ${i?'<button type="button" id="bDel">Apagar item</button>':''}</form>
+    ${i&&v.link?`<a href="${esc(v.link)}" target="_blank" rel="noopener" class="small">Abrir link</a>`:''}`, () => {
+    $('#fItem').onsubmit = async e => { e.preventDefault(); const n = x => x.value===''?null:+x.value;
+      const row = {item:$('#iItem').value.trim(), lista:$('#iLista').value, categoria:$('#iCat').value.trim()||null, prioridade:+$('#iPri').value, prazo:$('#iPrazo').value||null,
+        valor_estimado:n($('#iVal')), preco_alvo:n($('#iAlvo')), link:$('#iLink').value.trim()||null, ugc_possivel:$('#iUgc').checked, obs:$('#iObs').value.trim()||null, updated_at:new Date().toISOString()};
+      if (i) row.status = $('#iStatus').value;
+      try { await q(i ? sb.from('listas').update(row).eq('id', i.id) : sb.from('listas').insert(row)); fechar(); toast('Salvo'); listas(); } catch(err) { erro(err); } };
+    const d = $('#bDel'); if (d) d.onclick = async () => { d.textContent = 'Toque de novo pra apagar'; d.onclick = async () => { await q(sb.from('listas').delete().eq('id', i.id)); fechar(); toast('Apagado'); listas(); }; };
+  });
+}
+
+/* ---------- Lançar ---------- */
+function lancar(){
+  abrir(`<h2>Lançar</h2><div class="seg"><button class="on" data-k="gasto">Gasto avulso</button><button data-k="conta">Conta a pagar</button><button data-k="entrada">Entrada</button></div>
+    <form id="fLanc">
+      <label>Descrição<input id="cDesc" required placeholder="ex.: carne, farmácia, freela"></label>
+      <div class="grid2"><label>Valor<input id="cVal" type="number" step="0.01" inputmode="decimal" required></label><label id="lblData">Data<input id="cData" type="date" value="${hoje()}" required></label></div>
+      <div class="grid2"><label>Categoria<input id="cCat" list="dlC" placeholder="mercado, casa…"><datalist id="dlC">${['mercado','casa','bebê','transporte','saúde','lazer','ferramentas','cliente','impostos','cartao','educacao'].map(c=>`<option value="${c}">`).join('')}</datalist></label>
+      <label id="lblForma">Forma<select id="cForma">${FORMAS.map(([v,n])=>`<option value="${v}">${n}</option>`).join('')}</select></label></div>
+      <div class="grid2" id="lblQuem"><label>Quem<select id="cQuem"><option>Lu</option><option>Heuller</option></select></label>
+      <label>Parcelas<input id="cParc" type="number" min="1" max="24" value="1"></label></div>
+      <p class="small muted" id="dicaCartao">No crédito Nubank ou Inter, o valor entra sozinho na fatura certa (dividido, se for parcelado).</p>
+      <button class="primary">Salvar</button></form>`, () => {
+    let k = 'gasto';
+    document.querySelectorAll('#dlgBody .seg button').forEach(b => b.onclick = () => { k = b.dataset.k;
+      document.querySelectorAll('#dlgBody .seg button').forEach(x => x.classList.toggle('on', x===b));
+      $('#lblData').firstChild.textContent = k==='gasto' ? 'Data' : 'Vencimento'; $('#lblQuem').hidden = k!=='gasto'; $('#dicaCartao').hidden = k!=='gasto'; });
+    $('#fLanc').onsubmit = async e => { e.preventDefault(); try {
+      if (k === 'gasto') await q(sb.from('gastos').insert({data:$('#cData').value, descricao:$('#cDesc').value.trim(), valor:+$('#cVal').value, categoria:$('#cCat').value.trim()||null, forma:$('#cForma').value, quem:$('#cQuem').value, parcelas:Math.max(1, +$('#cParc').value||1), origem:'painel'}));
+      else await q(sb.from('lancamentos').insert({descricao:$('#cDesc').value.trim(), tipo:k==='conta'?'saida':'entrada', valor_previsto:+$('#cVal').value, vencimento:$('#cData').value, categoria:$('#cCat').value.trim()||null, forma_pagamento:$('#cForma').value, origem:'painel'}));
+      fechar(); toast('Lançado'); render(); } catch(err) { erro(err); } };
+  });
+}
+
+if (!window.SB_KEY || window.SB_KEY.startsWith('COLE')) {
+  $('#app').innerHTML = '<div class="card"><h2>Falta configurar</h2><p class="muted">Cole a chave publishable do Supabase em <code>config.js</code>.</p></div>';
+} else iniciar();
+</script>
+</body>
+</html>
