@@ -20,6 +20,7 @@
     { "host": "site",   "path": "hfconsultoria/relatorios",      "repo": "negocios-creators/hf-consultoria", "nome": "HF Consultoria · relatórios" },
     { "host": "site",   "path": "hfcreditos/relatorios",         "repo": "negocios-creators/hf-creditos",    "nome": "HF Créditos · relatórios" },
     { "host": "site",   "path": "indenizavoo/relatorios",        "repo": "negocios-creators/indeniza-voo",   "nome": "Indeniza Voo · relatórios" },
+    { "host": "site",   "path": "stabilepessoa/relatorios",      "repo": "luanacaper/stabile-pessoa-relatorios", "nome": "Stabile & Pessoa · relatórios" },
     { "host": "painel", "path": "central",                       "repo": "luanacaper/central",               "nome": "Central Negócios Creators" },
     { "host": "painel", "path": "creatorsaime",                 "repo": "pousadaaime/aime-criadores",       "nome": "Creators Aimê" },
     { "host": "painel", "path": "creatorsfast",                  "repo": "fastescovabauru/criadores",        "nome": "Creators Fast Escova" },
