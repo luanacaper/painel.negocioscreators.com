@@ -14,6 +14,7 @@
     { "host": "site",   "path": "aime/aniversario",              "repo": "pousadaaime/aime-lp-aniversario",  "nome": "Aimê · aniversário" },
     { "host": "site",   "path": "aime/calendario",               "repo": "pousadaaime/calendario",           "nome": "Aimê · calendário" },
     { "host": "site",   "path": "fastescova/cupom",              "repo": "fastescovabauru/cupom",            "nome": "Fast Escova · cupom" },
+    { "host": "site",   "path": "fastescova/bio",                "repo": "fastescovabauru/bio",              "nome": "Fast Escova · link da bio" },
     { "host": "site",   "path": "fastescova/yellowfriday",        "repo": "fastescovabauru/yellowfriday",     "nome": "Fast Escova · Yellow Friday (pacotes)" },
     { "host": "site",   "path": "fastescova/calendario",         "repo": "fastescovabauru/calendario",       "nome": "Fast Escova · calendário" },
     { "host": "site",   "path": "fastescova/relatorios",         "repo": "fastescovabauru/relatorios",       "nome": "Fast Escova · relatórios" },
