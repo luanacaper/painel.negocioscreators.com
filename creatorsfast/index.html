@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Fast Escova Bauru · Casting de Criadores</title>
+<meta name="description" content="Seja o rosto da Fast Escova Bauru. Combo completo de serviços em permuta por conteúdo — pra criadoras, UGCs e influenciadores de Bauru.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💛</text></svg>">
+
+<!-- ===================================================================
+     META PIXEL — Fast Escova Bauru · Dataset ID 2253088758874211
+     (mesma conta "Lc. Fast escova Bauru" / FE - BAURU já usada na isca do cupom)
+     PageView ao carregar; evento "Lead" com content_category "Criador"
+     dispara ao CONCLUIR a inscrição — segmenta separado dos leads de cupom.
+==================================================================== -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2253088758874211');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2253088758874211&ev=PageView&noscript=1"/></noscript>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --preto:#0a0a0a; --preto-2:#151515; --preto-3:#1e1e1e;
+    --dourado:#d4af37; --dourado-claro:#e8cc6a; --dourado-esc:#a8842a;
+    --branco:#f7f5f0; --cinza:#a8a49b; --cinza-esc:#6b675f;
+    --serif:'Playfair Display',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --shadow-gold:0 8px 30px rgba(212,175,55,0.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{font-family:var(--sans);color:var(--branco);background:var(--preto);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:540px;margin:0 auto;padding:0 18px}
+  img{max-width:100%;display:block}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ---------- MARCA ---------- */
+  .marca{display:flex;flex-direction:column;align-items:center;gap:0}
+  .marca .word{font-family:var(--serif);font-size:29px;font-style:italic;font-weight:600;color:var(--branco);letter-spacing:0.5px}
+  .marca .word b{font-style:normal;font-weight:700;color:var(--dourado);font-family:var(--sans)}
+  .marca .cidade{font-size:10.5px;letter-spacing:5px;color:var(--cinza);margin-top:2px;font-weight:600}
+  .marca .tagline{font-family:var(--serif);font-style:italic;font-size:12.5px;color:var(--dourado-esc);margin-top:6px}
+  header.topo{padding:22px 0 8px;text-align:center}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:20px 0 28px;text-align:center}
+  .hero .selo{display:inline-flex;align-items:center;gap:7px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.35);color:var(--dourado-claro);font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;padding:7px 14px;border-radius:30px;margin-bottom:20px}
+  .hero h1{font-family:var(--serif);font-size:33px;line-height:1.17;font-weight:600;color:var(--branco)}
+  .hero h1 em{color:var(--dourado);font-style:italic}
+  .hero p{margin-top:14px;color:var(--cinza);font-size:15.5px;max-width:40ch;margin-left:auto;margin-right:auto}
+  .hero p strong{color:var(--branco);font-weight:600}
+  .cta-hero{margin-top:24px;width:100%;padding:17px;border-radius:14px;border:none;background:linear-gradient(180deg,var(--dourado-claro),var(--dourado));color:#161200;font-size:16px;font-weight:800;box-shadow:var(--shadow-gold);letter-spacing:0.2px}
+  .cta-hero:active{transform:scale(0.98)}
+  .hero-hint{margin-top:12px;font-size:12.5px;color:var(--cinza-esc)}
+
+  /* ---------- SEÇÃO GENÉRICA ---------- */
+  section.bloco{padding:14px 0 24px}
+  section.bloco > h2{font-family:var(--serif);font-size:22px;text-align:center;color:var(--branco);margin-bottom:6px;font-weight:600}
+  section.bloco > .sub{text-align:center;color:var(--cinza);font-size:13.5px;max-width:38ch;margin:0 auto 20px}
+
+  /* ---------- O SALÃO DO MÊS ---------- */
+  .combo{display:grid;gap:12px}
+  .combo .item{display:flex;gap:14px;align-items:flex-start;background:var(--preto-2);border:1px solid rgba(212,175,55,0.18);border-radius:14px;padding:16px}
+  .combo .item .ic{flex:none;width:34px;height:34px;border-radius:10px;background:rgba(212,175,55,0.14);display:grid;place-content:center;font-size:17px}
+  .combo .item .t{font-size:15px;font-weight:700;color:var(--branco)}
+  .combo .item .d{font-size:12.5px;color:var(--cinza);margin-top:2px}
+  .combo-nota{text-align:center;font-size:12px;color:var(--cinza-esc);margin-top:14px}
+
+  /* ---------- PERMUTA (destaque) ---------- */
+  .permuta{background:linear-gradient(155deg,#1a1710,#0c0c0c);border:1.5px solid var(--dourado);border-radius:18px;padding:22px 20px;margin:6px 0 4px}
+  .permuta .tag{display:inline-block;background:var(--dourado);color:#161200;font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;padding:5px 11px;border-radius:20px;margin-bottom:12px}
+  .permuta h3{font-family:var(--serif);font-size:20px;color:var(--branco);font-weight:600;margin-bottom:8px}
+  .permuta p{font-size:14px;color:var(--cinza);margin-bottom:8px}
+  .permuta p strong{color:var(--dourado-claro);font-weight:700}
+
+  /* ---------- BENEFÍCIOS ---------- */
+  .bens{display:grid;gap:12px}
+  .bem{background:var(--preto-2);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px 16px}
+  .bem .h{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:700;color:var(--dourado-claro);margin-bottom:5px}
+  .bem .h .n{flex:none;width:26px;height:26px;border-radius:50%;background:rgba(212,175,55,0.14);color:var(--dourado);font-weight:800;font-size:12px;display:grid;place-content:center}
+  .bem p{font-size:13px;color:var(--cinza)}
+  .bem p b{color:var(--branco);font-weight:600}
+
+  /* ---------- QUEM PROCURAMOS ---------- */
+  .quem{background:var(--preto-2);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px 18px}
+  .quem li{list-style:none;font-size:13.5px;color:var(--cinza);padding:7px 0 7px 26px;position:relative}
+  .quem li::before{content:'✦';position:absolute;left:2px;color:var(--dourado)}
+  .quem li b{color:var(--branco);font-weight:600}
+
+  /* ---------- FORM ---------- */
+  .form-card{background:var(--preto-2);border:1px solid rgba(212,175,55,0.2);border-radius:18px;padding:24px 20px;margin:6px 0 30px}
+  .form-card h2{font-family:var(--serif);font-size:22px;text-align:center;color:var(--branco);margin-bottom:6px}
+  .form-card .sub{text-align:center;color:var(--cinza);font-size:13px;margin-bottom:20px}
+  .field{margin-bottom:15px}
+  .field > label{display:block;font-size:11.5px;font-weight:700;color:var(--dourado-claro);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+  .field input[type=text],.field input[type=email],.field input:not([type]),.field textarea{width:100%;padding:14px 15px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.12);background:var(--preto-3);color:var(--branco);font-size:16px}
+  .field textarea{min-height:74px;resize:vertical;line-height:1.5}
+  .field input::placeholder,.field textarea::placeholder{color:var(--cinza-esc)}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--dourado);box-shadow:0 0 0 3px rgba(212,175,55,0.14)}
+  .hint{font-size:12px;color:var(--cinza-esc);margin-top:6px;line-height:1.5}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  @media(max-width:430px){.row2{grid-template-columns:1fr}}
+
+  .pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pick label{display:flex;flex-direction:column;gap:3px;padding:13px 12px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.12);background:var(--preto-3);cursor:pointer}
+  .pick input{width:auto;margin-bottom:2px;accent-color:var(--dourado)}
+  .pick .t{font-size:14px;font-weight:700;color:var(--branco)}
+  .pick .d{font-size:11.5px;color:var(--cinza)}
+  .pick label:has(input:checked){border-color:var(--dourado);background:rgba(212,175,55,0.08)}
+
+  .pick-sn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pick-sn label{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.12);background:var(--preto-3);cursor:pointer;font-size:14.5px;font-weight:600;color:var(--branco)}
+  .pick-sn input{accent-color:var(--dourado)}
+  .pick-sn label:has(input:checked){border-color:var(--dourado);background:rgba(212,175,55,0.08)}
+
+  .upload{border:1.5px dashed rgba(212,175,55,0.5);border-radius:12px;padding:18px 14px;text-align:center;background:rgba(212,175,55,0.04);cursor:pointer}
+  .upload.tem{border-style:solid;border-color:var(--dourado)}
+  .upload .ic{font-size:26px}
+  .upload .txt{font-size:13px;color:var(--cinza);margin-top:6px}
+  .upload .txt b{color:var(--dourado-claro)}
+  .upload input{display:none}
+  .upload-prev{margin-top:10px;display:none}
+  .upload-prev.show{display:block}
+  .upload-prev img{max-height:220px;width:auto;margin:0 auto;border-radius:10px;border:1px solid rgba(212,175,55,0.3)}
+  .upload-prev button{margin-top:8px;background:none;border:none;color:#e8a48c;font-size:12.5px;text-decoration:underline}
+
+  .err{display:none;color:#e8a48c;font-size:12px;margin-top:6px}
+  .err.show{display:block}
+  .form-card button[type=submit]{width:100%;margin-top:6px;padding:16px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--dourado-claro),var(--dourado));color:#161200;font-size:15.5px;font-weight:800;box-shadow:var(--shadow-gold)}
+  .form-card button[type=submit]:disabled{opacity:0.6}
+  .sending{display:none;text-align:center;margin-top:14px;color:var(--cinza);font-size:13px;align-items:center;justify-content:center;gap:8px}
+  .sending.show{display:flex}
+  .spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(212,175,55,0.25);border-top-color:var(--dourado);animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .form-erro{display:none;text-align:center;color:#e8a48c;font-size:13px;margin-top:12px}
+  .form-erro.show{display:block}
+  .privacidade{text-align:center;font-size:11.5px;color:var(--cinza-esc);margin-top:14px}
+
+  /* ---------- DONE ---------- */
+  .done{display:none;text-align:center;padding:44px 18px;background:var(--preto-2);border:1px solid rgba(212,175,55,0.2);border-radius:18px;margin:6px 0 30px}
+  .done.show{display:block}
+  .done .ok{font-size:42px}
+  .done h2{font-family:var(--serif);font-size:26px;color:var(--dourado);margin:10px 0 8px;font-weight:600}
+  .done p{color:var(--cinza);font-size:14px;max-width:34ch;margin:0 auto}
+  .done .cod{margin-top:14px;font-size:13px;color:var(--cinza-esc)}
+  .done .cod b{color:var(--branco);letter-spacing:1px}
+
+  /* ---------- UNIDADE / FOOTER ---------- */
+  .unidade{background:var(--preto-2);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:20px;margin-bottom:20px}
+  .unidade h3{font-family:var(--serif);font-size:17px;color:var(--branco);margin-bottom:12px}
+  .unidade .linha{display:flex;gap:10px;font-size:13.5px;color:var(--cinza);margin-bottom:8px}
+  .unidade .linha b{color:var(--branco);font-weight:600}
+  footer{text-align:center;padding:18px 0 40px;font-size:11.5px;color:var(--cinza-esc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topo">
+    <div class="marca">
+      <div class="word">fast<b>escova</b></div>
+      <div class="cidade">BAURU</div>
+      <div class="tagline">Você linda no seu tempo</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <span class="selo">💛 Casting de Criadores · Bauru</span>
+    <h1>Seja o <em>rosto</em> da Fast Escova Bauru esse mês</h1>
+    <p>Todo mês a gente escolhe criadoras e criadores de Bauru pra receber um <strong>combo completo de salão</strong> — em troca de conteúdo. É permuta: você cuida do visual com a gente, a gente combina o conteúdo com você.</p>
+    <button class="cta-hero" onclick="document.getElementById('form-secao').scrollIntoView({behavior:'smooth',block:'start'})">Quero me inscrever no casting</button>
+    <div class="hero-hint">Leva 2 minutos · vagas limitadas por mês</div>
+  </section>
+
+  <section class="bloco">
+    <h2>O que entra no combo</h2>
+    <div class="sub">O “salão do mês” do criador, por nossa conta:</div>
+    <div class="combo">
+      <div class="item">
+        <div class="ic">💨</div>
+        <div><div class="t">Escova modelada + hidratação</div><div class="d">Fio alinhado, com brilho e movimento — pronto pra gravar.</div></div>
+      </div>
+      <div class="item">
+        <div class="ic">🦶</div>
+        <div><div class="t">Pedicure + velaterapia</div><div class="d">Pés cuidados com a massagem quentinha da vela hidratante.</div></div>
+      </div>
+      <div class="item">
+        <div class="ic">✨</div>
+        <div><div class="t">Fast Retoque — cobertura de fios brancos</div><div class="d">Tecnologia exclusiva da rede pra disfarçar a raiz em minutos, sem química pesada.</div></div>
+      </div>
+    </div>
+    <div class="combo-nota">Todos os serviços são feitos na unidade Bauru, sem hora marcada, em um único dia.</div>
+  </section>
+
+  <section class="bloco">
+    <div class="permuta">
+      <span class="tag">Como funciona a permuta</span>
+      <h3>Serviço em troca de conteúdo</h3>
+      <p>Você recebe o combo completo <strong>de graça</strong>. Em troca, entrega um pacote de conteúdo que a gente combina antes com você (normalmente <strong>Reels + sequência de stories</strong> mostrando a experiência na Fast).</p>
+      <p>É uma parceria: a gente entrega o cuidado, você entrega o conteúdo — e os dois lados ganham visibilidade.</p>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <h2>Por que vale a pena além dos serviços</h2>
+    <div class="sub">O combo é só o começo. Pra quem se destaca, tem mais:</div>
+    <div class="bens">
+      <div class="bem">
+        <div class="h"><span class="n">1</span> Seu nome ligado a uma marca nacional</div>
+        <p>A Fast Escova tem <b>mais de 400 franquias no Brasil</b> e a assinatura “Você linda no seu tempo”. Trabalhar com a gente entra no seu portfólio como parceria com uma marca reconhecida no país inteiro — não só um salão local.</p>
+      </div>
+      <div class="bem">
+        <div class="h"><span class="n">2</span> Os melhores conteúdos ganham tráfego pago</div>
+        <p>Os conteúdos que mais performarem a gente <b>impulsiona como anúncio</b>, com verba da Fast. Seu rosto e seu perfil rodando pra milhares de pessoas em Bauru — mais alcance pro seu conteúdo, e que fica no seu nome também.</p>
+      </div>
+      <div class="bem">
+        <div class="h"><span class="n">3</span> Casting fixo: salão todo mês</div>
+        <p>As criadoras e criadores que entregam bem e combinam com a marca <b>ficam fixos no nosso casting</b> — com combo de salão renovado todos os meses, de forma recorrente, sem precisar se inscrever de novo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <h2>Quem a gente procura</h2>
+    <div class="quem">
+      <ul>
+        <li><b>Criadoras, criadores, UGCs e influenciadores</b> — de todos os tamanhos de perfil.</li>
+        <li><b>De Bauru</b>: você mora aqui <b>ou</b> a maior parte do seu público é daqui.</li>
+        <li>Quem gosta de mostrar rotina, beleza, autocuidado e bastidor — com naturalidade.</li>
+        <li>Quem entrega o combinado no prazo. Parceria boa é parceria que roda todo mês.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="form-secao">
+    <div class="form-card" id="formCard">
+      <h2>Inscrição no casting</h2>
+      <div class="sub">A equipe da Fast avalia e responde por WhatsApp.</div>
+      <form id="inscForm" novalidate>
+
+        <div class="field">
+          <label>Nome</label>
+          <input id="nome" placeholder="Seu nome completo" autocomplete="name">
+          <div class="err" id="errNome">Preenche seu nome, por favor.</div>
+        </div>
+
+        <div class="field">
+          <label>@ do Instagram</label>
+          <input id="instagram" placeholder="@seuusuario">
+          <div class="err" id="errInsta">Preenche seu @, por favor.</div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>WhatsApp</label>
+            <input id="whatsapp" inputmode="numeric" placeholder="(14) 99999-9999" autocomplete="tel">
+            <div class="err" id="errWhats">WhatsApp inválido.</div>
+          </div>
+          <div class="field">
+            <label>E-mail</label>
+            <input id="email" type="email" placeholder="seu@email.com" autocomplete="email">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Bairro / cidade onde mora</label>
+            <input id="cidade" placeholder="Ex: Vila Aviação, Bauru">
+          </div>
+          <div class="field">
+            <label>Seguidores (aprox.)</label>
+            <input id="seguidores" inputmode="numeric" placeholder="Ex: 4000">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Você se considera</label>
+          <div class="pick">
+            <label><input type="radio" name="cat" value="UGC" checked><span class="t">UGC</span><span class="d">Produz conteúdo pra marca usar</span></label>
+            <label><input type="radio" name="cat" value="Influenciador"><span class="t">Influenciador</span><span class="d">Vive de audiência e engajamento</span></label>
+          </div>
+          <div class="hint">É só seu palpite — quem define a categoria final é a equipe da Fast.</div>
+        </div>
+
+        <div class="field">
+          <label>Link do seu portfólio ou melhores conteúdos</label>
+          <input id="portfolio" placeholder="Link do Drive, TikTok, ou destaque do Instagram">
+          <div class="hint">Se você é UGC, é isso que a gente mais olha — capriche.</div>
+        </div>
+
+        <div class="field">
+          <label>Você já tem fios brancos?</label>
+          <div class="pick-sn">
+            <label><input type="radio" name="fios" value="Sim">Sim</label>
+            <label><input type="radio" name="fios" value="Não" checked>Não</label>
+          </div>
+          <div class="hint">Ajuda a gente a planejar o Fast Retoque dentro do seu combo.</div>
+        </div>
+
+        <div class="field">
+          <label>Qual cidade concentra a maior parte do seu público?</label>
+          <input id="publicoCidade" placeholder="Ex: Bauru, SP">
+          <div class="hint">Se a maioria do seu público não é de Bauru, tudo bem — só seja sincero aqui.</div>
+        </div>
+
+        <div class="field">
+          <label>Print do alcance dos seus stories nas últimas 24h</label>
+          <label class="upload" id="uploadBox">
+            <div class="ic">📎</div>
+            <div class="txt"><b>Toque pra enviar o print</b><br>Insights &gt; Alcance dos stories, ou a lista de espectadores mostrando as cidades do seu público.</div>
+            <input type="file" id="print" accept="image/*">
+          </label>
+          <div class="upload-prev" id="uploadPrev">
+            <img id="uploadImg" alt="Prévia do print">
+            <br><button type="button" id="uploadRemove">trocar imagem</button>
+          </div>
+          <div class="hint">É como a equipe confirma que seu público é de Bauru de verdade. Pode ser foto da tela mesmo.</div>
+          <div class="err" id="errPrint">Envie o print do alcance dos seus stories.</div>
+        </div>
+
+        <div class="field">
+          <label>Quer contar mais alguma coisa? (opcional)</label>
+          <textarea id="mensagem" placeholder="Nicho, tipo de conteúdo, com que marcas já trabalhou…"></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmit">Enviar inscrição</button>
+        <div class="sending" id="sending"><span class="spin"></span> Enviando sua inscrição…</div>
+        <div class="form-erro" id="formErro">Não consegui enviar agora. Tenta de novo em instantes, ou chama a gente no WhatsApp: (14) 99145-5532.</div>
+      </form>
+      <div class="privacidade">Seus dados servem só pra avaliação do casting da Fast Escova Bauru.</div>
+    </div>
+
+    <div class="done" id="done">
+      <div class="ok">💛</div>
+      <h2>Inscrição recebida!</h2>
+      <p>A equipe da Fast Escova Bauru vai avaliar seu perfil e o print que você enviou. Se rolar, a gente chama você no WhatsApp pra combinar o combo e o conteúdo.</p>
+      <div class="cod">Sua inscrição: <b id="doneCodigo">—</b></div>
+    </div>
+  </section>
+
+  <section class="unidade">
+    <h3>Unidade Bauru</h3>
+    <div class="linha">📍 <b>R. Antônio Alves, 30-12</b> — Bauru, SP</div>
+    <div class="linha">🕐 <b>Seg a sáb:</b> 8h às 20h &nbsp;·&nbsp; <b>Dom:</b> 9h às 15h</div>
+    <div class="linha">📞 <b>(14) 99145-5532</b> · sem hora marcada</div>
+  </section>
+
+  <footer>Fast Escova Bauru · R. Antônio Alves, 30-12 — Bauru, SP</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ==================================================================
+   CONFIGURAÇÃO — mesmo projeto Supabase da isca do cupom
+   (Settings → API do projeto bsemnxcfdzdyokxidafu).
+================================================================== */
+const SUPABASE_URL = "https://bsemnxcfdzdyokxidafu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_rYrDx9SuurtISjiJqw0ECQ_vTWeKgUg";
+const BUCKET = "prints-criadores";
+/* opcional — URL do Apps Script que só avisa a equipe por email quando entra
+   inscrição nova (ver codigo-apps-script.gs). Deixe "" pra não usar. */
+const NOTIFICAR_URL = "";
+/* Enquanto testa: cole um código de "Testar Eventos" do Gerenciador de Eventos
+   da Meta aqui pra o evento cair só na aba de teste, sem sujar dados reais.
+   Deixe "" antes de divulgar o link. */
+const TEST_EVENT_CODE = "";
+
+const configPendente = () => !SUPABASE_URL || SUPABASE_URL.indexOf('COLE_AQUI') > -1
+  || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.indexOf('COLE_AQUI') > -1;
+const sb = window.supabase && !configPendente()
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+const $ = id => document.getElementById(id);
+const form = $('inscForm');
+let arquivoPrint = null;
+
+/* ---------- máscara de WhatsApp ---------- */
+$('whatsapp').addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,'').slice(0,11);
+  if (v.length > 6)      e.target.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if (v.length > 2) e.target.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else if (v.length > 0) e.target.value = `(${v}`;
+  else e.target.value = v;
+});
+
+/* ---------- rastro do anúncio (Meta Ads) ---------- */
+function getCookie_(nome){
+  const m = document.cookie.match(new RegExp('(?:^|; )' + nome + '=([^;]*)'));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+function capturarRastroAnuncio(){
+  const p = new URLSearchParams(location.search);
+  const fbclid = p.get('fbclid');
+  let fbc = getCookie_('_fbc');
+  if (!fbc && fbclid) fbc = `fb.1.${Date.now()}.${fbclid}`;
+  return { fbclid, fbc, fbp: getCookie_('_fbp') };
+}
+
+/* ---------- upload de print: prévia + compressão ---------- */
+$('print').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  arquivoPrint = f;
+  const url = URL.createObjectURL(f);
+  $('uploadImg').src = url;
+  $('uploadPrev').classList.add('show');
+  $('uploadBox').classList.add('tem');
+  $('errPrint').classList.remove('show');
+});
+$('uploadRemove').addEventListener('click', () => {
+  arquivoPrint = null;
+  $('print').value = '';
+  $('uploadPrev').classList.remove('show');
+  $('uploadBox').classList.remove('tem');
+});
+
+// redimensiona pra no máx 1280px e comprime em JPEG — o print vai de
+// vários MB pra ~150-300KB, economizando o Storage do Supabase (limite 1 GB).
+function comprimirImagem(file){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1280;
+      let { width, height } = img;
+      if (width > MAX || height > MAX) {
+        const r = Math.min(MAX / width, MAX / height);
+        width = Math.round(width * r);
+        height = Math.round(height * r);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('falha ao comprimir')), 'image/jpeg', 0.82);
+    };
+    img.onerror = () => reject(new Error('imagem inválida'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ---------- submit ---------- */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!sb) { alert('Configuração pendente: rode supabase-schema-criadores.sql e confira as chaves no topo do <script>.'); return; }
+
+  let ok = true;
+  const nome = $('nome').value.trim();
+  const instagram = $('instagram').value.trim();
+  const whatsDigits = $('whatsapp').value.replace(/\D/g,'');
+
+  $('errNome').classList.toggle('show', !nome);           if(!nome) ok = false;
+  $('errInsta').classList.toggle('show', !instagram);     if(!instagram) ok = false;
+  $('errWhats').classList.toggle('show', whatsDigits.length < 10); if(whatsDigits.length < 10) ok = false;
+  $('errPrint').classList.toggle('show', !arquivoPrint);  if(!arquivoPrint) ok = false;
+
+  if(!ok){ document.querySelector('.err.show')?.scrollIntoView({behavior:'smooth', block:'center'}); return; }
+
+  $('formErro').classList.remove('show');
+  $('btnSubmit').disabled = true;
+  $('sending').classList.add('show');
+
+  try {
+    // 1) sobe o print comprimido pro Storage
+    const blob = await comprimirImagem(arquivoPrint);
+    const nomeArq = `${crypto.randomUUID()}.jpg`;
+    const up = await sb.storage.from(BUCKET).upload(nomeArq, blob, { contentType: 'image/jpeg', upsert: false });
+    if (up.error) throw up.error;
+    const printUrl = sb.storage.from(BUCKET).getPublicUrl(nomeArq).data.publicUrl;
+
+    // 2) grava a inscrição
+    const rastro = capturarRastroAnuncio();
+    const cat = form.querySelector('input[name=cat]:checked')?.value || '';
+    const fios = form.querySelector('input[name=fios]:checked')?.value || '';
+    const { data, error } = await sb.rpc('inscrever_criador', {
+      p_nome: nome, p_instagram: instagram, p_whatsapp: $('whatsapp').value,
+      p_email: $('email').value.trim(), p_cidade: $('cidade').value.trim(),
+      p_categoria: cat, p_seguidores: $('seguidores').value.trim(),
+      p_portfolio: $('portfolio').value.trim(), p_fios_brancos: fios,
+      p_publico_cidade: $('publicoCidade').value.trim(), p_mensagem: $('mensagem').value.trim(),
+      p_print_path: nomeArq, p_print_url: printUrl,
+      p_fbclid: rastro.fbclid, p_fbc: rastro.fbc, p_fbp: rastro.fbp
+    });
+    if (error) throw error;
+    if (!data.ok) throw new Error(data.erro || 'falha ao inscrever');
+
+    // 3) conversão Meta Ads — só na primeira inscrição (não em reenvio)
+    if (!data.existente && window.fbq) {
+      try {
+        const params = { content_category: 'Criador', content_name: cat };
+        if (TEST_EVENT_CODE) fbq('track', 'Lead', params, { eventID: data.codigo, test_event_code: TEST_EVENT_CODE });
+        else fbq('track', 'Lead', params, { eventID: data.codigo });
+      } catch(_){}
+    }
+
+    // 4) aviso por email pra equipe (opcional, fire-and-forget)
+    if (!data.existente && NOTIFICAR_URL) {
+      try {
+        fetch(NOTIFICAR_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'nova_inscricao_criador', codigo: data.codigo, nome, instagram,
+            whatsapp: $('whatsapp').value, cidade: $('cidade').value.trim(), categoria: cat,
+            seguidores: $('seguidores').value.trim(), fios_brancos: fios,
+            publico_cidade: $('publicoCidade').value.trim()
+          })
+        }).catch(()=>{});
+      } catch(_){}
+    }
+
+    $('doneCodigo').textContent = data.codigo;
+    $('formCard').style.display = 'none';
+    $('done').classList.add('show');
+    $('done').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (err) {
+    console.error(err);
+    $('formErro').classList.add('show');
+  } finally {
+    $('sending').classList.remove('show');
+    $('btnSubmit').disabled = false;
+  }
+});
+</script>
+</body>
+</html>
