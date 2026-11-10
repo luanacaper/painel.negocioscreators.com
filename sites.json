@@ -8,6 +8,7 @@
     { "host": "site",   "path": "luanacaper/links",              "repo": "pousadaaime/luhcaper",             "nome": "Links Luh Caper" },
     { "host": "site",   "path": "luanacaper/economiza",          "repo": "luanacaper/economiza.ai",          "nome": "Economiza.ai Family" },
     { "host": "site",   "path": "luanacaper/economiza-family",   "repo": "pousadaaime/economiza.aifamily",   "nome": "Economiza.ai Family (versão 2)" },
+    { "host": "site",   "path": "luanacaper/abordagem",          "repo": "luanacaper/abordagem",             "nome": "Painel de abordagem UGC" },
     { "host": "site",   "path": "luanacaper/thais-farm",         "repo": "luanacaper/thais-farm",            "nome": "Thaís Farm Rio · gerador de link" },
     { "host": "site",   "path": "aime/hospedagem",               "repo": "pousadaaime/aime-lp-hospedagem",   "nome": "Aimê · hospedagem" },
     { "host": "site",   "path": "aime/agencias",                 "repo": "pousadaaime/aime-lp-agencia",      "nome": "Aimê · agências" },
