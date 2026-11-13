@@ -95,6 +95,15 @@ with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             shutil.copytree(src, alvo, ignore=IGNORAR, dirs_exist_ok=True)
         print(f"ok  /{s['path']:<32} <- {s['repo']}")
 
+# marca nova (13/11/2026): todo arquivo com nome da marca antiga (nc-icone-32.png, nc-assinatura-escura.png...)
+# vira a versão nova, inclusive nos repositórios em que não temos permissão de push (org negocios-creators)
+MARCA_NOVA = AQUI / "marca-nova"
+if MARCA_NOVA.exists():
+    novos = {f.name: f for f in MARCA_NOVA.iterdir() if f.is_file()}
+    for arq in OUT.rglob("*"):
+        if arq.is_file() and arq.name in novos:
+            shutil.copy2(novos[arq.name], arq)
+
 for arq in OUT.rglob("*"):
     if arq.is_file() and arq.suffix.lower() in TEXTO:
         t = arq.read_text(encoding="utf-8", errors="surrogateescape")
