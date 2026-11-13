@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Pousada Aimê · Parceria com Criadores</title>
+<meta name="description" content="Quer se hospedar na Pousada Aimê em troca de conteúdo? Preencha seu perfil e a gente avalia.">
+
+<!-- ===================================================================
+     META PIXEL — Aimê (lc.pousadaaime) · ID 983368201398155
+     Mesmo pixel usado nas outras páginas da Aimê. O evento "Lead" dispara
+     ao CONCLUIR o formulário, marcado com content_category "Criador" pra
+     não misturar com leads de hospedagem nos relatórios do Gerenciador de Anúncios.
+==================================================================== -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '983368201398155');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=983368201398155&ev=PageView&noscript=1"/></noscript>
+
+<style>
+  :root{
+    --mata:#1b3a2f; --mata-2:#24503f; --rio:#4a7c6f; --agua-clara:#7fa99b;
+    --areia:#f4efe4; --areia-2:#eae2d2; --creme:#fbf8f1;
+    --cobre:#c96f3f; --cobre-esc:#a9552b;
+    --tinta:#21281f; --tinta-mud:#5c6357; --linha:#d9cfba;
+    --serif:'Cormorant Garamond',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --radius:14px; --shadow:0 8px 30px rgba(27,58,47,0.10); --shadow-lift:0 14px 40px rgba(27,58,47,0.18);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);color:var(--tinta);background:var(--areia);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding:34px 18px 60px}
+  header.hero{text-align:center;margin-bottom:26px}
+  header.hero h1{font-family:var(--serif);font-size:32px;font-weight:600;color:var(--mata);line-height:1.15}
+  header.hero p{margin-top:10px;color:var(--tinta-mud);font-size:15px;max-width:42ch;margin-left:auto;margin-right:auto}
+  .card{background:var(--creme);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--tinta-mud);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--linha);background:#fff;font-size:16px;color:var(--tinta)}
+  .field textarea{min-height:80px;resize:vertical;line-height:1.5}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--rio);box-shadow:0 0 0 3px rgba(74,124,111,0.14)}
+  .hint{font-size:12.5px;color:var(--tinta-mud);margin-top:6px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  @media(max-width:420px){.row2{grid-template-columns:1fr}}
+
+  .cat-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+  .cat-pick label{display:flex;flex-direction:column;gap:4px;padding:14px 12px;border-radius:11px;border:1.5px solid var(--linha);background:#fff;cursor:pointer;text-transform:none}
+  .cat-pick input{width:auto;margin-bottom:2px}
+  .cat-pick .t{font-size:14.5px;font-weight:700;color:var(--mata)}
+  .cat-pick .d{font-size:12px;color:var(--tinta-mud);font-weight:400}
+  .cat-pick input:checked ~ .t{color:var(--cobre-esc)}
+  .cat-pick label:has(input:checked){border-color:var(--cobre);background:#fbf3e0}
+
+  .err{display:none;color:var(--cobre-esc);font-size:12.5px;margin-top:6px}
+  .err.show{display:block}
+
+  button[type=submit]{width:100%;margin-top:6px;padding:16px;border-radius:12px;border:none;background:var(--cobre);color:#fff;font-size:16px;font-weight:700;box-shadow:var(--shadow-lift)}
+  button[type=submit]:active{transform:scale(0.99)}
+  .sending{display:none;text-align:center;margin-top:14px;color:var(--tinta-mud);font-size:13.5px}
+  .sending.show{display:block}
+
+  .done{display:none;text-align:center;padding:40px 20px}
+  .done.show{display:block}
+  .done h2{font-family:var(--serif);font-size:28px;color:var(--mata);margin-bottom:10px}
+  .done p{color:var(--tinta-mud);font-size:15px;max-width:40ch;margin:0 auto}
+  .form-shell.hide{display:none}
+  .wa-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:340px;margin:24px auto 0;padding:15px;border-radius:12px;background:var(--rio);color:#fff;font-size:15px;font-weight:700;text-decoration:none;box-shadow:var(--shadow-lift)}
+  .wa-btn:active{transform:scale(0.99)}
+  .wa-btn svg{flex:0 0 auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <h1>Parceria com Criadores</h1>
+    <p>Hospedagem na Pousada Aimê, em Maresias, em troca de conteúdo. Conta um pouco sobre seu perfil que a gente avalia.</p>
+  </header>
+
+  <div class="card form-shell" id="formShell">
+    <form id="leadForm" novalidate>
+      <div class="field">
+        <label>Você se considera</label>
+        <div class="cat-pick">
+          <label><input type="radio" name="categoria_autodeclarada" value="Influenciador" checked><span class="t">Influenciador</span><span class="d">Vive de audiência e engajamento</span></label>
+          <label><input type="radio" name="categoria_autodeclarada" value="UGC"><span class="t">UGC</span><span class="d">Produz conteúdo pra anúncio</span></label>
+        </div>
+        <div class="hint">Essa é só sua percepção — quem confirma a categoria final é a equipe da Aimê.</div>
+      </div>
+
+      <div class="field">
+        <label>Nome</label>
+        <input id="nome" required>
+        <div class="err" id="errNome">Preenche seu nome, por favor.</div>
+      </div>
+
+      <div class="field">
+        <label>@ do Instagram</label>
+        <input id="instagram" placeholder="@seuusuario" required>
+        <div class="err" id="errInsta">Preenche seu @, por favor.</div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>WhatsApp</label>
+          <input id="whats" inputmode="numeric" placeholder="(11) 99999-9999" required>
+          <div class="err" id="errWhats">WhatsApp inválido.</div>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input id="email" type="email" placeholder="seu@email.com">
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>Seguidores (aprox.)</label>
+          <input id="seguidores" inputmode="numeric" placeholder="Ex: 15000">
+        </div>
+        <div class="field">
+          <label>Cidade / onde mora</label>
+          <input id="localizacao" placeholder="Ex: São Paulo, SP">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Link de portfólio ou destaque com conteúdos anteriores</label>
+        <input id="portfolio" placeholder="Link do Drive, site ou destaque do Instagram">
+        <div class="hint">Se você é UGC, isso é o que a gente mais olha — capriche.</div>
+      </div>
+
+      <div class="field">
+        <label>Conte um pouco sobre seu conteúdo e sua audiência</label>
+        <textarea id="engajamento" placeholder="Nicho, tipo de conteúdo, com quem você costuma viajar…"></textarea>
+      </div>
+
+      <button type="submit">Enviar perfil</button>
+      <div class="sending" id="sending">Enviando…</div>
+    </form>
+  </div>
+
+  <div class="card done" id="done">
+    <h2>Perfil recebido 🌿</h2>
+    <p>As análises acontecem mensalmente, e às vezes semanalmente quando abre vaga. Se a gente não retornar nas próximas semanas, seu perfil será avaliado dentro dos próximos 30 dias.</p>
+    <a class="wa-btn" href="https://wa.me/556294505047?text=Ola%2C%20fiz%20minha%20inscricao%20para%20ser%20criador%20na%20Aime%20e%20gostaria%20que%20avaliassem%20meu%20perfil." target="_blank" rel="noopener">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s1 2.5 1.1 2.7c.1.2 2 3 4.7 4.2.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.6-.7 1.9-1.3.2-.6.2-1.1.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.2L2 22l4.9-1.3c1.5.8 3.3 1.3 5.1 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.3c-1.7 0-3.3-.5-4.7-1.3l-.3-.2-3 .8.8-2.9-.2-.3C3.8 15 3.3 13.5 3.3 12c0-4.8 3.9-8.7 8.7-8.7s8.7 3.9 8.7 8.7-3.9 8.7-8.7 8.7z"/></svg>
+      Solicitar avaliação do meu perfil
+    </a>
+  </div>
+</div>
+
+<script>
+/* ==================================================================
+   CONFIGURAÇÃO — cole aqui a URL do Apps Script (ver Sistema/codigo-apps-script.gs)
+================================================================== */
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyJMprmeWkFYgpvrAzBJZDyr8YKwP_ugttNPWmJgzt7TVohTZ4kuvxHBDRXhCjqBVddwA/exec";
+/* Enquanto testa: pegue um código em "Testar Eventos" no Gerenciador de Eventos da Meta
+   e cole aqui — o evento some do "ao vivo" e só aparece na aba de teste, sem sujar dados reais.
+   Quando confirmar que funciona, deixe "" de novo antes de divulgar o link de verdade. */
+const TEST_EVENT_CODE = "";
+
+const $ = id => document.getElementById(id);
+const form = $('leadForm');
+
+function mascaraWhats(el){
+  el.addEventListener('input', () => {
+    let v = el.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 6)      el.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 2) el.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    else if (v.length > 0) el.value = `(${v}`;
+    else el.value = v;
+  });
+}
+mascaraWhats($('whats'));
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  let ok = true;
+  const nome = $('nome').value.trim();
+  const instagram = $('instagram').value.trim();
+  const whatsDigits = $('whats').value.replace(/\D/g,'');
+
+  $('errNome').classList.toggle('show', !nome);
+  if(!nome) ok = false;
+  $('errInsta').classList.toggle('show', !instagram);
+  if(!instagram) ok = false;
+  const whatsInvalido = whatsDigits.length < 10;
+  $('errWhats').classList.toggle('show', whatsInvalido);
+  if(whatsInvalido) ok = false;
+
+  if(!ok){
+    document.querySelector('.err.show')?.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  const dados = {
+    action: 'novo_lead',
+    nome,
+    instagram,
+    whatsapp: $('whats').value,
+    email: $('email').value.trim(),
+    seguidores: $('seguidores').value.trim(),
+    localizacao: $('localizacao').value.trim(),
+    portfolio_link: $('portfolio').value.trim(),
+    engajamento: $('engajamento').value.trim(),
+    categoria_autodeclarada: form.querySelector('input[name=categoria_autodeclarada]:checked')?.value || '',
+    status: 'Triagem'
+  };
+
+  $('sending').classList.add('show');
+
+  /* 1) conversão Meta Ads — dispara ao concluir o formulário.
+     Evento padrão "Lead", com content_category "Criador" pra segmentar depois. */
+  if (window.fbq) {
+    try {
+      const params = { content_category: 'Criador', content_name: dados.categoria_autodeclarada };
+      if (TEST_EVENT_CODE) fbq('track', 'Lead', params, { test_event_code: TEST_EVENT_CODE });
+      else fbq('track', 'Lead', params);
+    } catch(_){}
+  }
+
+  /* 2) salva o lead na planilha (gratuito, ilimitado) */
+  if (SHEETS_URL) {
+    try {
+      await fetch(SHEETS_URL, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify(dados)
+      });
+    } catch(_){}
+  }
+
+  $('formShell').classList.add('hide');
+  $('done').classList.add('show');
+});
+</script>
+</body>
+</html>
