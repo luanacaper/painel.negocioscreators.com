@@ -19,6 +19,12 @@
     },
     {
       "host": "site",
+      "path": "luh/portifolio/si",
+      "repo": "luanacaper/portifolio-si",
+      "nome": "Portfólio SI (influencer)"
+    },
+    {
+      "host": "site",
       "path": "luanacaper/portifolio/ugc",
       "repo": "luanacaper/portfolio-ugc",
       "nome": "Portfólio UGC"
