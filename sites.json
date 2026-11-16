@@ -190,7 +190,14 @@
       "nome": "Looks da Grinda · aprovação de posts"
     }
   ],
-  "atalhos": [],
+  "atalhos": [
+    {
+      "host": "site",
+      "path": "luanacaper/portifolio",
+      "nome": "Portfólio Geral (link antigo)",
+      "url": "https://negocioscreators.com/luh/portifolio/"
+    }
+  ],
   "aliases": [
     {
       "de": "luanacaper.github.io/hf-creditos",
