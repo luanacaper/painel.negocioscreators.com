@@ -188,6 +188,12 @@
       "path": "looksdagrinda",
       "repo": "luanacaper/looksdagrinda",
       "nome": "Looks da Grinda · aprovação de posts"
+    },
+    {
+      "host": "site",
+      "path": "laradam/proposta",
+      "repo": "luanacaper/proposta-lara-dam",
+      "nome": "Proposta Lara Dam (tráfego)"
     }
   ],
   "atalhos": [
