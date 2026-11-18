@@ -150,6 +150,12 @@
       "nome": "Stabille Advogados · site modelo 1"
     },
     {
+      "host": "site",
+      "path": "stabille/modelo2",
+      "repo": "Negocios-creators/modelostabile2",
+      "nome": "Stabille Advogados · site modelo 2"
+    },
+    {
       "host": "painel",
       "path": "central",
       "repo": "luanacaper/central",
