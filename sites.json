@@ -144,6 +144,12 @@
       "nome": "Stabile & Pessoa · relatórios"
     },
     {
+      "host": "site",
+      "path": "stabille/modelo1",
+      "repo": "Negocios-creators/modelostabile1",
+      "nome": "Stabille Advogados · site modelo 1"
+    },
+    {
       "host": "painel",
       "path": "central",
       "repo": "luanacaper/central",
