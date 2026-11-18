@@ -145,15 +145,21 @@
     },
     {
       "host": "site",
-      "path": "stabille/modelo1",
+      "path": "stabile/modelo1",
       "repo": "Negocios-creators/modelostabile1",
-      "nome": "Stabille Advogados · site modelo 1"
+      "nome": "Stabile Advogados · site modelo 1"
     },
     {
       "host": "site",
-      "path": "stabille/modelo2",
+      "path": "stabile/modelo2",
       "repo": "Negocios-creators/modelostabile2",
-      "nome": "Stabille Advogados · site modelo 2"
+      "nome": "Stabile Advogados · site modelo 2"
+    },
+    {
+      "host": "site",
+      "path": "stabile/lp",
+      "repo": "Negocios-creators/stabile-lps",
+      "nome": "Stabile Advogados · LPs BPC/LOAS e Auxílio-Acidente"
     },
     {
       "host": "painel",
@@ -206,6 +212,12 @@
       "path": "laradam/proposta",
       "repo": "luanacaper/proposta-lara-dam",
       "nome": "Proposta Lara Dam (tráfego)"
+    },
+    {
+      "host": "site",
+      "path": "orcamentostabile",
+      "repo": "luanacaper/orcamento-stabile",
+      "nome": "Orçamento nova fase Stabile"
     }
   ],
   "atalhos": [
@@ -214,6 +226,24 @@
       "path": "luanacaper/portifolio",
       "nome": "Portfólio Geral (link antigo)",
       "url": "https://negocioscreators.com/luh/portifolio/"
+    },
+    {
+      "host": "site",
+      "path": "stabille/modelo1",
+      "nome": "Stabile (link antigo com dois L)",
+      "url": "https://negocioscreators.com/stabile/modelo1/"
+    },
+    {
+      "host": "site",
+      "path": "stabille/modelo2",
+      "nome": "Stabile (link antigo com dois L)",
+      "url": "https://negocioscreators.com/stabile/modelo2/"
+    },
+    {
+      "host": "site",
+      "path": "stabille/lp",
+      "nome": "Stabile (link antigo com dois L)",
+      "url": "https://negocioscreators.com/stabile/lp/"
     }
   ],
   "aliases": [
