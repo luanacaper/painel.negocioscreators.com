@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fast Escova Bauru · Painel de Criadores</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💛</text></svg>">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600;700;800&display=swap');
+  :root{
+    --preto:#0a0a0a; --preto-2:#151515; --preto-3:#1e1e1e; --preto-4:#262626;
+    --dourado:#d4af37; --dourado-claro:#e8cc6a; --dourado-esc:#a8842a;
+    --branco:#f7f5f0; --cinza:#a8a49b; --cinza-esc:#6b675f; --linha:rgba(255,255,255,0.1);
+    --novo:#6b7a8f; --analise:#c9932f; --aprovado:#3f8f5f; --reprovado:#b0563f; --fixo:#d4af37;
+    --serif:'Playfair Display',Georgia,serif; --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --shadow:0 6px 24px rgba(0,0,0,0.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--preto);color:var(--branco);line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit}
+  img{max-width:100%;display:block}
+
+  /* LOGIN */
+  .login{position:fixed;inset:0;background:var(--preto);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:28px;gap:20px;text-align:center}
+  .login.hidden{display:none}
+  .login .word{font-family:var(--serif);font-size:32px;font-style:italic;font-weight:600;color:var(--branco)}
+  .login .word b{font-style:normal;font-weight:700;color:var(--dourado);font-family:var(--sans)}
+  .login .sub{font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:var(--cinza);font-weight:600}
+  .login p{color:var(--cinza);font-size:13.5px;max-width:32ch}
+  .login input{width:100%;max-width:280px;padding:15px 16px;border-radius:12px;border:1.5px solid rgba(212,175,55,0.35);background:var(--preto-2);color:var(--branco);font-size:16px;text-align:center}
+  .login input:focus{outline:none;border-color:var(--dourado)}
+  .login button{width:100%;max-width:280px;padding:15px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--dourado-claro),var(--dourado));color:#161200;font-size:16px;font-weight:800}
+  .login .erro{color:#e8a48c;font-size:13px;min-height:16px}
+  .keep{display:flex;align-items:center;gap:9px;color:var(--cinza);font-size:13px;cursor:pointer}
+  .keep input{width:18px;height:18px;accent-color:var(--dourado)}
+
+  /* APP */
+  .app{display:none;min-height:100vh;flex-direction:column;max-width:920px;margin:0 auto}
+  .app.show{display:flex}
+  header.top{position:sticky;top:0;z-index:20;background:var(--preto-2);border-bottom:1px solid var(--linha);padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top))}
+  .top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .top .logo{font-family:var(--serif);font-size:21px;font-style:italic;font-weight:600}
+  .top .logo b{font-style:normal;color:var(--dourado);font-family:var(--sans);font-weight:700}
+  .top .logo small{display:block;font-family:var(--sans);font-size:8.5px;letter-spacing:0.22em;text-transform:uppercase;color:var(--cinza);font-weight:600;font-style:normal}
+  .top .actions{display:flex;gap:8px;align-items:center}
+  .top .btn-s{font-size:12px;background:var(--preto-3);border:1px solid var(--linha);color:var(--cinza);padding:8px 12px;border-radius:20px}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+  .kpi{background:var(--preto-3);border:1px solid var(--linha);border-radius:12px;padding:10px}
+  .kpi .n{font-family:var(--serif);font-size:21px;font-weight:600;line-height:1;color:var(--dourado-claro)}
+  .kpi .l{font-size:9px;letter-spacing:0.04em;text-transform:uppercase;color:var(--cinza);margin-top:5px}
+  @media(max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .storage{margin-top:10px;font-size:11px;color:var(--cinza-esc);display:flex;align-items:center;gap:8px}
+  .storage .bar{flex:1;height:5px;border-radius:3px;background:var(--preto-4);overflow:hidden}
+  .storage .bar i{display:block;height:100%;background:var(--dourado);width:0}
+  .storage.alerta{color:#e8c48c}
+  .storage.alerta .bar i{background:#e0a54a}
+
+  .filters{position:sticky;top:0;z-index:15;background:var(--preto);padding:12px 14px 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;padding:8px 13px;border-radius:20px;border:1.5px solid var(--linha);background:var(--preto-2);color:var(--cinza);font-size:12.5px;font-weight:500;display:flex;gap:6px;align-items:center}
+  .chip.active{background:var(--dourado);border-color:var(--dourado);color:#161200;font-weight:700}
+  .chip .count{font-size:10.5px;background:rgba(0,0,0,0.18);padding:1px 6px;border-radius:9px}
+  .chip.active .count{background:rgba(0,0,0,0.15)}
+  .search{padding:2px 14px 10px}
+  .search input{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--linha);background:var(--preto-2);color:var(--branco);font-size:15px}
+  .search input:focus{outline:none;border-color:var(--dourado-esc)}
+
+  main{flex:1;padding:4px 14px 90px}
+  @media(min-width:720px){main{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-content:start}}
+  .card{background:var(--preto-2);border:1px solid var(--linha);border-left:4px solid var(--novo);border-radius:13px;padding:14px;margin-bottom:11px}
+  @media(min-width:720px){.card{margin-bottom:0}}
+  .card.s-emanálise{border-left-color:var(--analise)}
+  .card.s-aprovado{border-left-color:var(--aprovado)}
+  .card.s-reprovado{border-left-color:var(--reprovado)}
+  .card.s-castingfixo{border-left-color:var(--fixo)}
+  .card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .card .nome{font-size:16px;font-weight:700;color:var(--branco)}
+  .card .badge{font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;color:#fff;background:var(--novo)}
+  .badge.s-emanálise{background:var(--analise);color:#161200}
+  .badge.s-aprovado{background:var(--aprovado)}
+  .badge.s-reprovado{background:var(--reprovado)}
+  .badge.s-castingfixo{background:var(--fixo);color:#161200}
+  .card .meta{font-size:12.5px;color:var(--cinza);margin-top:7px;display:flex;flex-wrap:wrap;gap:3px 12px}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:7px;background:var(--preto-4);color:var(--cinza)}
+  .tag.cat{background:#243247;color:#9cc0e8}
+  .tag.bauru-sim{background:#1f3d2b;color:#8fe0a8}
+  .tag.bauru-não{background:#3d2320;color:#e8a48c}
+  .tag.bauru-parcial{background:#3d3520;color:#e8d08c}
+  .tag.fios{background:#332a3d;color:#d0b0e0}
+  .tag.print{background:rgba(212,175,55,0.16);color:var(--dourado-claro)}
+  .tag.manual{background:#2f2a1a;color:#d8c48a;border:1px solid #5a4d28}
+  .tag.termo{background:#16301f;color:#8fe0a8;border:1px solid #2c5a3c}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--cinza);grid-column:1/-1}
+  .empty .big{font-family:var(--serif);font-size:22px;color:var(--branco);margin-bottom:8px}
+  .loading{padding:56px 20px;text-align:center;color:var(--cinza);grid-column:1/-1}
+  .spin{width:34px;height:34px;border:3px solid var(--linha);border-top-color:var(--dourado);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 14px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* SHEET */
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;opacity:0;pointer-events:none;transition:.25s}
+  .sheet-bg.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;z-index:41;background:var(--preto);left:0;right:0;bottom:0;max-height:94vh;border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow:hidden;max-width:640px;margin:0 auto;border:1px solid var(--linha)}
+  .sheet.open{transform:translateY(0)}
+  .sheet-grab{width:40px;height:4px;background:var(--preto-4);border-radius:3px;margin:10px auto 4px;flex-shrink:0}
+  .sheet-head{padding:6px 18px 14px;border-bottom:1px solid var(--linha);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}
+  .sheet-head h2{font-family:var(--serif);font-size:22px;color:var(--dourado-claro);font-weight:600}
+  .sheet-head .close{background:var(--preto-3);border:none;width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--cinza)}
+  .sheet-body{overflow-y:auto;padding:16px 18px 24px}
+
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:11px;font-weight:700;color:var(--dourado-esc);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;padding:12px 13px;border-radius:10px;border:1.5px solid var(--linha);background:var(--preto-2);color:var(--branco);font-size:16px}
+  .field textarea{min-height:64px;resize:vertical;line-height:1.5}
+  .field input:disabled{opacity:0.6}
+  .field select{-webkit-appearance:none;appearance:none}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--dourado-esc)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+
+  .status-pick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+  .status-pick button{padding:10px 4px;border-radius:10px;border:1.5px solid var(--linha);background:var(--preto-2);font-size:11.5px;font-weight:700;color:var(--cinza)}
+  .status-pick button.sel{border-color:var(--dourado);background:rgba(212,175,55,0.12);color:var(--dourado-claro)}
+
+  .divider{height:1px;background:var(--linha);margin:20px 0 15px;position:relative}
+  .divider span{position:absolute;top:-8px;left:0;background:var(--preto);padding-right:12px;font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--dourado-esc)}
+
+  .print-wrap{background:var(--preto-2);border:1px solid var(--linha);border-radius:12px;padding:12px;margin-bottom:14px;text-align:center}
+  .print-wrap img{border-radius:8px;margin:0 auto;max-height:340px;width:auto;cursor:zoom-in}
+  .print-wrap .semp{color:var(--cinza-esc);font-size:13px;padding:20px 0}
+  .print-wrap .del{margin-top:10px;background:none;border:1px solid rgba(224,120,100,0.4);color:#e8a48c;font-size:12px;padding:7px 12px;border-radius:8px}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:var(--preto-2);border:1.5px solid var(--linha);border-radius:10px;margin-bottom:9px}
+  .toggle-row .lbl{font-size:14px;font-weight:500}
+  .toggle-row .lbl small{display:block;font-size:11.5px;color:var(--cinza-esc);font-weight:400}
+  .toggle{position:relative;width:50px;height:29px;flex-shrink:0}
+  .toggle input{opacity:0;width:0;height:0}
+  .toggle .sl{position:absolute;inset:0;background:var(--preto-4);border-radius:30px;transition:.2s}
+  .toggle .sl::before{content:"";position:absolute;width:23px;height:23px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  .toggle input:checked + .sl{background:var(--dourado)}
+  .toggle input:checked + .sl::before{transform:translateX(21px)}
+
+  .ro{background:var(--preto-2);border:1px solid var(--linha);border-radius:10px;padding:12px 13px;margin-bottom:9px;font-size:13px}
+  .ro .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--cinza-esc);font-weight:700}
+  .ro .v{color:var(--branco);margin-top:3px;word-break:break-word}
+  .ro a{color:var(--dourado-claro)}
+  .btn-termo{width:100%;padding:12px;border-radius:10px;border:1.5px solid var(--dourado-esc);background:rgba(212,175,55,0.1);color:var(--dourado-claro);font-size:13.5px;font-weight:700;margin-bottom:8px}
+  .btn-termo.alt{flex:1;margin-bottom:0;background:var(--preto-3);border-color:var(--linha);color:var(--branco);font-weight:600}
+  .btn-termo.ghost{background:none;border:none;color:var(--cinza-esc);font-size:12px;font-weight:500;text-decoration:underline;margin-top:4px;padding:6px}
+  #termoLink,#pastaInput{width:100%;padding:10px 12px;border-radius:9px;border:1.5px solid var(--linha);background:var(--preto-2);color:var(--dourado-claro);font-size:12.5px}
+  #pastaInput{color:var(--branco)}
+  #pastaInput:focus{outline:none;border-color:var(--dourado-esc)}
+
+  .sheet-foot{flex-shrink:0;padding:13px 18px calc(13px + env(safe-area-inset-bottom));border-top:1px solid var(--linha);background:var(--preto);display:flex;gap:10px}
+  .btn{flex:1;padding:15px;border-radius:12px;border:none;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-primary{background:linear-gradient(180deg,var(--dourado-claro),var(--dourado));color:#161200}
+  .btn-wa{background:#25d366;color:#0a2313;flex:0 0 auto;padding:15px 17px}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--preto-3);border:1px solid var(--dourado-esc);color:var(--branco);padding:13px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:var(--shadow);opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:80;display:none;align-items:center;justify-content:center;padding:20px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <div class="word">fast<b>escova</b></div>
+  <div class="sub">Painel de Criadores · Bauru</div>
+  <p>Área interna da equipe. Informe a senha de acesso.</p>
+  <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
+  <label class="keep"><input type="checkbox" id="keep" checked> Permanecer conectado neste aparelho</label>
+  <div class="erro" id="loginErro"></div>
+  <button id="btnEntrar">Entrar</button>
+</div>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="top-row">
+      <div class="logo">fast<b>escova</b><small>Criadores</small></div>
+      <div class="actions">
+        <button class="btn-s" id="btnNovo" style="background:rgba(212,175,55,0.14);border-color:var(--dourado-esc);color:var(--dourado-claro);font-weight:700">+ Novo criador</button>
+        <button class="btn-s" id="btnRecarregar">Atualizar</button>
+        <button class="btn-s" id="btnSair">Sair</button>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kpiTotal">0</div><div class="l">Inscritos</div></div>
+      <div class="kpi"><div class="n" id="kpiNovos">0</div><div class="l">A avaliar</div></div>
+      <div class="kpi"><div class="n" id="kpiAprovados">0</div><div class="l">Aprovados</div></div>
+      <div class="kpi"><div class="n" id="kpiFixo">0</div><div class="l">Casting fixo</div></div>
+    </div>
+    <div class="storage" id="storage">
+      <span id="storageTxt">Prints: —</span>
+      <span class="bar"><i id="storageBar"></i></span>
+    </div>
+  </header>
+
+  <div class="filters" id="filters"></div>
+  <div class="search"><input type="search" id="busca" placeholder="Buscar por nome, @ ou WhatsApp…"></div>
+
+  <main id="lista"><div class="loading"><div class="spin"></div>Carregando criadores…</div></main>
+</div>
+
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-grab"></div>
+  <div class="sheet-head">
+    <h2 id="sheetTitle">Criador</h2>
+    <button class="close" id="sheetClose">✕</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+  <div class="sheet-foot">
+    <button class="btn btn-wa" id="btnWa" title="WhatsApp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.3L2 22l4.8-1.5A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.1 14.9l-.3-.2-2.8.9.9-2.7-.2-.3A8 8 0 0 1 12 4z"/></svg>
+    </button>
+    <button class="btn btn-primary" id="btnSalvar">Salvar avaliação</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="Print ampliado"></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://bsemnxcfdzdyokxidafu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_rYrDx9SuurtISjiJqw0ECQ_vTWeKgUg";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const PW_KEY = 'fe_criadores_pw';
+
+const $ = s => document.querySelector(s);
+let registros = [], filtro = 'Todos', termo = '', aberto = null, senha = '', modoNovo = false;
+
+/* storage tolerante a contexto sem localStorage (private mode, etc.) */
+const store = {
+  get(k){ try{ return localStorage.getItem(k) || sessionStorage.getItem(k); }catch(_){ return null; } },
+  set(k,v,persist){ try{ (persist?localStorage:sessionStorage).setItem(k,v); }catch(_){} },
+  del(k){ try{ localStorage.removeItem(k); sessionStorage.removeItem(k); }catch(_){} }
+};
+
+const STATUS = ['Novo','Em análise','Aprovado','Reprovado','Casting fixo'];
+const CAT = ['','UGC','Influenciador'];
+const BAURU = ['','Sim','Não','Parcial'];
+const cls = s => 's-' + String(s||'Novo').toLowerCase().replace(/\s/g,'');
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function fmtBytes(b){ b=Number(b)||0; if(b<1048576) return (b/1024).toFixed(0)+' KB'; return (b/1048576).toFixed(1)+' MB'; }
+
+/* LOGIN */
+async function tentarLogin(pw){
+  $('#loginErro').textContent = '';
+  const r = await sb.rpc('listar_criadores_admin', { p_senha: pw });
+  if (r.error || (r.data && r.data.erro)) {
+    $('#loginErro').textContent = 'Senha incorreta.';
+    $('#senha').value = '';
+    return;
+  }
+  senha = pw;
+  store.set(PW_KEY, pw, $('#keep').checked);
+  $('#login').classList.add('hidden');
+  $('#app').classList.add('show');
+  registros = (r.data || []);
+  render();
+  carregarStorage();
+}
+$('#btnEntrar').onclick = () => tentarLogin($('#senha').value);
+$('#senha').addEventListener('keydown', e => { if(e.key==='Enter') tentarLogin($('#senha').value); });
+$('#btnSair').onclick = () => { store.del(PW_KEY); location.reload(); };
+
+const pwSalva = store.get(PW_KEY);
+if (pwSalva) tentarLogin(pwSalva);
+
+/* CARREGAR */
+async function carregar(){
+  const r = await sb.rpc('listar_criadores_admin', { p_senha: senha });
+  if (r.error || (r.data && r.data.erro)) { toast('Erro ao carregar'); return; }
+  registros = r.data || [];
+  render();
+  carregarStorage();
+}
+$('#btnRecarregar').onclick = () => { toast('Atualizando…'); carregar(); };
+
+async function carregarStorage(){
+  const r = await sb.rpc('stats_prints_admin', { p_senha: senha });
+  if (r.error || !r.data || r.data.erro) return;
+  const { qtd, bytes, limite_bytes } = r.data;
+  const pct = Math.min(100, (bytes / limite_bytes) * 100);
+  $('#storageTxt').textContent = `Prints: ${qtd} · ${fmtBytes(bytes)} / 1 GB`;
+  $('#storageBar').style.width = pct.toFixed(1) + '%';
+  $('#storage').classList.toggle('alerta', pct > 65);
+  if (pct > 65) $('#storageTxt').textContent += ' — apague prints de criadores já avaliados';
+}
+
+/* RENDER LISTA */
+function render(){
+  $('#kpiTotal').textContent = registros.length;
+  $('#kpiNovos').textContent = registros.filter(r=>['Novo','Em análise'].includes(r.status||'Novo')).length;
+  $('#kpiAprovados').textContent = registros.filter(r=>r.status==='Aprovado').length;
+  $('#kpiFixo').textContent = registros.filter(r=>r.status==='Casting fixo' || r.casting_fixo).length;
+
+  const cont = { Todos: registros.length };
+  STATUS.forEach(s => cont[s] = registros.filter(r=>(r.status||'Novo')===s).length);
+  $('#filters').innerHTML = ['Todos',...STATUS].map(c =>
+    `<button class="chip ${filtro===c?'active':''}" data-f="${esc(c)}">${esc(c)}<span class="count">${cont[c]||0}</span></button>`).join('');
+  $('#filters').querySelectorAll('.chip').forEach(ch => ch.onclick = () => { filtro = ch.dataset.f; render(); });
+
+  const t = termo.toLowerCase();
+  const lista = registros.filter(r=>{
+    const okF = filtro==='Todos' || (r.status||'Novo')===filtro;
+    const okB = !t || [r.nome,r.instagram,r.whatsapp].some(v=>String(v||'').toLowerCase().includes(t));
+    return okF && okB;
+  });
+
+  if(!lista.length){
+    $('#lista').innerHTML = `<div class="empty"><div class="big">Nenhum criador aqui</div><p>${termo?'Nada encontrado.':'Assim que alguém se inscrever no formulário, aparece aqui.'}</p></div>`;
+    return;
+  }
+
+  $('#lista').innerHTML = lista.map(r=>{
+    const st = r.status || 'Novo';
+    const bauru = r.de_bauru ? `<span class="tag bauru-${r.de_bauru.toLowerCase()}">Bauru: ${esc(r.de_bauru)}</span>` : '';
+    const cat = r.categoria_final || (r.categoria_autodeclarada ? r.categoria_autodeclarada + ' (auto)' : '');
+    const manual = (r.origem && r.origem !== 'Formulário') ? `<span class="tag manual">✍ inserção manual</span>` : '';
+    return `<div class="card ${cls(st)}" data-id="${esc(r.id)}">
+      <div class="card-top">
+        <div class="nome">${esc(r.nome)||'Sem nome'}</div>
+        <div class="badge ${cls(st)}">${esc(st)}</div>
+      </div>
+      <div class="meta">
+        ${r.instagram?`<span>📷 ${esc(r.instagram)}</span>`:''}
+        ${r.cidade?`<span>📍 ${esc(r.cidade)}</span>`:''}
+        ${r.seguidores?`<span>👥 ${esc(r.seguidores)}</span>`:''}
+      </div>
+      <div class="tags">
+        ${cat?`<span class="tag cat">${esc(cat)}</span>`:''}
+        ${bauru}
+        ${manual}
+        ${r.fios_brancos?`<span class="tag fios">Fios brancos: ${esc(r.fios_brancos)}</span>`:''}
+        ${r.termo_aceite_em?`<span class="tag termo">✓ termo</span>`:''}
+        ${r.print_url?`<span class="tag print">📎 print</span>`:(manual?'':'<span class="tag">sem print</span>')}
+      </div>
+    </div>`;
+  }).join('');
+  $('#lista').querySelectorAll('.card').forEach(c => c.onclick = () => abrirFicha(c.dataset.id));
+}
+$('#busca').addEventListener('input', e => { termo = e.target.value; render(); });
+
+/* FICHA */
+function abrirFicha(id){
+  const r = registros.find(x => String(x.id) === String(id));
+  if(!r) return;
+  aberto = r;
+  $('#sheetTitle').textContent = r.nome || 'Criador';
+  const opt = (arr, cur) => arr.map(o => `<option value="${esc(o)}" ${String(cur||'')===o?'selected':''}>${o||'— selecionar —'}</option>`).join('');
+
+  $('#sheetBody').innerHTML = `
+    <div class="field">
+      <label>Status</label>
+      <div class="status-pick" id="statusPick">
+        ${STATUS.map(s=>`<button type="button" data-s="${esc(s)}" class="${(r.status||'Novo')===s?'sel':''}">${esc(s)}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="divider"><span>Print do alcance (últimas 24h)</span></div>
+    <div class="print-wrap">
+      ${r.print_url
+        ? `<img src="${esc(r.print_url)}" alt="Print" id="printImg"><button type="button" class="del" id="btnDelPrint">🗑 Apagar print (libera storage)</button>`
+        : (r.origem && r.origem !== 'Formulário'
+            ? `<div class="semp">Inserido manualmente — sem print. A validação de Bauru vem da pesquisa (ver "O que o criador enviou" abaixo).</div>`
+            : `<div class="semp">Este criador não enviou print (ou já foi apagado).</div>`)}
+    </div>
+
+    <div class="divider"><span>Validação da equipe</span></div>
+    <div class="row2">
+      <div class="field"><label>É de Bauru?</label><select id="f_bauru">${opt(BAURU, r.de_bauru)}</select></div>
+      <div class="field"><label>Categoria final</label><select id="f_catfinal">${opt(CAT, r.categoria_final)}</select></div>
+    </div>
+    ${toggle('Conteúdo recebe tráfego pago', 'Os melhores conteúdos são impulsionados com verba da Fast', 't_trafego', r.trafego_pago)}
+    ${toggle('Casting fixo', 'Fica fixo no casting — combo de salão todo mês', 't_fixo', r.casting_fixo)}
+    <div class="field"><label>Notas da avaliação</label><textarea id="f_notas" placeholder="Por que aprovou / reprovou, fit com a marca, combinações do combo…">${esc(r.avaliacao_notas)}</textarea></div>
+
+    <div class="divider"><span>Contato (editável)</span></div>
+    <div class="field"><label>Nome</label><input id="f_nome" value="${esc(r.nome)}"></div>
+    <div class="row2">
+      <div class="field"><label>Instagram</label><input id="f_insta" value="${esc(r.instagram)}"></div>
+      <div class="field"><label>WhatsApp</label><input id="f_whats" value="${esc(r.whatsapp)}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>E-mail</label><input id="f_email" value="${esc(r.email)}"></div>
+      <div class="field"><label>Bairro / cidade</label><input id="f_cidade" value="${esc(r.cidade)}"></div>
+    </div>
+
+    <div class="divider"><span>O que o criador enviou</span></div>
+    <div class="ro"><div class="k">Se considera</div><div class="v">${esc(r.categoria_autodeclarada)||'—'}</div></div>
+    <div class="ro"><div class="k">Seguidores (aprox.)</div><div class="v">${esc(r.seguidores)||'—'}</div></div>
+    <div class="ro"><div class="k">Já tem fios brancos?</div><div class="v">${esc(r.fios_brancos)||'—'}</div></div>
+    <div class="ro"><div class="k">Cidade do público majoritário (declarada)</div><div class="v">${esc(r.publico_cidade)||'—'}</div></div>
+    <div class="ro"><div class="k">Portfólio</div><div class="v">${r.portfolio_link?`<a href="${esc(r.portfolio_link)}" target="_blank" rel="noopener">${esc(r.portfolio_link)}</a>`:'—'}</div></div>
+    <div class="ro"><div class="k">Mensagem</div><div class="v">${esc(r.mensagem)||'—'}</div></div>
+    <div class="ro"><div class="k">Origem</div><div class="v">${esc(r.origem)||'Formulário'}</div></div>
+    <div class="ro"><div class="k">Inscrição</div><div class="v">${esc(r.codigo)} · ${esc(r.data_inscricao)}</div></div>
+
+    <div class="divider"><span>Termo</span></div>
+    ${r.termo_aceite_em
+      ? `<div class="ro" style="border-color:#2c5a3c"><div class="k" style="color:#8fe0a8">✓ Termo assinado${(r.termo_aceite_versao||'').includes('manual')?' (manual)':' eletronicamente'}</div><div class="v">${esc(r.termo_aceite_em)} · versão ${esc(r.termo_aceite_versao)||'v1'}${r.termo_aceite_nome?`<br>${esc(r.termo_aceite_nome)}`:''}${r.termo_aceite_cpf?` · CPF ${esc(r.termo_aceite_cpf)}`:''}${r.termo_aceite_email?` · ${esc(r.termo_aceite_email)}`:''}</div></div>`
+      : `<button type="button" class="btn-termo" id="btnGerarTermo">🔗 Gerar link do termo pra enviar</button>
+         <div id="termoLinkBox" style="display:none;margin-top:10px">
+           <input id="termoLink" readonly style="font-size:12.5px;color:var(--dourado-claro)">
+           <div style="display:flex;gap:8px;margin-top:8px">
+             <button type="button" class="btn-termo alt" id="btnCopiarTermo">Copiar link</button>
+             <button type="button" class="btn-termo alt" id="btnWaTermo">Enviar no WhatsApp</button>
+           </div>
+         </div>
+         <button type="button" class="btn-termo ghost" id="btnTermoManual">Assinou no papel/PDF? Marcar como assinado manualmente</button>`}
+
+    <div class="divider"><span>Pasta de arquivos</span></div>
+    ${r.pasta_url
+      ? `<div class="ro" style="border-color:#2c5a3c"><div class="k" style="color:#8fe0a8">📁 Pasta criada</div><div class="v" style="word-break:break-all">${esc(r.pasta_url)}</div></div>
+         <div style="display:flex;gap:8px;margin-bottom:8px">
+           <button type="button" class="btn-termo alt" id="btnCopiarPasta">Copiar link da pasta</button>
+           <button type="button" class="btn-termo alt" id="btnAbrirPasta">Abrir pasta</button>
+         </div>
+         <button type="button" class="btn-termo ghost" id="btnTrocarPasta">Trocar o link da pasta</button>`
+      : `<button type="button" class="btn-termo" id="btnAbrirDrive">📁 Abrir Drive + copiar nome da subpasta</button>
+         <div class="v" style="font-size:12px;color:var(--cinza-esc);margin:6px 0 10px">1. clique acima → abre a pasta-mãe e copia o nome certo &nbsp; 2. no Drive: Novo → Pasta → cola (Ctrl+V) &nbsp; 3. abre a pasta nova, copia o link dela, cola abaixo</div>
+         <input id="pastaInput" placeholder="Cola aqui o link da pasta que você criou">
+         <button type="button" class="btn-termo alt" id="btnSalvarPasta" style="width:100%;margin-top:8px">Salvar link da pasta</button>`}
+  `;
+
+  $('#statusPick').querySelectorAll('button').forEach(b => b.onclick = () => {
+    $('#statusPick').querySelectorAll('button').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+  });
+  const pimg = $('#printImg');
+  if (pimg) pimg.onclick = () => { $('#lightboxImg').src = pimg.src; $('#lightbox').classList.add('open'); };
+  const del = $('#btnDelPrint');
+  if (del) del.onclick = apagarPrint;
+
+  // ---- termo: gerar link / copiar / whatsapp / marcar manual ----
+  const gerar = $('#btnGerarTermo');
+  if (gerar) {
+    const linkTermo = () => {
+      const h = String($('#f_insta')?.value || r.instagram || '').replace(/^@/,'').trim();
+      const nm = String($('#f_nome')?.value || r.nome || '').trim();
+      return 'https://painel.negocioscreators.com/creatorsfast/termo.html'
+        + '?ig=' + encodeURIComponent(h)
+        + (nm ? '&n=' + encodeURIComponent(nm) : '');
+    };
+    gerar.onclick = () => {
+      $('#termoLink').value = linkTermo();
+      $('#termoLinkBox').style.display = 'block';
+      $('#termoLink').select();
+    };
+    $('#btnCopiarTermo').onclick = async () => {
+      try { await navigator.clipboard.writeText($('#termoLink').value); toast('✓ Link copiado'); }
+      catch(_) { $('#termoLink').select(); document.execCommand('copy'); toast('✓ Link copiado'); }
+    };
+    $('#btnWaTermo').onclick = () => {
+      let num = String($('#f_whats')?.value || r.whatsapp || '').replace(/\D/g,'');
+      const msg = 'Oi ' + (String($('#f_nome')?.value||r.nome||'').split(' ')[0] || '') + '! Segue o termo do casting da Fast Escova Bauru pra você assinar (é rápido, é online): ' + $('#termoLink').value;
+      if (num && num.length <= 11) num = '55' + num;
+      window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+    };
+  }
+  const man = $('#btnTermoManual');
+  if (man) man.onclick = async () => {
+    if (!confirm('Marcar o termo desta criadora como assinado manualmente (papel/PDF/WhatsApp)? Registra a data de hoje.')) return;
+    toast('Registrando…');
+    const rr = await sb.rpc('marcar_termo_manual', { p_id: aberto.id, p_senha: senha });
+    if (rr.error || !rr.data || !rr.data.ok) { toast('Não consegui registrar'); return; }
+    toast('✓ Termo marcado como assinado');
+    fechar(); carregar();
+  };
+
+  // ---- pasta de arquivos ----
+  const PASTA_MAE = 'https://drive.google.com/drive/folders/1Rh4KRNtSfet0l-RspeJHJ64B0cturglg';
+  const nomePasta = () => {
+    const h = String($('#f_insta')?.value || r.instagram || '').replace(/^@/,'').trim();
+    const nm = String($('#f_nome')?.value || r.nome || '').trim();
+    return nm + ' - @' + h;
+  };
+  const abrirDrive = $('#btnAbrirDrive');
+  if (abrirDrive) {
+    abrirDrive.onclick = async () => {
+      try { await navigator.clipboard.writeText(nomePasta()); } catch(_){}
+      toast('Nome "' + nomePasta() + '" copiado');
+      window.open(PASTA_MAE, '_blank');
+    };
+    $('#btnSalvarPasta').onclick = async () => {
+      const url = $('#pastaInput').value.trim();
+      if (!/^https?:\/\//.test(url)) { toast('Cola um link válido da pasta'); return; }
+      toast('Salvando…');
+      const rr = await sb.rpc('salvar_pasta_url', { p_id: aberto.id, p_senha: senha, p_url: url });
+      if (rr.error || !rr.data || !rr.data.ok) { toast('Não consegui salvar'); return; }
+      toast('✓ Pasta salva'); fechar(); carregar();
+    };
+  }
+  if ($('#btnCopiarPasta')) {
+    $('#btnCopiarPasta').onclick = async () => {
+      try { await navigator.clipboard.writeText(r.pasta_url); toast('✓ Link da pasta copiado'); }
+      catch(_) { toast('Copie manualmente o link acima'); }
+    };
+    $('#btnAbrirPasta').onclick = () => window.open(r.pasta_url, '_blank');
+    $('#btnTrocarPasta').onclick = async () => {
+      const url = prompt('Novo link da pasta:', r.pasta_url);
+      if (url === null) return;
+      toast('Salvando…');
+      const rr = await sb.rpc('salvar_pasta_url', { p_id: aberto.id, p_senha: senha, p_url: url.trim() });
+      if (rr.error || !rr.data || !rr.data.ok) { toast('Não consegui salvar'); return; }
+      toast('✓ Atualizado'); fechar(); carregar();
+    };
+  }
+
+  $('#sheetBg').classList.add('open');
+  $('#sheet').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function toggle(label, sub, id, on){
+  return `<div class="toggle-row"><span class="lbl">${label}<small>${sub}</small></span><label class="toggle"><input type="checkbox" id="${id}" ${on?'checked':''}><span class="sl"></span></label></div>`;
+}
+function fechar(){ $('#sheetBg').classList.remove('open'); $('#sheet').classList.remove('open'); document.body.style.overflow=''; aberto=null; modoNovo=false; }
+
+/* NOVO CRIADOR — inserir manualmente pelo painel */
+function abrirNovoCriador(){
+  modoNovo = true;
+  aberto = {};
+  $('#sheetTitle').textContent = 'Novo criador (manual)';
+  const opt = (arr, cur) => arr.map(o => `<option value="${esc(o)}" ${String(cur||'')===o?'selected':''}>${o||'— selecionar —'}</option>`).join('');
+  $('#sheetBody').innerHTML = `
+    <div class="ro" style="border-color:var(--dourado-esc)"><div class="v" style="color:var(--dourado-claro)">Vai entrar no painel com a tag <b>✍ inserção manual</b>. Nome e @ são obrigatórios.</div></div>
+
+    <div class="divider"><span>Contato</span></div>
+    <div class="field"><label>Nome *</label><input id="n_nome" placeholder="Nome da criadora"></div>
+    <div class="row2">
+      <div class="field"><label>@ do Instagram *</label><input id="n_insta" placeholder="@usuario"></div>
+      <div class="field"><label>WhatsApp</label><input id="n_whats" inputmode="numeric" placeholder="(14) 99999-9999"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>E-mail</label><input id="n_email" type="email"></div>
+      <div class="field"><label>Bairro / cidade</label><input id="n_cidade" placeholder="Ex: Vila Aviação, Bauru"></div>
+    </div>
+
+    <div class="divider"><span>Perfil</span></div>
+    <div class="row2">
+      <div class="field"><label>Se considera</label><select id="n_cat">${opt(['','UGC','Influenciador'],'')}</select></div>
+      <div class="field"><label>Seguidores (aprox.)</label><input id="n_seguidores" placeholder="Ex: 8k IG"></div>
+    </div>
+    <div class="field"><label>Link de portfólio / perfil</label><input id="n_portfolio" placeholder="https://instagram.com/..."></div>
+    <div class="row2">
+      <div class="field"><label>Já tem fios brancos?</label><select id="n_fios">${opt(['','Sim','Não'],'')}</select></div>
+      <div class="field"><label>Cidade do público majoritário</label><input id="n_publico" placeholder="Ex: Bauru"></div>
+    </div>
+    <div class="field"><label>Observações / dados da pesquisa</label><textarea id="n_msg" placeholder="Engajamento, % de audiência de Bauru, de onde veio a indicação, alertas…"></textarea></div>
+
+    <div class="divider"><span>Avaliação (opcional — dá pra deixar em branco e avaliar depois)</span></div>
+    <div class="field">
+      <label>Status</label>
+      <div class="status-pick" id="n_statusPick">
+        ${STATUS.map(s=>`<button type="button" data-s="${esc(s)}" class="${s==='Novo'?'sel':''}">${esc(s)}</button>`).join('')}
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>É de Bauru?</label><select id="n_bauru">${opt(BAURU,'')}</select></div>
+      <div class="field"><label>Categoria final</label><select id="n_catfinal">${opt(CAT,'')}</select></div>
+    </div>
+    <div class="err" id="n_err" style="display:none;color:#e8a48c;font-size:12.5px;margin-top:4px"></div>
+  `;
+  $('#n_statusPick').querySelectorAll('button').forEach(b => b.onclick = () => {
+    $('#n_statusPick').querySelectorAll('button').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+  });
+  // máscara simples de WhatsApp
+  $('#n_whats').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    if (v.length > 6) e.target.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 2) e.target.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    else e.target.value = v;
+  });
+  $('#sheetBg').classList.add('open');
+  $('#sheet').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+$('#btnNovo').onclick = abrirNovoCriador;
+$('#sheetClose').onclick = fechar;
+$('#sheetBg').onclick = fechar;
+$('#lightbox').onclick = () => $('#lightbox').classList.remove('open');
+
+/* SALVAR */
+$('#btnSalvar').onclick = async () => {
+  if(!aberto) return;
+  const g = id => { const el = $('#'+id); return el ? el.value.trim() : ''; };
+  const gc = id => { const el = $('#'+id); return !!(el && el.checked); };
+
+  // ---- criar criador manual ----
+  if (modoNovo) {
+    if (!g('n_nome') || !g('n_insta')) {
+      $('#n_err').textContent = 'Preencha o nome e o @ do Instagram.';
+      $('#n_err').style.display = 'block';
+      return;
+    }
+    toast('Criando…');
+    const rr = await sb.rpc('criar_criador_manual', {
+      p_senha: senha,
+      p_nome: g('n_nome'), p_instagram: g('n_insta'), p_whatsapp: g('n_whats'),
+      p_email: g('n_email'), p_cidade: g('n_cidade'), p_categoria: g('n_cat') || null,
+      p_seguidores: g('n_seguidores'), p_portfolio: g('n_portfolio'),
+      p_fios_brancos: g('n_fios') || null, p_publico_cidade: g('n_publico'),
+      p_mensagem: g('n_msg'),
+      p_status: $('#n_statusPick').querySelector('button.sel')?.dataset.s || 'Novo',
+      p_de_bauru: g('n_bauru') || null, p_categoria_final: g('n_catfinal') || null
+    });
+    if (rr.error || !rr.data || !rr.data.ok) {
+      $('#n_err').textContent = (rr.data && rr.data.erro) || 'Não consegui criar.';
+      $('#n_err').style.display = 'block';
+      return;
+    }
+    toast('✓ Criador adicionado');
+    fechar();
+    carregar();
+    return;
+  }
+
+  const st = $('#statusPick').querySelector('button.sel')?.dataset.s || 'Novo';
+
+  toast('Salvando…');
+  const r = await sb.rpc('atualizar_criador_admin', {
+    p_id: aberto.id, p_senha: senha,
+    p_status: st, p_categoria_final: g('f_catfinal') || null, p_de_bauru: g('f_bauru') || null,
+    p_trafego_pago: gc('t_trafego'), p_casting_fixo: gc('t_fixo'), p_avaliacao_notas: g('f_notas') || null,
+    p_nome: g('f_nome'), p_instagram: g('f_insta'), p_whatsapp: g('f_whats'),
+    p_email: g('f_email'), p_cidade: g('f_cidade')
+  });
+  if (r.error || !r.data || !r.data.ok) { toast('Não consegui salvar'); return; }
+  toast('✓ Salvo');
+  fechar();
+  carregar();
+};
+
+async function apagarPrint(){
+  if(!aberto) return;
+  if(!confirm('Apagar o print deste criador? Isso libera espaço no Storage e não dá pra desfazer.')) return;
+  toast('Apagando…');
+  const r = await sb.rpc('deletar_print_criador', { p_id: aberto.id, p_senha: senha });
+  if (r.error || !r.data || !r.data.ok) { toast('Não consegui apagar'); return; }
+  toast('✓ Print apagado');
+  fechar();
+  carregar();
+}
+
+/* WHATSAPP */
+$('#btnWa').onclick = () => {
+  if(!aberto) return;
+  let n = ($('#f_whats')?.value || aberto.whatsapp || '').replace(/\D/g,'');
+  if(!n) return;
+  if(n.length <= 11) n = '55' + n;
+  window.open('https://wa.me/' + n, '_blank');
+};
+
+/* TOAST */
+let tT;
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),2400); }
+</script>
+</body>
+</html>
