@@ -169,6 +169,12 @@
     },
     {
       "host": "painel",
+      "path": "desafio",
+      "repo": "luanacaper/desafio",
+      "nome": "Projeto Florescer"
+    },
+    {
+      "host": "painel",
       "path": "creatorsaime",
       "repo": "pousadaaime/aime-criadores",
       "nome": "Creators Aimê"
