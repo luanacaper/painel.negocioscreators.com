@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F1F5F2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Projeto Florescer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna única no celular (check-in do dia primeiro), duas colunas no desktop; mapa de 120 dias como trilha de conquista */
+:root{
+  --bg:#F1F5F2; --surface:#FFFFFF; --ink:#14221D; --muted:#5B6C65; --line:#D9E3DE;
+  --accent:#1E7656; --accent-soft:#DCEFE6; --gold:#C98A1C; --gold-soft:#F8EBCF;
+  --h0:#E3EBE7; --h1:#B9DDCB; --h2:#7CC3A3; --h3:#3E9D77; --h4:#1E7656;
+  --warn:#B4541F; --warn-soft:#F7E3D6;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Inter", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1613; --surface:#16211D; --ink:#E6EFEA; --muted:#93A69D; --line:#263530;
+  --accent:#4CC096; --accent-soft:#1B3A2F; --gold:#EDB44C; --gold-soft:#3A2F17;
+  --h0:#1E2B26; --h1:#1F4A3A; --h2:#257055; --h3:#33966F; --h4:#4CC096;
+  --warn:#F08A55; --warn-soft:#3B241A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E1613; --surface:#16211D; --ink:#E6EFEA; --muted:#93A69D; --line:#263530;
+  --accent:#4CC096; --accent-soft:#1B3A2F; --gold:#EDB44C; --gold-soft:#3A2F17;
+  --h0:#1E2B26; --h1:#1F4A3A; --h2:#257055; --h3:#33966F; --h4:#4CC096;
+  --warn:#F08A55; --warn-soft:#3B241A; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(28px,6vw,44px);font-weight:800;line-height:1.05}
+h2{font-size:20px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr;gap:20px}
+@media (min-width:860px){.grid2{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+
+/* topo */
+.top{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between}
+.top .sub{color:var(--muted);margin-top:6px}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{display:flex;flex-direction:column;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);min-width:96px}
+.badge b{font-family:var(--display);font-size:24px;line-height:1.1}
+.badge span{font-size:12px;color:var(--muted)}
+.badge.fire b{color:var(--gold)}
+.timebar{height:8px;border-radius:99px;background:var(--h0);overflow:hidden}
+.timebar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+/* metas */
+.goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.goal{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);min-width:0}
+.goal .big{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.1}
+.bar{height:10px;border-radius:99px;background:var(--h0);position:relative;overflow:visible}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.bar .pace{position:absolute;top:-3px;width:2px;height:16px;background:var(--ink);opacity:.55;border-radius:2px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;width:fit-content}
+.pill.ok{background:var(--accent-soft);color:var(--accent)}
+.pill.low{background:var(--warn-soft);color:var(--warn)}
+.pill.idle{background:var(--h0);color:var(--muted)}
+.pill.gold{background:var(--gold-soft);color:var(--gold)}
+
+/* check-in */
+.daynav{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.daynav .lbl{text-align:center;flex:1;min-width:0}
+.daynav .lbl b{font-family:var(--display);font-size:18px;display:block}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:18px;display:grid;place-items:center;flex:none}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.habits{display:flex;flex-direction:column;gap:8px}
+.habit{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);transition:background .15s,border-color .15s}
+.habit .tick{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:transparent;font-weight:800;font-size:15px}
+.habit .t{display:flex;flex-direction:column;min-width:0}
+.habit .t b{font-weight:600}
+.habit .t span{font-size:13px;color:var(--muted)}
+.habit[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.habit[aria-pressed="true"] .tick{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.habit.weekly[aria-pressed="true"]{background:var(--gold-soft);border-color:var(--gold)}
+.habit.weekly[aria-pressed="true"] .tick{background:var(--gold);border-color:var(--gold)}
+.habit .tag{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.water{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.cups{display:flex;gap:4px;flex-wrap:wrap;flex:1;min-width:0}
+.cup{width:20px;height:26px;border-radius:3px 3px 7px 7px;border:2px solid var(--h2);background:transparent;padding:0}
+.cup.on{background:var(--h2)}
+.daysum{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+textarea,input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:64px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.row > *{flex:1 1 120px}
+.btn{border:none;background:var(--accent);color:var(--surface);font-weight:600;border-radius:10px;padding:10px 14px;flex:0 0 auto}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.small{padding:6px 10px;font-size:13px}
+
+/* mapa */
+.mapa-wrap{overflow-x:auto;padding-bottom:4px}
+.mapa{--c:clamp(14px,3.9vw,22px);display:grid;grid-template-rows:repeat(7,var(--c)) calc(var(--c) - 2px);grid-auto-columns:var(--c);grid-template-columns:22px;gap:4px;width:max-content}
+.wd{font-size:10px;color:var(--muted);display:grid;place-items:center;grid-column:1}
+.cell{border-radius:4px;background:var(--h0);border:0;padding:0;position:relative}
+.cell.l1{background:var(--h1)}.cell.l2{background:var(--h2)}.cell.l3{background:var(--h3)}.cell.l4{background:var(--h4)}
+.cell.fut{background:transparent;border:1px dashed var(--line);cursor:default}
+.cell.today{outline:2px solid var(--ink);outline-offset:1px}
+.cell.sel{box-shadow:0 0 0 2px var(--gold) inset}
+.cell.marco::after{content:"";position:absolute;right:-3px;top:-3px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:1.5px solid var(--surface)}
+.ev{display:grid;place-items:center;font-size:11px;color:var(--line)}
+.ev.on{color:var(--gold)}
+.legend{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* constância */
+.const{display:flex;flex-direction:column;gap:10px}
+.const .it{display:grid;grid-template-columns:170px 1fr 48px;gap:10px;align-items:center;font-size:14px}
+.const .it .bar{height:8px}
+@media (max-width:420px){.const .it{grid-template-columns:120px 1fr 42px}}
+
+/* trilha */
+.trail{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.stage{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--surface);min-width:0}
+.stage.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.stage .chk{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.stage .chk div{display:flex;gap:6px;align-items:baseline}
+.stage .chk .m{width:14px;flex:none;text-align:center;font-weight:700}
+.stage .chk .y{color:var(--accent)} .stage .chk .n{color:var(--muted)}
+
+/* vendas */
+.vendas{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow:auto}
+.venda{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--bg);font-size:14px}
+.venda .o{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.venda .del{background:none;border:none;color:var(--muted);font-size:13px;padding:4px 6px;border-radius:6px}
+.venda .del.armed{color:var(--warn);font-weight:600}
+
+.setup{border-color:var(--gold);background:var(--gold-soft)}
+.status{font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+.fl-fundo{position:fixed;inset:0;z-index:30;background:var(--bg);display:grid;place-items:center;padding:16px;overflow:auto}
+.fl-login{width:min(420px,100%)}
+.linkbtn{background:none;border:none;color:var(--accent);padding:0;font-size:12px;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div style="min-width:0;flex:1 1 320px">
+      <div class="eyebrow">Projeto Florescer · 120 dias de corpo, fé, família e trabalho</div>
+      <h1 id="hTitle">Dia 1 de 120</h1>
+      <div class="sub num" id="hSub">Carregando…</div>
+      <div class="timebar" style="margin-top:12px"><i id="hTime" style="width:0%"></i></div>
+    </div>
+    <div class="badges">
+      <div class="badge fire"><b class="num" id="bStreak">0</b><span>dias seguidos</span></div>
+      <div class="badge"><b class="num" id="bWins">0</b><span>dias de vitória</span></div>
+      <div class="badge"><b class="num" id="bConst">0%</b><span>constância</span></div>
+    </div>
+  </header>
+
+  <section class="card setup" id="setup" hidden>
+    <div>
+      <h2>Ponto de partida</h2>
+      <p class="muted" style="margin:4px 0 0">Preencha uma vez. Sem esses números o painel não consegue medir quanto falta pra cada meta.</p>
+    </div>
+    <form id="fSetup" class="row">
+      <label class="f">Início do desafio<input id="sInicio" type="date" required></label>
+      <label class="f">Peso hoje (kg)<input id="sPeso" type="number" step="0.1" min="30" max="250" inputmode="decimal" placeholder="ex.: 72,4" required></label>
+      <label class="f">Seguidores hoje<input id="sSeg" type="number" step="1" min="0" inputmode="numeric" placeholder="ex.: 18500" required></label>
+      <button class="btn" type="submit">Começar</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="daysum"><h2>Metas até <span id="gFim" class="num">—</span></h2><span class="status" id="status">Conectando…</span></div>
+    <div class="goals" id="goals"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" id="checkin">
+      <div class="daynav">
+        <button class="icon-btn" id="prev" aria-label="Dia anterior">‹</button>
+        <div class="lbl"><b id="selLabel">Hoje</b><span class="muted num" id="selSub"></span></div>
+        <button class="icon-btn" id="next" aria-label="Próximo dia">›</button>
+      </div>
+      <div class="habits" id="habits"></div>
+      <div class="water">
+        <span style="font-weight:600">Água</span>
+        <div class="cups" id="cups"></div>
+        <span class="muted num" id="cupTxt">0/8 copos</span>
+      </div>
+      <label class="f">Como foi o dia (opcional)<textarea id="nota" placeholder="O que ajudou, o que atrapalhou, uma vitória pequena…"></textarea></label>
+      <div class="daysum"><span id="dayScore" class="pill idle">0 de 6 hábitos</span><span class="status">Dia de vitória = 5 ou 6 hábitos</span></div>
+    </section>
+
+    <section class="card">
+      <div>
+        <h2>Mapa de conquista</h2>
+        <p class="muted" style="margin:4px 0 0">Cada quadrado é um dia do desafio. Quanto mais verde, mais hábitos cumpridos. Toque num dia pra editar.</p>
+      </div>
+      <div class="mapa-wrap"><div class="mapa" id="mapa"></div></div>
+      <div class="legend">
+        <span>menos</span>
+        <span class="sw" style="background:var(--h0)"></span><span class="sw" style="background:var(--h1)"></span><span class="sw" style="background:var(--h2)"></span><span class="sw" style="background:var(--h3)"></span><span class="sw" style="background:var(--h4)"></span>
+        <span>6/6</span>
+        <span style="margin-left:10px;color:var(--gold)">★</span><span>Evangelho no Lar da semana</span>
+        <span class="sw" style="background:var(--gold);border-radius:50%;width:8px;height:8px;margin-left:10px"></span><span>fim de cada mês</span>
+      </div>
+      <h3 style="margin-top:4px">Constância por hábito</h3>
+      <div class="const" id="const"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div>
+      <h2>A trilha</h2>
+      <p class="muted" style="margin:4px 0 0">Quatro etapas de 30 dias. Cada uma tem um marco pras três metas. Bater o marco é estar no ritmo certo.</p>
+    </div>
+    <div class="trail" id="trail"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Registrar números</h2>
+      <form id="fPeso" class="row">
+        <label class="f">Peso (kg)<input id="iPeso" type="number" step="0.1" min="30" max="250" inputmode="decimal" required></label>
+        <label class="f">Data<input id="dPeso" type="date" required></label>
+        <button class="btn" type="submit">Salvar peso</button>
+      </form>
+      <form id="fSeg" class="row">
+        <label class="f">Seguidores<input id="iSeg" type="number" step="1" min="0" inputmode="numeric" required></label>
+        <label class="f">Data<input id="dSeg" type="date" required></label>
+        <button class="btn" type="submit">Salvar seguidores</button>
+      </form>
+      <p class="status" style="margin:0">Dica: pese-se sempre no mesmo dia da semana, de manhã, em jejum.</p>
+    </section>
+
+    <section class="card">
+      <h2>Vendas orgânicas</h2>
+      <form id="fVenda" class="row">
+        <label class="f" style="flex:2 1 160px">Marca ou cliente<input id="vOrigem" type="text" maxlength="80" placeholder="ex.: marca de skincare" required></label>
+        <label class="f">Tipo<select id="vTipo"><option value="marca">Marca</option><option value="cliente">Cliente</option></select></label>
+        <label class="f">Valor (R$)<input id="vValor" type="number" step="0.01" min="0" inputmode="decimal" required></label>
+        <label class="f">Data<input id="vData" type="date" required></label>
+        <button class="btn" type="submit">Lançar</button>
+      </form>
+      <div class="vendas" id="vendas"></div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- Versão do domínio: login com senha + banco no Supabase da Central (tabela nc_docs, coleções florescer_*) ---------- */
+const FL_URL = "https://ldwrkqlpigjnbulfxsbh.supabase.co";
+const FL_KEY = "sb_publishable_lY-olbrferdwg4fbm7op_w_9M5IymY1";
+const FL_VEIO_DO_LINK = /type=(magiclink|recovery|signup|invite)/.test(location.hash);
+const sb = window.supabase.createClient(FL_URL, FL_KEY, { auth: { persistSession: true, detectSessionInUrl: true, flowType: "implicit" } });
+const FL_PRE = "florescer_";
+
+function fl_makeDb(){
+  const cache = {}, colSubs = {}, docSubs = {};
+  const meta = { fromCache:false, hasPendingWrites:false };
+  const snapCol = c => { const docs = Object.keys(cache[c]||{}).sort().map(id => ({ id, exists:true, data:() => cache[c][id], metadata:meta })); return { docs, size:docs.length, empty:!docs.length, metadata:meta, docChanges:() => [] }; };
+  const notify = (c, id) => { (colSubs[c]||[]).forEach(cb => cb(snapCol(c))); const d = (cache[c]||{})[id]; (docSubs[c+'/'+id]||[]).forEach(cb => cb({ id, exists:!!d, data:() => d, metadata:meta })); };
+  const put = (c, id, d) => { cache[c] = cache[c] || {}; if (d === null) delete cache[c][id]; else cache[c][id] = d; notify(c, id); };
+  const fail = e => { if (e) throw { code: e.code === '42501' ? 'invalid_argument' : 'unavailable', message: e.message }; };
+  const ready = (async () => {
+    const { data, error } = await sb.from('nc_docs').select('col,id,data').like('col', FL_PRE + '%'); fail(error);
+    (data||[]).forEach(r => { const c = r.col.slice(FL_PRE.length); (cache[c] = cache[c] || {})[r.id] = r.data; });
+    sb.channel('florescer').on('postgres_changes', { event:'*', schema:'public', table:'nc_docs' }, p => {
+      const row = p.eventType === 'DELETE' ? p.old : p.new; if (!row || !row.col || !row.col.startsWith(FL_PRE)) return;
+      put(row.col.slice(FL_PRE.length), row.id, p.eventType === 'DELETE' ? null : row.data);
+    }).subscribe();
+  })();
+  const docApi = (c, id) => ({
+    id,
+    async set(data){ await ready; const d = JSON.parse(JSON.stringify(data)); put(c, id, d); const { error } = await sb.from('nc_docs').upsert({ col:FL_PRE + c, id, data:d }); fail(error); },
+    async delete(){ await ready; put(c, id, null); const { error } = await sb.from('nc_docs').delete().eq('col', FL_PRE + c).eq('id', id); fail(error); },
+    onSnapshot(cb, err){ const k = c+'/'+id; (docSubs[k] = docSubs[k] || []).push(cb); ready.then(() => { const d = (cache[c]||{})[id]; cb({ id, exists:!!d, data:() => d, metadata:meta }); }, e => err && err(e)); return () => {}; }
+  });
+  const colApi = c => ({ limit(){ return colApi(c); }, doc:id => docApi(c, id),
+    onSnapshot(cb, err){ (colSubs[c] = colSubs[c] || []).push(cb); ready.then(() => cb(snapCol(c)), e => err && err(e)); return () => {}; } });
+  return { doc(path){ const [c, id] = path.split('/'); return docApi(c, id); }, collection: colApi };
+}
+
+async function fl_entrar(){
+  const { data: { session } } = await sb.auth.getSession();
+  if (session){
+    const { data: adm } = await sb.from('nc_admins').select('email');
+    if (adm && adm.length){ fl_rodape(session); return true; }
+    fl_login('O e-mail ' + session.user.email + ' não tem acesso a este painel.', true); return false;
+  }
+  fl_login('', false); return false;
+}
+function fl_box(html){ const f = document.createElement('div'); f.className = 'fl-fundo'; f.innerHTML = html; document.body.append(f); return f; }
+function fl_login(msg, logado){
+  let salvo = ''; try { salvo = localStorage.getItem('nc-email') || ''; } catch(e){}
+  const f = fl_box(`<form class="card fl-login" id="flForm"><div class="eyebrow">Projeto Florescer</div><h2>Entrar</h2>
+    <label class="f">E-mail<input id="flEmail" type="email" autocomplete="username" required></label>
+    <label class="f">Senha<input id="flSenha" type="password" autocomplete="current-password"></label>
+    <button class="btn" type="submit">Entrar</button>
+    <button class="btn ghost" type="button" id="flLink">Primeira vez ou esqueceu a senha? Receber link por e-mail</button>
+    ${logado ? '<button class="btn ghost" type="button" id="flSair">Sair desta conta</button>' : ''}
+    <p class="status" id="flMsg" aria-live="polite"></p></form>`);
+  const em = f.querySelector('#flEmail'), se = f.querySelector('#flSenha'), av = f.querySelector('#flMsg');
+  em.value = salvo; av.textContent = msg;
+  f.querySelector('#flForm').addEventListener('submit', async ev => {
+    ev.preventDefault(); const e = em.value.trim(); if (!e || !se.value){ av.textContent = 'Preencha o e-mail e a senha.'; return; }
+    try { localStorage.setItem('nc-email', e); } catch(x){}
+    av.textContent = 'Entrando…';
+    const { error } = await sb.auth.signInWithPassword({ email:e, password:se.value });
+    if (error){ av.textContent = /invalid/i.test(error.message) ? 'E-mail ou senha não conferem. Se ainda não criou a senha, use o link por e-mail.' : 'Não deu para entrar: ' + error.message; return; }
+    location.reload();
+  });
+  f.querySelector('#flLink').onclick = async () => {
+    const e = em.value.trim(); if (!e){ av.textContent = 'Digite o seu e-mail primeiro.'; return; }
+    av.textContent = 'Enviando…';
+    const { error } = await sb.auth.signInWithOtp({ email:e, options:{ emailRedirectTo: location.origin + location.pathname, shouldCreateUser:false } });
+    av.textContent = error ? 'Não deu para enviar: ' + error.message : 'Pronto! Abra o e-mail e clique no link. Ao entrar, crie a sua senha.';
+  };
+  const s = f.querySelector('#flSair'); if (s) s.onclick = async () => { await sb.auth.signOut(); location.reload(); };
+  setTimeout(() => (salvo ? se : em).focus(), 50);
+}
+function fl_senha(primeira){
+  const f = fl_box(`<form class="card fl-login" id="flS"><h2>${primeira ? 'Crie a sua senha' : 'Trocar a senha'}</h2>
+    <label class="f">Nova senha (mínimo 6 caracteres)<input id="flN1" type="password" autocomplete="new-password"></label>
+    <label class="f">Repita a senha<input id="flN2" type="password" autocomplete="new-password"></label>
+    <div class="row"><button class="btn" type="submit">Salvar senha</button><button class="btn ghost" type="button" id="flC">${primeira ? 'Agora não' : 'Cancelar'}</button></div>
+    <p class="status" id="flSM" aria-live="polite"></p></form>`);
+  const a = f.querySelector('#flN1'), b = f.querySelector('#flN2'), av = f.querySelector('#flSM');
+  f.querySelector('#flC').onclick = () => f.remove();
+  f.querySelector('#flS').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    if (a.value.length < 6){ av.textContent = 'A senha precisa ter pelo menos 6 caracteres.'; return; }
+    if (a.value !== b.value){ av.textContent = 'As duas senhas não estão iguais.'; return; }
+    av.textContent = 'Salvando…';
+    const { error } = await sb.auth.updateUser({ password:a.value });
+    if (error){ av.textContent = 'Não deu para salvar: ' + error.message; return; }
+    av.textContent = 'Senha salva!'; setTimeout(() => f.remove(), 1500);
+  });
+  setTimeout(() => a.focus(), 50);
+}
+function fl_rodape(session){
+  const p = document.createElement('p'); p.className = 'status'; p.style.textAlign = 'center';
+  p.append(document.createTextNode(session.user.email + ' · '));
+  const t = document.createElement('button'); t.className = 'linkbtn'; t.textContent = 'Trocar senha'; t.onclick = () => fl_senha(false);
+  const s = document.createElement('button'); s.className = 'linkbtn'; s.textContent = 'Sair'; s.onclick = async () => { await sb.auth.signOut(); location.reload(); };
+  p.append(t, document.createTextNode(' · '), s);
+  document.querySelector('.wrap').append(p);
+  if (FL_VEIO_DO_LINK) setTimeout(() => fl_senha(true), 600);
+}
+
+const HAB = [
+  {k:'alim',  nome:'Alimentação',     dica:'Comi dentro do plano'},
+  {k:'hidr',  nome:'Hidratação',      dica:'Bati a meta de água'},
+  {k:'exerc', nome:'Exercício',       dica:'30 min ou mais de movimento'},
+  {k:'biblia',nome:'Leitura bíblica', dica:'Li a passagem do dia'},
+  {k:'post',  nome:'Publiquei',       dica:'Postei conteúdo do meu trabalho'},
+  {k:'familia',nome:'Tempo com Cauê e Heuller', dica:'Tempo de qualidade, sem celular'},
+];
+const EV = {k:'evang', nome:'Evangelho no Lar', dica:'Fiz o desta semana'};
+const DEF = {dias:120, metaPeso:10, metaSeg:30000, metaReceita:15000, copos:8};
+const VIT = HAB.length - 1; // dia de vitória = no máximo 1 hábito faltando
+const RECEITA_MARCOS = [3000, 7000, 11000, 15000];
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays = (s,n) => { const d = parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const diff = (a,b) => Math.round((parse(b)-parse(a))/86400000);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v||0);
+const nf = (v,d=0) => Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const br = s => { const d = parse(s); return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`; };
+const WD = ['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+const TODAY = iso(new Date());
+
+const state = { config:null, dias:{}, medidas:{}, vendas:[], sel:TODAY, loaded:false };
+let mode = 'loading', db = null;
+
+function cfg(){ return Object.assign({}, DEF, {inicio:TODAY}, state.config || {}); }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,3200); }
+
+/* ---------- armazenamento ---------- */
+const LKEY = 'desafio120-local';
+function localLoad(){ try{ const o = JSON.parse(localStorage.getItem(LKEY)||'{}'); Object.assign(state, {config:o.config||null, dias:o.dias||{}, medidas:o.medidas||{}, vendas:o.vendas||[]}); }catch(e){} }
+function localSave(){ try{ localStorage.setItem(LKEY, JSON.stringify({config:state.config,dias:state.dias,medidas:state.medidas,vendas:state.vendas})); }catch(e){} }
+
+const queues = {};
+function write(path, data){
+  if (mode !== 'db'){ localSave(); return; }
+  queues[path] = (queues[path] || Promise.resolve())
+    .then(() => db.doc(path).set(data))
+    .catch(e => toast(e && e.code === 'quota_exceeded' ? 'O espaço de dados acabou.' : 'Não salvou. Confira a conexão e tente de novo.'));
+}
+function removeDoc(path){
+  if (mode !== 'db'){ localSave(); return; }
+  db.doc(path).delete().catch(() => toast('Não consegui apagar. Tente de novo.'));
+}
+
+async function start(){
+  render();
+  if (!(await fl_entrar())) return;
+  db = fl_makeDb();
+  if (!db){ mode = 'local'; localLoad(); $('status').textContent = 'Salvando só neste navegador'; state.loaded = true; render(); return; }
+  mode = 'db';
+  let got = 0;
+  const timer = setTimeout(() => { if (!state.loaded) $('status').textContent = 'Os dados ainda não carregaram. Confira a conexão.'; }, 10000);
+  const done = snap => { if (!snap.metadata.fromCache && !state.loaded && ++got >= 4){ state.loaded = true; clearTimeout(timer); $('status').textContent = 'Salvo automaticamente'; } };
+  const fail = () => { clearTimeout(timer); $('status').textContent = 'Não consegui ler os dados agora.'; };
+  db.doc('desafio/config').onSnapshot(s => { state.config = s.exists ? s.data() : null; done(s); render(); }, fail);
+  db.collection('dias').limit(400).onSnapshot(q => { const o={}; q.docs.forEach(d=>o[d.id]=d.data()); state.dias=o; done(q); render(); }, fail);
+  db.collection('medidas').limit(400).onSnapshot(q => { const o={}; q.docs.forEach(d=>o[d.id]=d.data()); state.medidas=o; done(q); render(); }, fail);
+  db.collection('vendas').limit(1000).onSnapshot(q => { state.vendas = q.docs.map(d=>Object.assign({id:d.id}, d.data())); done(q); render(); }, fail);
+}
+
+/* ---------- cálculos ---------- */
+function dayDoc(s){ const d = state.dias[s]; return { h: Object.assign({}, d && d.h), copos: (d && d.copos) || 0, nota: (d && d.nota) || '' }; }
+function score(s){ const h = dayDoc(s).h; return HAB.reduce((n,x)=>n+(h[x.k]?1:0),0); }
+function idxOf(s){ return diff(cfg().inicio, s); }
+function weekOf(s){ return Math.floor((idxOf(s) + offset()) / 7); }
+function offset(){ return (parse(cfg().inicio).getDay() + 6) % 7; } // segunda = 0
+function evWeekDone(w){ return Object.keys(state.dias).some(s => state.dias[s].h && state.dias[s].h.evang && idxOf(s) >= 0 && idxOf(s) < cfg().dias && weekOf(s) === w); }
+function latest(field){
+  const ks = Object.keys(state.medidas).filter(k => state.medidas[k][field] != null).sort();
+  return ks.length ? {v:Number(state.medidas[ks[ks.length-1]][field]), d:ks[ks.length-1]} : null;
+}
+function elapsed(){ const i = idxOf(TODAY); return Math.max(0, Math.min(cfg().dias, i + 1)); }
+
+/* ---------- render ---------- */
+function render(){
+  const c = cfg(), fim = addDays(c.inicio, c.dias - 1), el = elapsed(), ti = idxOf(TODAY);
+  // topo
+  $('hTitle').textContent = ti < 0 ? `Começa em ${-ti} dia${ti===-1?'':'s'}` : ti >= c.dias ? 'Desafio concluído' : `Dia ${ti+1} de ${c.dias}`;
+  $('hSub').textContent = `${br(c.inicio)} → ${br(fim)} · faltam ${Math.max(0, c.dias - el)} dias`;
+  $('hTime').style.width = (el / c.dias * 100) + '%';
+  $('gFim').textContent = br(fim);
+  $('setup').hidden = !(state.loaded && !state.config);
+
+  // streak e vitórias
+  let wins = 0, total = 0;
+  for (let i=0;i<el;i++){ const s = addDays(c.inicio,i), sc = score(s); total += sc; if (sc>=VIT) wins++; }
+  let streak = 0, cur = score(TODAY) >= VIT ? TODAY : addDays(TODAY,-1);
+  while (idxOf(cur) >= 0 && score(cur) >= VIT){ streak++; cur = addDays(cur,-1); }
+  $('bStreak').textContent = streak; $('bWins').textContent = wins;
+  $('bConst').textContent = el ? Math.round(total / (el*HAB.length) * 100) + '%' : '0%';
+
+  renderGoals(c, el); renderDay(c); renderMap(c); renderConst(c, el); renderTrail(c); renderVendas();
+}
+
+function goalHTML(o){
+  const pct = Math.max(0, Math.min(1, o.pct)), pace = Math.min(1, o.pace);
+  let pill = '<span class="pill idle">Sem registro ainda</span>';
+  if (o.has){ pill = pct >= 1 ? '<span class="pill gold">Meta batida ★</span>' : pct >= pace - 0.02 ? '<span class="pill ok">No ritmo</span>' : '<span class="pill low">Abaixo do ritmo</span>'; }
+  return `<div class="goal"><div class="eyebrow">${o.label}</div><div class="big num">${o.big}</div>
+    <div class="bar" title="Marca preta = onde você deveria estar hoje"><i style="width:${pct*100}%"></i><span class="pace" style="left:calc(${pace*100}% - 1px)"></span></div>
+    <div class="muted num" style="font-size:13px">${o.sub}</div>${pill}</div>`;
+}
+function renderGoals(c, el){
+  const pace = el / c.dias, p0 = c.pesoInicial, s0 = c.segInicial;
+  const pw = latest('peso'), sw = latest('seguidores');
+  const perdido = p0 != null && pw ? p0 - pw.v : 0;
+  const ganho = s0 != null && sw ? sw.v - s0 : 0;
+  const mes = TODAY.slice(0,7), mesTot = state.vendas.filter(v => (v.data||'').startsWith(mes)).reduce((a,v)=>a+Number(v.valor||0),0);
+  const fim = addDays(c.inicio, c.dias-1);
+  const desafioTot = state.vendas.filter(v => v.data >= c.inicio && v.data <= fim).reduce((a,v)=>a+Number(v.valor||0),0);
+  const mi = Math.min(3, Math.max(0, Math.floor(idxOf(TODAY)/30)));
+  $('goals').innerHTML =
+    goalHTML({label:'Emagrecer 10 kg', has: p0 != null && !!pw, pct: perdido/c.metaPeso, pace,
+      big: p0 == null ? '—' : `${nf(Math.max(0,perdido),1)} kg`,
+      sub: p0 == null ? 'Preencha o ponto de partida' : `de ${nf(c.metaPeso)} kg · início ${nf(p0,1)} → meta ${nf(p0-c.metaPeso,1)} kg${pw?` · hoje ${nf(pw.v,1)}`:''}`}) +
+    goalHTML({label:'+30 mil seguidores', has: s0 != null && !!sw, pct: ganho/c.metaSeg, pace,
+      big: s0 == null ? '—' : `+${nf(Math.max(0,ganho))}`,
+      sub: s0 == null ? 'Preencha o ponto de partida' : `de ${nf(c.metaSeg)} · meta ${nf(s0+c.metaSeg)} seguidores${sw?` · hoje ${nf(sw.v)}`:''}`}) +
+    goalHTML({label:'R$ 15 mil/mês orgânico', has: state.vendas.length > 0, pct: mesTot/c.metaReceita, pace: RECEITA_MARCOS[mi]/c.metaReceita,
+      big: brl(mesTot),
+      sub: `neste mês · marco da etapa ${mi+1}: ${brl(RECEITA_MARCOS[mi])} · total no desafio ${brl(desafioTot)}`});
+}
+
+function renderDay(c){
+  const s = state.sel, d = dayDoc(s), i = idxOf(s);
+  $('selLabel').textContent = s === TODAY ? 'Hoje' : s === addDays(TODAY,-1) ? 'Ontem' : `${WD[parse(s).getDay()]}`;
+  $('selSub').textContent = `${br(s)}${i>=0 && i<c.dias ? ` · dia ${i+1}` : ''}`;
+  $('prev').disabled = s <= c.inicio; $('next').disabled = s >= TODAY;
+  const w = weekOf(s), evDone = evWeekDone(w);
+  $('habits').innerHTML = HAB.map(h => `<button class="habit" data-k="${h.k}" aria-pressed="${!!d.h[h.k]}"><span class="tick">✓</span><span class="t"><b>${h.nome}</b><span>${h.dica}</span></span></button>`).join('') +
+    `<button class="habit weekly" data-k="evang" aria-pressed="${!!d.h.evang}"><span class="tick">✓</span><span class="t"><b>${EV.nome}</b><span>${d.h.evang ? 'Feito neste dia' : evDone ? 'Já feito nesta semana ✓' : EV.dica}</span></span><span class="tag">semanal</span></button>`;
+  $('cups').innerHTML = Array.from({length:c.copos}, (_,k) => `<button class="cup ${k < d.copos ? 'on':''}" data-n="${k+1}" aria-label="${k+1} copos"></button>`).join('');
+  $('cupTxt').textContent = `${d.copos}/${c.copos} copos`;
+  const n = $('nota'); if (document.activeElement !== n && n.dataset.day !== s + '|' + d.nota){ n.value = d.nota; n.dataset.day = s + '|' + d.nota; }
+  const sc = score(s);
+  $('dayScore').className = 'pill ' + (sc >= VIT ? 'ok' : sc ? 'low' : 'idle');
+  $('dayScore').textContent = `${sc} de ${HAB.length} hábitos${sc>=VIT?' · dia de vitória':''}`;
+}
+
+function renderMap(c){
+  const off = offset(), cols = Math.ceil((c.dias + off)/7);
+  let h = ['S','T','Q','Q','S','S','D'].map((l,r)=>`<span class="wd" style="grid-row:${r+1}">${r%2===0?l:''}</span>`).join('');
+  h += `<span class="wd" style="grid-row:8">★</span>`;
+  for (let i=0;i<c.dias;i++){
+    const s = addDays(c.inicio,i), p = i + off, col = Math.floor(p/7)+2, row = p%7+1;
+    const fut = s > TODAY, sc = score(s), lvl = sc===0?0: sc<=2?1: sc<=4?2: sc===5?3:4;
+    const cls = ['cell', fut?'fut':'l'+lvl, s===TODAY?'today':'', s===state.sel?'sel':'', (i+1)%30===0?'marco':''].join(' ');
+    h += `<button class="${cls}" style="grid-column:${col};grid-row:${row}" data-s="${s}" ${fut?'tabindex="-1" aria-disabled="true"':''} aria-label="Dia ${i+1}, ${br(s)}: ${sc} de ${HAB.length}" title="Dia ${i+1} · ${br(s)} · ${sc}/${HAB.length}"></button>`;
+  }
+  for (let w=0; w<cols; w++){ const on = evWeekDone(w); h += `<span class="ev ${on?'on':''}" style="grid-column:${w+2};grid-row:8">${on?'★':'·'}</span>`; }
+  $('mapa').innerHTML = h;
+}
+
+function renderConst(c, el){
+  const cnt = k => { let n=0; for (let i=0;i<el;i++) if (dayDoc(addDays(c.inicio,i)).h[k]) n++; return n; };
+  const weeks = el ? weekOf(addDays(c.inicio, el-1)) + 1 : 0;
+  let evn = 0; for (let w=0; w<weeks; w++) if (evWeekDone(w)) evn++;
+  const rows = HAB.map(h => ({nome:h.nome, pct: el ? cnt(h.k)/el : 0, sub:`${cnt(h.k)}/${el}`}))
+    .concat([{nome:'Evangelho no Lar', pct: weeks ? evn/weeks : 0, sub:`${evn}/${weeks} sem.`, gold:true}]);
+  $('const').innerHTML = rows.map(r => `<div class="it"><span>${r.nome}</span><div class="bar" title="${r.sub}"><i style="width:${r.pct*100}%;${r.gold?'background:var(--gold)':''}"></i></div><span class="num muted" style="text-align:right">${Math.round(r.pct*100)}%</span></div>`).join('');
+}
+
+function renderTrail(c){
+  const ti = idxOf(TODAY), p0 = c.pesoInicial, s0 = c.segInicial, pw = latest('peso'), sw = latest('seguidores');
+  const perdido = p0 != null && pw ? p0 - pw.v : 0, ganho = s0 != null && sw ? sw.v - s0 : 0;
+  const names = ['Arrancada','Ritmo','Virada','Reta final'];
+  let h = '';
+  for (let k=0;k<4;k++){
+    const a = k*30, b = Math.min(c.dias, a+30) - 1, sa = addDays(c.inicio,a), sb = addDays(c.inicio,b);
+    const now = ti >= a && ti <= b, past = ti > b;
+    const rec = state.vendas.filter(v => v.data >= sa && v.data <= sb).reduce((x,v)=>x+Number(v.valor||0),0);
+    const tp = c.metaPeso/4*(k+1), ts = c.metaSeg/4*(k+1), tr = RECEITA_MARCOS[k];
+    let wins=0, el=0; for (let i=a;i<=b && i<=ti;i++){ el++; if (score(addDays(c.inicio,i))>=VIT) wins++; }
+    const chk = (ok, t) => `<div><span class="m ${ok?'y':'n'}">${ok?'✓':'○'}</span><span>${t}</span></div>`;
+    const st = past ? '<span class="pill idle">Concluída</span>' : now ? '<span class="pill ok">Você está aqui</span>' : `<span class="pill idle">Começa ${br(sa).slice(0,5)}</span>`;
+    h += `<div class="stage ${now?'now':''}"><div class="daysum"><span class="eyebrow">Etapa ${k+1} · dias ${a+1}–${b+1}</span></div>
+      <h3>${names[k]}</h3>${st}
+      <div class="chk">${chk(perdido >= tp, `−${nf(tp,1)} kg no total`)}${chk(ganho >= ts, `+${nf(ts)} seguidores no total`)}${chk(rec >= tr, `${brl(tr)} vendidos na etapa <span class="muted">(${brl(rec)})</span>`)}${chk(el && wins/el >= .8, `80% dias de vitória <span class="muted">(${wins}/${el||0})</span>`)}</div>
+      <span class="status num">${br(sa).slice(0,5)} → ${br(sb).slice(0,5)}</span></div>`;
+  }
+  $('trail').innerHTML = h;
+}
+
+function renderVendas(){
+  const vs = state.vendas.slice().sort((a,b) => (b.data||'').localeCompare(a.data||''));
+  $('vendas').innerHTML = vs.length ? vs.map(v => `<div class="venda"><span class="num muted">${esc(br(v.data).slice(0,5))}</span><span class="o">${esc(v.origem)} <span class="muted">· ${v.tipo==='cliente'?'cliente':'marca'}</span></span><b class="num">${brl(Number(v.valor))}</b><button class="del" data-id="${esc(v.id)}">apagar</button></div>`).join('')
+    : '<p class="muted" style="margin:0">Nenhuma venda lançada ainda. Cada publi, UGC ou cliente que fechar pelo orgânico entra aqui.</p>';
+}
+
+/* ---------- ações ---------- */
+function saveDay(s, d){ state.dias[s] = d; write('dias/' + s, d); render(); }
+$('habits').addEventListener('click', e => {
+  const b = e.target.closest('.habit'); if (!b) return;
+  const s = state.sel, d = dayDoc(s); d.h[b.dataset.k] = !d.h[b.dataset.k]; saveDay(s, d);
+});
+$('cups').addEventListener('click', e => {
+  const b = e.target.closest('.cup'); if (!b) return;
+  const s = state.sel, d = dayDoc(s), n = Number(b.dataset.n), c = cfg();
+  d.copos = d.copos === n ? n - 1 : n;
+  if (d.copos >= c.copos) d.h.hidr = true;
+  saveDay(s, d);
+});
+let notaT;
+$('nota').addEventListener('input', () => { clearTimeout(notaT); notaT = setTimeout(saveNota, 900); });
+$('nota').addEventListener('blur', () => { clearTimeout(notaT); saveNota(); });
+function saveNota(){ const s = state.sel, d = dayDoc(s), v = $('nota').value.slice(0,2000); if (v === d.nota) return; d.nota = v; $('nota').dataset.day = s+'|'+v; saveDay(s, d); }
+function go(s){ saveNota(); state.sel = s; render(); }
+$('prev').onclick = () => go(addDays(state.sel,-1));
+$('next').onclick = () => go(addDays(state.sel,1));
+$('mapa').addEventListener('click', e => { const b = e.target.closest('.cell'); if (!b || b.classList.contains('fut')) return; go(b.dataset.s); $('checkin').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); });
+
+function setMedida(date, field, v){ const m = Object.assign({}, state.medidas[date]); m[field] = v; state.medidas[date] = m; write('medidas/' + date, m); render(); }
+$('fSetup').addEventListener('submit', e => {
+  e.preventDefault();
+  const inicio = $('sInicio').value, peso = Number($('sPeso').value), seg = Number($('sSeg').value);
+  state.config = Object.assign({}, DEF, {inicio, pesoInicial:peso, segInicial:seg});
+  write('desafio/config', state.config);
+  setMedida(inicio, 'peso', peso); setMedida(inicio, 'seguidores', seg);
+  toast('Projeto Florescer iniciado. Bora!');
+});
+$('fPeso').addEventListener('submit', e => { e.preventDefault(); setMedida($('dPeso').value, 'peso', Number($('iPeso').value)); $('iPeso').value=''; toast('Peso salvo'); });
+$('fSeg').addEventListener('submit', e => { e.preventDefault(); setMedida($('dSeg').value, 'seguidores', Number($('iSeg').value)); $('iSeg').value=''; toast('Seguidores salvos'); });
+$('fVenda').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = {data:$('vData').value, origem:$('vOrigem').value.trim().slice(0,80), tipo:$('vTipo').value, valor:Number($('vValor').value)};
+  const id = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  state.vendas.push(Object.assign({id}, v));
+  write('vendas/' + id, v); render();
+  $('vOrigem').value=''; $('vValor').value=''; toast('Venda lançada');
+});
+$('vendas').addEventListener('click', e => {
+  const b = e.target.closest('.del'); if (!b) return;
+  if (!b.classList.contains('armed')){ b.classList.add('armed'); b.textContent = 'confirmar'; setTimeout(()=>{ b.classList.remove('armed'); b.textContent='apagar'; }, 3000); return; }
+  const id = b.dataset.id; state.vendas = state.vendas.filter(v => v.id !== id);
+  if (mode === 'db') removeDoc('vendas/' + id); else localSave();
+  render();
+});
+
+['sInicio','dPeso','dSeg','vData'].forEach(id => $(id).value = TODAY);
+start();
+</script>
+
+</body>
+</html>

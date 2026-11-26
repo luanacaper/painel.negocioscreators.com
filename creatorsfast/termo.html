@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Fast Escova Bauru · Termo do Casting de Criadores</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💛</text></svg>">
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','2253088758874211');fbq('track','PageView');
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600;700;800&display=swap');
+  :root{
+    --preto:#0a0a0a;--preto-2:#151515;--preto-3:#1e1e1e;
+    --dourado:#d4af37;--dourado-claro:#e8cc6a;--branco:#f7f5f0;--cinza:#a8a49b;--cinza-esc:#6b675f;
+    --serif:'Playfair Display',Georgia,serif;--sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);color:var(--branco);background:var(--preto);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:640px;margin:0 auto;padding:0 18px 60px}
+  button{font-family:inherit;cursor:pointer}
+  .topo{padding:26px 0 6px;text-align:center}
+  .marca .word{font-family:var(--serif);font-size:27px;font-style:italic;font-weight:600;letter-spacing:0.5px}
+  .marca .word b{font-style:normal;font-weight:700;color:var(--dourado);font-family:var(--sans)}
+  .marca .cidade{font-size:10px;letter-spacing:5px;color:var(--cinza);margin-top:2px;font-weight:600}
+  h1{font-family:var(--serif);font-size:26px;font-weight:600;text-align:center;margin:18px 0 4px;line-height:1.2}
+  .sub{text-align:center;color:var(--cinza);font-size:13.5px;margin-bottom:22px}
+
+  .termo{background:var(--preto-2);border:1px solid rgba(212,175,55,0.18);border-radius:16px;padding:22px 20px;margin-bottom:22px;font-size:14px}
+  .termo h2{font-family:var(--serif);font-size:18px;color:var(--dourado-claro);margin:18px 0 8px;font-weight:600}
+  .termo h2:first-child{margin-top:0}
+  .termo p{margin-bottom:9px;color:#e6e2d7}
+  .termo ul{margin:0 0 9px 20px;color:#e6e2d7}
+  .termo li{margin-bottom:5px}
+  .termo .cab{font-size:12.5px;color:var(--cinza);border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:12px;margin-bottom:14px}
+  .termo strong{color:var(--branco)}
+  .versao{text-align:center;font-size:11.5px;color:var(--cinza-esc);margin-bottom:20px}
+
+  .form-card{background:var(--preto-2);border:1px solid rgba(212,175,55,0.25);border-radius:16px;padding:22px 20px}
+  .form-card h2{font-family:var(--serif);font-size:20px;text-align:center;margin-bottom:16px;font-weight:600}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:11.5px;font-weight:700;color:var(--dourado-claro);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+  .field input{width:100%;padding:13px 14px;border-radius:11px;border:1.5px solid rgba(255,255,255,0.12);background:var(--preto-3);color:var(--branco);font-size:16px}
+  .field input:focus{outline:none;border-color:var(--dourado)}
+  .check{display:flex;gap:11px;align-items:flex-start;background:var(--preto-3);border:1.5px solid rgba(255,255,255,0.12);border-radius:11px;padding:13px 14px;margin:6px 0 4px;cursor:pointer}
+  .check input{width:20px;height:20px;min-width:20px;margin-top:1px;accent-color:var(--dourado)}
+  .check span{font-size:13.5px;color:#e6e2d7}
+  .check:has(input:checked){border-color:var(--dourado);background:rgba(212,175,55,0.07)}
+  .err{display:none;color:#e8a48c;font-size:12px;margin-top:6px}
+  .err.show{display:block}
+  button[type=submit]{width:100%;margin-top:10px;padding:16px;border-radius:12px;border:none;background:linear-gradient(180deg,var(--dourado-claro),var(--dourado));color:#161200;font-size:15.5px;font-weight:800}
+  button[type=submit]:disabled{opacity:0.6}
+  .sending{display:none;text-align:center;margin-top:12px;color:var(--cinza);font-size:13px}
+  .sending.show{display:block}
+  .form-erro{display:none;text-align:center;color:#e8a48c;font-size:13px;margin-top:12px}
+  .form-erro.show{display:block}
+
+  .done{display:none;text-align:center;padding:44px 18px;background:var(--preto-2);border:1px solid rgba(212,175,55,0.25);border-radius:16px}
+  .done.show{display:block}
+  .done .ok{font-size:42px}
+  .done h2{font-family:var(--serif);font-size:24px;color:var(--dourado);margin:10px 0 8px;font-weight:600}
+  .done p{color:var(--cinza);font-size:14px;max-width:38ch;margin:0 auto}
+  footer{text-align:center;padding:24px 0 0;font-size:11.5px;color:var(--cinza-esc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topo">
+    <div class="marca">
+      <div class="word">fast<b>escova</b></div>
+      <div class="cidade">BAURU</div>
+    </div>
+  </header>
+
+  <h1>Termo do Casting de Criadores</h1>
+  <div class="sub">Leia o termo abaixo e confirme o aceite no fim da página.</div>
+
+  <div class="termo" id="termoTexto">
+    <div class="cab">
+      <strong>Parceria:</strong> Casting de Criadores — Fast Escova Bauru<br>
+      <strong>Unidade:</strong> Fast Escova Bauru — R. Antônio Alves, 30-12, Bauru/SP<br>
+      <strong>Modalidade:</strong> permuta (troca de serviços por conteúdo), sem pagamento em dinheiro por nenhuma das partes.
+    </div>
+
+    <h2>1. Objeto</h2>
+    <p>O(a) criador(a) identificado(a) no aceite ao final declara ciência e concorda em participar da parceria de conteúdo da <strong>Fast Escova Bauru</strong>, nos termos abaixo.</p>
+
+    <h2>2. O que a Fast Escova Bauru oferece</h2>
+    <p>Um combo de serviços de salão por visita, com valor aproximado de <strong>R$ 500,00 (quinhentos reais)</strong> em serviços, definido pela Fast Escova Bauru. No primeiro mês, o combo padrão é:</p>
+    <ul>
+      <li>Escova modelada + hidratação capilar;</li>
+      <li>Serviço de pedicure + velaterapia;</li>
+      <li>Fast Retoque (retoque de fios brancos).</li>
+    </ul>
+    <p>Os serviços são realizados na unidade Fast Escova Bauru, sem hora marcada, mediante agendamento prévio combinado com a unidade. A composição do combo pode variar a critério da Fast Escova Bauru.</p>
+
+    <h2>3. O que o(a) criador(a) se compromete a entregar</h2>
+    <p>Durante cada mês de parceria vigente:</p>
+    <ul>
+      <li>Em média <strong>3 (três) vídeos</strong> (formato Reels/TikTok) sobre a experiência na Fast Escova Bauru;</li>
+      <li><strong>1 (uma) sequência de stories</strong> a cada visita realizada à unidade;</li>
+      <li><strong>Prazo:</strong> todo o conteúdo de uma visita deve ser entregue em <strong>até 3 (três) dias úteis</strong> após a data da visita;</li>
+      <li><strong>Onde entregar:</strong> o conteúdo deve ser enviado, <strong>com e sem legenda</strong>, para a pasta digital individual disponibilizada pela Fast Escova Bauru, para <strong>aprovação prévia</strong> antes de qualquer publicação;</li>
+      <li><strong>Como publicar:</strong> as publicações no feed devem ser feitas em <strong>colaboração (collab)</strong> com o perfil @fastescova.bauru; os stories devem <strong>marcar</strong> o perfil @fastescova.bauru.</li>
+    </ul>
+
+    <h2>4. Autorização de uso de imagem, voz e conteúdo</h2>
+    <p>O(a) criador(a) autoriza, de forma <strong>gratuita</strong> e <strong>por prazo indeterminado</strong>, a <strong>Fast Escova Bauru</strong> a:</p>
+    <ul>
+      <li>a) utilizar sua <strong>imagem, voz, nome e @</strong> presentes no conteúdo produzido nesta parceria;</li>
+      <li>b) <strong>reproduzir, publicar, editar, adaptar e veicular</strong> esse conteúdo nos canais da unidade Fast Escova Bauru (Instagram, TikTok, Facebook, WhatsApp, Google, site e materiais de ponto de venda da unidade);</li>
+      <li>c) <strong>utilizar o conteúdo em campanhas de mídia paga (anúncios)</strong> nas plataformas Meta (Facebook/Instagram), Google e similares, veiculadas pela unidade Fast Escova Bauru, <strong>sem data de expiração</strong>;</li>
+      <li>d) realizar cortes, legendagem e ajustes de edição que não desvirtuem o sentido original do conteúdo.</li>
+    </ul>
+    <p>Esta autorização abrange o conteúdo produzido durante a vigência da parceria; <strong>permanece válida para esse conteúdo mesmo após o encerramento da parceria</strong>; e <strong>não</strong> autoriza o uso do conteúdo pela rede nacional Fast Escova nem por outras unidades/franquias — o uso é <strong>exclusivo da unidade Fast Escova Bauru</strong>.</p>
+
+    <h2>5. Vigência e renovação</h2>
+    <p>A parceria vigora por <strong>1 (um) mês</strong> a partir da primeira visita, podendo ser <strong>renovada mês a mês</strong> por acordo entre as partes. Qualquer das partes pode encerrar a parceria ao fim de um ciclo mensal, sem ônus, comunicando a outra.</p>
+
+    <h2>6. Condições gerais</h2>
+    <ul>
+      <li>A parceria <strong>não gera vínculo empregatício, societário ou de exclusividade</strong> entre as partes.</li>
+      <li>O descumprimento reiterado das entregas (item 3) autoriza a Fast Escova Bauru a não renovar a parceria.</li>
+      <li>O(a) criador(a) declara que o conteúdo produzido é de sua autoria e não viola direitos de terceiros.</li>
+      <li>Enquanto a parceria estiver vigente, o(a) criador(a) se compromete a não fechar parceria de permuta com salão de beleza concorrente em Bauru para o mesmo tipo de serviço.</li>
+      <li>Foro: comarca de Bauru/SP.</li>
+    </ul>
+
+    <h2>7. Aceite eletrônico</h2>
+    <p>O aceite é feito eletronicamente nesta página, com registro de data e hora. Ao enviar o formulário abaixo, o(a) criador(a) declara que <strong>leu e concorda</strong> com todos os itens acima e confirma os dados informados.</p>
+  </div>
+
+  <div class="versao">Versão do termo: <b id="versaoLbl">v1</b> · 31/08/2026</div>
+
+  <div class="form-card" id="formCard">
+    <h2>Aceite</h2>
+    <form id="termoForm" novalidate>
+      <div class="field">
+        <label>Nome completo</label>
+        <input id="nome" autocomplete="name">
+        <div class="err" id="errNome">Preenche seu nome completo.</div>
+      </div>
+      <div class="field">
+        <label>CPF</label>
+        <input id="cpf" inputmode="numeric" placeholder="000.000.000-00">
+        <div class="err" id="errCpf">CPF inválido.</div>
+      </div>
+      <div class="field">
+        <label>@ do Instagram</label>
+        <input id="instagram" placeholder="@seuusuario">
+        <div class="err" id="errInsta">Preenche seu @.</div>
+      </div>
+      <div class="field">
+        <label>E-mail</label>
+        <input id="email" type="email" autocomplete="email" placeholder="seu@email.com">
+        <div class="err" id="errEmail">E-mail inválido.</div>
+      </div>
+      <label class="check">
+        <input type="checkbox" id="aceito">
+        <span>Li e concordo com todos os itens do termo acima, e confirmo que os dados informados são meus e verdadeiros.</span>
+      </label>
+      <div class="err" id="errAceito">Marque a confirmação pra continuar.</div>
+      <button type="submit" id="btnSubmit">Assinar o termo</button>
+      <div class="sending" id="sending">Registrando seu aceite…</div>
+      <div class="form-erro" id="formErro">Não consegui registrar agora. Tenta de novo em instantes, ou chama a gente no WhatsApp: (14) 99145-5532.</div>
+    </form>
+  </div>
+
+  <div class="done" id="done">
+    <div class="ok">💛</div>
+    <h2>Termo assinado!</h2>
+    <p>Seu aceite foi registrado com data e hora. A equipe da Fast Escova Bauru já foi notificada — em breve te chamam pra combinar a primeira visita.</p>
+  </div>
+
+  <footer>Fast Escova Bauru · R. Antônio Alves, 30-12 — Bauru, SP</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://bsemnxcfdzdyokxidafu.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_rYrDx9SuurtISjiJqw0ECQ_vTWeKgUg";
+const TERMO_VERSAO = "v1";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+$('versaoLbl').textContent = TERMO_VERSAO;
+
+// prefill pelos parâmetros do link gerado no painel (?ig=@usuario&n=Nome)
+const qs = new URLSearchParams(location.search);
+const ig0 = qs.get('ig');
+const n0 = qs.get('n');
+if (ig0) {
+  $('instagram').value = ig0.startsWith('@') ? ig0 : '@' + ig0;
+  // link veio da Fast com o @ definido — trava o campo pra o aceite bater com o cadastro
+  $('instagram').readOnly = true;
+  $('instagram').style.opacity = '0.7';
+  $('instagram').insertAdjacentHTML('afterend',
+    '<div class="hint" style="font-size:11.5px;color:var(--cinza-esc);margin-top:5px">Campo confirmado pela Fast Escova Bauru. Se o @ estiver errado, peça o link certo.</div>');
+}
+if (n0) $('nome').value = n0;
+
+// máscara de CPF
+$('cpf').addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,'').slice(0,11);
+  v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+  e.target.value = v;
+});
+
+$('termoForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nome = $('nome').value.trim();
+  const cpf = $('cpf').value.replace(/\D/g,'');
+  const insta = $('instagram').value.trim();
+  const email = $('email').value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const aceito = $('aceito').checked;
+
+  let ok = true;
+  $('errNome').classList.toggle('show', !nome); if(!nome) ok = false;
+  $('errCpf').classList.toggle('show', cpf.length !== 11); if(cpf.length !== 11) ok = false;
+  $('errInsta').classList.toggle('show', !insta); if(!insta) ok = false;
+  $('errEmail').classList.toggle('show', !emailOk); if(!emailOk) ok = false;
+  $('errAceito').classList.toggle('show', !aceito); if(!aceito) ok = false;
+  if(!ok){ document.querySelector('.err.show')?.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+
+  $('formErro').classList.remove('show');
+  $('btnSubmit').disabled = true;
+  $('sending').classList.add('show');
+  try {
+    const { data, error } = await sb.rpc('registrar_aceite_termo', {
+      p_instagram: insta, p_nome: nome, p_cpf: $('cpf').value, p_email: email, p_versao: TERMO_VERSAO
+    });
+    if (error) throw error;
+    if (!data.ok) throw new Error(data.erro || 'falha');
+    if (window.fbq) { try { fbq('track','SubmitApplication',{content_category:'Criador — termo'}); } catch(_){} }
+    $('formCard').style.display = 'none';
+    $('done').classList.add('show');
+    $('done').scrollIntoView({behavior:'smooth',block:'center'});
+  } catch (err) {
+    console.error(err);
+    $('formErro').classList.add('show');
+  } finally {
+    $('sending').classList.remove('show');
+    $('btnSubmit').disabled = false;
+  }
+});
+</script>
+</body>
+</html>
